@@ -1,8 +1,11 @@
+import ArticleListCard from '../components/common/ArticleListCard';
+import MainLayout from '../components/common/MainLayout';
+
 function Search() {
   return (
-    <div>
-      <h1>Search</h1>
-    </div>
+    <MainLayout>
+      <h1>search</h1>
+    </MainLayout>
   );
 }
 
