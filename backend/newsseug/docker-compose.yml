@@ -1,0 +1,19 @@
+services:
+
+  mariadb:
+    image: 'mariadb:11.5.2'
+    ports:
+      - '3306:3306'
+    environment:
+      TZ: Asia/Seoul
+      MYSQL_USER: newsseug
+      MYSQL_DATABASE: newsseug
+      MYSQL_PASSWORD: newsseug1234
+      MARIADB_ROOT_PASSWORD: newsseug1234
+    volumes:
+      - "./init.sql:/docker-entrypoint-initdb.d/init.sql"
+
+  redis:
+    image: 'redis:latest'
+    ports:
+      - '6379:6379'
