@@ -1,8 +1,13 @@
+import PressInfo from '../components/press/PressInfo';
+import SubLayout from '../components/common/SubLayout';
+import styled from 'styled-components';
+
 function Press() {
   return (
-    <div>
-      <h1>Press</h1>
-    </div>
+    <SubLayout headerColor="">
+      <h1>언론사 이름 데스네루</h1>
+      <PressInfo />
+    </SubLayout>
   );
 }
 

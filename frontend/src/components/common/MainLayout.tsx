@@ -1,4 +1,4 @@
-import { MainLayoutProps } from '@/types/common';
+import { LayoutProps } from '@/types/common';
 import Container from './Container';
 import Layout from './Layout';
 import LogoHeader from './LogoHeader';
@@ -10,7 +10,7 @@ import NavBar from './NavBar';
  * @returns
  */
 
-function MainLayout({ children }: Readonly<MainLayoutProps>) {
+function MainLayout({ children }: Readonly<LayoutProps>) {
   return (
     <Layout>
       <LogoHeader />

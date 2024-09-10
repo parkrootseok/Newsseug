@@ -1,6 +1,26 @@
 import { ArticleListCardProps } from '@/types/common';
 import styled from 'styled-components';
 
+function ArticleListCard({
+  imgUrl,
+  title,
+  viewCount,
+  pressName,
+}: ArticleListCardProps) {
+  return (
+    <Wrapper>
+      <Thumbnail src={imgUrl} />
+      <PressTag>{pressName}</PressTag>
+      <ArticleInfo>
+        <ArticleTitle>{title}</ArticleTitle>
+        <ViewCount>조회수 {formatViewCount(viewCount)}회</ViewCount>
+      </ArticleInfo>
+    </Wrapper>
+  );
+}
+
+export default ArticleListCard;
+
 const Wrapper = styled.div`
   position: relative;
   width: 180px;
@@ -33,6 +53,7 @@ const ArticleInfo = styled.div`
     rgba(0, 0, 0, 0.8) 100%
   );
 `;
+
 const ArticleTitle = styled.h1`
   color: ${({ theme }) => theme.bgColor};
   font-feature-settings:
@@ -91,23 +112,3 @@ function formatViewCount(viewCount: number): string {
     return viewCount.toString(); // 천 이하일 경우 그대로 출력
   }
 }
-
-function ArticleListCard({
-  imgUrl,
-  title,
-  viewCount,
-  pressName,
-}: ArticleListCardProps) {
-  return (
-    <Wrapper>
-      <Thumbnail src={imgUrl} />
-      <PressTag>{pressName}</PressTag>
-      <ArticleInfo>
-        <ArticleTitle>{title}</ArticleTitle>
-        <ViewCount>조회수 {formatViewCount(viewCount)}회</ViewCount>
-      </ArticleInfo>
-    </Wrapper>
-  );
-}
-
-export default ArticleListCard;
