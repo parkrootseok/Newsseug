@@ -6,6 +6,7 @@ export type ContainerProps = {
 
 export type LayoutProps = {
   children: React.ReactNode;
+  backgroundColor?: string;
 };
 
 export type LogoHeaderProps = {
@@ -14,7 +15,8 @@ export type LogoHeaderProps = {
 
 export type NavItemProps = {
   icon: React.ReactNode;
-  text: string;
+  text?: string;
+  isMain?: boolean;
   active: boolean;
   onClick: () => void;
 };
