@@ -2,6 +2,7 @@ import 'styled-components';
 
 interface RelaxColor {
   main: string;
+  superlight: string;
   light: string;
   dark: string;
 }

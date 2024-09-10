@@ -13,6 +13,7 @@ export const lightTheme: DefaultTheme = {
   relaxColor: {
     // 회색 종류
     main: '#807E7E',
+    superlight: '#F4F4F4', // 매우매우 연한 회색
     light: '#D9D9D9', // 연한 회색
     dark: '#5E5F60', // 진한 회색
   },

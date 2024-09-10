@@ -1,11 +1,11 @@
-import ArticleListCard from '../components/common/ArticleListCard';
-import MainLayout from '../components/common/MainLayout';
+import InputSection from '../components/search/InputSection';
+import SubLayout from '../components/common/SubLayout';
 
 function Search() {
   return (
-    <MainLayout>
-      <h1>search</h1>
-    </MainLayout>
+    <SubLayout isSearch={true}>
+      <InputSection />
+    </SubLayout>
   );
 }
 
