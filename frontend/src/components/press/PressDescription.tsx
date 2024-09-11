@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import expandIcon from '../../assets/expandIcon.svg';
+import expandIcon from 'assets/expandIcon.svg';
 import { useState } from 'react';
 
 function PressDescription() {

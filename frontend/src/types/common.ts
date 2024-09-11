@@ -33,12 +33,6 @@ export interface ArticleListCardProps {
   title: string;
   viewCount: number;
   pressName: string;
-}
-
-export interface MainSectionProps {
-  isSearch?: boolean;
-}
-
-export interface SubHeaderWrapper {
-  headerColor?: string;
+  width?: string;
+  height?: string;
 }

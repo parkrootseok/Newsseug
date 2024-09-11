@@ -1,11 +1,7 @@
 import styled from 'styled-components';
-import ArrowIcon from '../../assets/arrowIcon.svg';
+import ArrowIcon from 'assets/arrowIcon.svg';
 import { useNavigate } from 'react-router-dom';
-import {
-  MainSectionProps,
-  SubHeaderWrapper,
-  SubLayoutProps,
-} from '@/types/common';
+import { SubLayoutProps } from '@/types/common';
 
 /**
  * IMP : 자식 요소를 동적으로 Rendering 할 수 있음.
@@ -35,9 +31,9 @@ function SubHeader({
 
 export default SubHeader;
 
-const Wrapper = styled.div<SubHeaderWrapper>`
+const Wrapper = styled.div<{ headerColor?: string }>`
   padding: 12px 16px;
-  position: relative;
+  position: fixed;
   box-sizing: border-box;
   display: flex;
   width: 100%;
@@ -45,7 +41,8 @@ const Wrapper = styled.div<SubHeaderWrapper>`
   justify-content: space-between;
   align-items: center;
   gap: 8px;
-  background-color: ${({ headerColor }) => headerColor};
+  background-color: ${({ headerColor, theme }) =>
+    headerColor ? headerColor : theme.bgColor};
 `;
 
 const BackBtn = styled.button`
@@ -68,7 +65,7 @@ const BackBtn = styled.button`
   }
 `;
 
-const MainSection = styled.div<MainSectionProps>`
+const MainSection = styled.div<{ isSearch?: boolean }>`
   display: flex;
   width: ${({ isSearch }) => (isSearch ? 'fit-content' : 'auto')};
   padding: 8px 12px;

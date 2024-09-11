@@ -4,6 +4,7 @@ interface RelaxColor {
   main: string;
   superlight: string;
   light: string;
+  littlelight: string;
   dark: string;
 }
 

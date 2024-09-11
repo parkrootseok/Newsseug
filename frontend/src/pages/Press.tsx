@@ -1,5 +1,5 @@
-import PressInfo from '../components/press/PressInfo';
-import SubLayout from '../components/common/SubLayout';
+import PressInfo from 'components/press/PressInfo';
+import SubLayout from 'components/common/SubLayout';
 import styled from 'styled-components';
 
 function Press() {

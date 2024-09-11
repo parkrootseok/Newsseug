@@ -1,8 +1,18 @@
+import UserInfo from 'components/mypage/UserInfo';
+import MainLayout from 'components/common/MainLayout';
+import SubTitle from 'components/mypage/SubTitle';
+import Histories from 'components/mypage/Histories';
+import Scraps from 'components/mypage/Scraps';
+
 function MyPage() {
   return (
-    <div>
-      <h1>MyPage</h1>
-    </div>
+    <MainLayout>
+      <UserInfo />
+      <SubTitle title="시청 기록" url="scraps" />
+      <Histories />
+      <SubTitle title="스크랩" url="history" />
+      <Scraps />
+    </MainLayout>
   );
 }
 

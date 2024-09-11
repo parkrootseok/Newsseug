@@ -17,9 +17,9 @@ const Wrapper = styled.div`
   box-sizing: border-box;
   width: 100vw;
   display: flex;
-  padding: 12px 20px;
+  padding: 12px 0;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: space-between;
+  align-items: flex-start;
   gap: 12px;
 `;
