@@ -1,4 +1,4 @@
-package com.a301.newsseug.global.enums.status;
+package com.a301.newsseug.global.model.entity;
 
 public enum ActivateStatus {
 

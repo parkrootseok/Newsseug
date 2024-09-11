@@ -2,9 +2,9 @@ package com.a301.newsseug.global.handler;
 
 import static com.a301.newsseug.global.constant.StringFormat.VALIDATED_ERROR_RESULT;
 import static com.a301.newsseug.global.constant.StringFormat.VALID_ERROR_RESULT;
-import static com.a301.newsseug.global.enums.code.ErrorCode.FAIL_TO_VALIDATE;
+import static com.a301.newsseug.global.execption.ErrorCode.FAIL_TO_VALIDATE;
 
-import com.a301.newsseug.global.enums.code.ErrorCode;
+import com.a301.newsseug.global.execption.ErrorCode;
 import com.a301.newsseug.global.execption.BaseException;
 import jakarta.annotation.Nullable;
 import jakarta.validation.ConstraintViolation;
