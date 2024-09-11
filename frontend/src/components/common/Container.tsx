@@ -10,26 +10,13 @@ function Container({ children }: Readonly<LayoutProps>) {
   return <ContainerBox>{children}</ContainerBox>;
 }
 
-const ContainerBox = styled.div`
-  display: flex;
-  height: 100%;
-  width: 100%;
-  padding: 0 15px;
-  padding-top: calc(6.7vh);
-  padding-bottom: calc(7vh);
-  box-sizing: border-box;
-`;
-
 export default Container;
 
 const ContainerBox = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  height: 100%;
-  width: 100%;
   padding: 0 15px;
-  flex-grow: 1;
+  padding-top: calc(6.7vh);
+  padding-bottom: calc(7vh);
   box-sizing: border-box;
 `;

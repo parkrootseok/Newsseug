@@ -47,7 +47,8 @@ const VectorWordItems = [
 const StyledLoginWord = styled.div`
   display: flex;
   justify-content: center;
-  align-items: center;
+  margin-top: calc(30vh);
+  gap: 15px;
 `;
 
 export default LoginWord;

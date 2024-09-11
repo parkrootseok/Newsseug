@@ -8,6 +8,7 @@ import Subscribes from './pages/Subscribes';
 import AllArticles from './pages/AllArticles';
 import Login from './pages/Login';
 import Search from './pages/Search';
+import Splash from './pages/Splash';
 import Press from './pages/Press';
 import Article from './pages/Article';
 
@@ -16,6 +17,7 @@ function Router() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/splash" element={<Splash />} />
         <Route path="/login" element={<Login />} />
         <Route path="/articles/all" element={<AllArticles />} />
         <Route path="/subscribes" element={<Subscribes />} />
