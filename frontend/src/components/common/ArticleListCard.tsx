@@ -1,4 +1,4 @@
-import { ArticleListCardProps } from '@/types/common';
+import { ArticleListCardProps } from '@/types/common/common';
 import styled from 'styled-components';
 
 function ArticleListCard({

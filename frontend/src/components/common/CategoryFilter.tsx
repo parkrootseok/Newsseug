@@ -1,9 +1,5 @@
+import { CategoryFilterProps } from '@/types/common/common';
 import styled from 'styled-components';
-
-interface CategoryFilterProps {
-  activeCategory: string;
-  setActiveCategory: (category: string) => void;
-}
 
 function CategoryFilter({
   activeCategory,

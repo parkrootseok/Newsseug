@@ -1,4 +1,4 @@
-import { SubLayoutProps } from '@/types/common';
+import { SubLayoutProps } from '@/types/common/layout';
 import Container from './Container';
 import Layout from './Layout';
 import NavBar from './NavBar';

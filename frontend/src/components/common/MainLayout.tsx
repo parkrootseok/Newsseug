@@ -1,4 +1,4 @@
-import { LayoutProps } from '@/types/common';
+import { LayoutProps } from '@/types/common/layout';
 import Container from './Container';
 import Layout from './Layout';
 import LogoHeader from './LogoHeader';

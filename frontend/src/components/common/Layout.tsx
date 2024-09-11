@@ -1,4 +1,4 @@
-import { LayoutProps } from '@/types/common';
+import { LayoutProps } from '@/types/common/layout';
 import styled from 'styled-components';
 
 /**

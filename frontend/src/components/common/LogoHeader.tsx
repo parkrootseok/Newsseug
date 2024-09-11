@@ -1,4 +1,4 @@
-import { LogoHeaderProps } from '@/types/common';
+import { LogoHeaderProps } from '@/types/common/layout';
 import styled from 'styled-components';
 
 function LogoHeader({ size = 48 }: Readonly<LogoHeaderProps>) {

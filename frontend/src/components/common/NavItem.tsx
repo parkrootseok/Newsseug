@@ -1,4 +1,4 @@
-import { NavItemProps } from '@/types/common';
+import { NavItemProps } from '@/types/common/layout';
 import styled from 'styled-components';
 
 function NavItem({

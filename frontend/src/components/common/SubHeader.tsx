@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import ArrowIcon from 'assets/arrowIcon.svg';
 import { useNavigate } from 'react-router-dom';
-import { SubLayoutProps } from '@/types/common';
+import { SubLayoutProps } from '@/types/common/layout';
 
 /**
  * IMP : 자식 요소를 동적으로 Rendering 할 수 있음.

@@ -1,4 +1,4 @@
-import { ArticleListCardProps } from './common';
+import { ArticleListCardProps } from './common/common';
 
 export type SectionProps = {
   subTitle: string;

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { LayoutProps } from '@/types/common';
+import { LayoutProps } from '@/types/common/layout';
 
 /**
  * IMP : 자식 요소를 동적으로 Rendering 할 수 있음.
