@@ -11,6 +11,7 @@ import Search from './pages/Search';
 import Splash from './pages/Splash';
 import Press from './pages/Press';
 import Article from './pages/Article';
+import History from './pages/History';
 
 function Router() {
   return (
@@ -19,15 +20,26 @@ function Router() {
         <Route path="/" element={<Home />} />
         <Route path="/splash" element={<Splash />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/articles/all" element={<AllArticles />} />
-        <Route path="/subscribes" element={<Subscribes />} />
-        <Route path="/subscribes/all" element={<AllSubscribes />} />
-        <Route path="/mypage" element={<MyPage />} />
-        <Route path="/mypage/scraps" element={<AllScraps />} />
-        <Route path="/mypage/scraps/:scrapId" element={<Scrap />} />
+
+        <Route path="/articles">
+          <Route path="all" element={<AllArticles />} />
+          <Route path=":articleId" element={<Article />} />
+        </Route>
+
+        <Route path="/subscribes">
+          <Route path="" element={<Subscribes />} />
+          <Route path="all" element={<AllSubscribes />} />
+        </Route>
+
+        <Route path="/mypage">
+          <Route path="" element={<MyPage />} />
+          <Route path="scraps" element={<AllScraps />} />
+          <Route path="history" element={<History />} />
+          <Route path="scraps/:scrapId" element={<Scrap />} />
+        </Route>
+
         <Route path="/search" element={<Search />} />
         <Route path="/press/:pressId" element={<Press />} />
-        <Route path="/articles/:articleId" element={<Article />} />
       </Routes>
     </BrowserRouter>
   );

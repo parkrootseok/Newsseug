@@ -6,9 +6,11 @@ function ArticleListCard({
   title,
   viewCount,
   pressName,
-}: Readonly<ArticleListCardProps>) {
+  width = '180px',
+  height = '250px',
+}: ArticleListCardProps) {
   return (
-    <Wrapper>
+    <Wrapper width={width} height={height}>
       <Thumbnail src={imgUrl} />
       <PressTag>{pressName}</PressTag>
       <ArticleInfo>
@@ -21,19 +23,19 @@ function ArticleListCard({
 
 export default ArticleListCard;
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ width?: string; height?: string }>`
   position: relative;
-  width: 180px;
-  height: 250px;
+  width: ${({ width }) => width};
+  height: ${({ height }) => height};
   overflow: hidden;
   border-radius: 5px;
 `;
 
 const Thumbnail = styled.img`
-  display: flex;
   width: 100%;
   height: 100%;
-  align-items: flex-end;
+  object-fit: cover; /* 비율을 유지하며 잘리는 부분을 감춤 */
+  object-position: center; /* 중앙에 맞춰 자르기 */
 `;
 
 const ArticleInfo = styled.div`
