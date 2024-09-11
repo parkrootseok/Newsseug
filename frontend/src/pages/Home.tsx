@@ -1,10 +1,9 @@
-import NavBar from '../components/common/NavBar';
+import MainLayout from '../components/common/MainLayout';
 function Home() {
   return (
-    <div>
-      <h1>Home</h1>
-      <NavBar />
-    </div>
+    <MainLayout>
+      <h1></h1>
+    </MainLayout>
   );
 }
 

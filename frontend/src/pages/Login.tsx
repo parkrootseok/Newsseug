@@ -1,8 +1,11 @@
+import LoginWord from '../components/login/LoginWord';
+import Layout from '../components/common/Layout';
+
 function Login() {
   return (
-    <div>
-      <h1>Login</h1>
-    </div>
+    <Layout>
+      <LoginWord />
+    </Layout>
   );
 }
 

@@ -1,23 +1,6 @@
 import { LogoHeaderProps } from '@/types/common';
 import styled from 'styled-components';
 
-const LogoContainer = styled.div<{ $size: number }>`
-  display: flex;
-  width: 360px;
-  height: ${({ $size }) => $size}px;
-  padding: 0px 10px;
-  align-items: center;
-`;
-
-const StyledSVG = styled.svg<{ $size: number }>`
-  width: ${({ $size }) => $size}px;
-  height: ${({ $size }) => $size / 2.22}px;
-  /* margin: 10px 0; */
-  path {
-    fill: ${({ theme }) => theme.mainColor};
-  }
-`;
-
 function LogoHeader({ size = 48 }: Readonly<LogoHeaderProps>) {
   return (
     <LogoContainer $size={size}>
@@ -43,5 +26,26 @@ function LogoHeader({ size = 48 }: Readonly<LogoHeaderProps>) {
     </LogoContainer>
   );
 }
+
+const LogoContainer = styled.div<{ $size: number }>`
+  display: flex;
+  width: 100%;
+  height: 6.7%;
+  padding: 0px 10px;
+  align-items: center;
+  background-color: white;
+  position: fixed;
+  z-index: 5;
+  top: 0;
+`;
+
+const StyledSVG = styled.svg<{ $size: number }>`
+  width: ${({ $size }) => $size}px;
+  height: ${({ $size }) => $size / 2.22}px;
+  /* margin: 10px 0; */
+  path {
+    fill: ${({ theme }) => theme.mainColor};
+  }
+`;
 
 export default LogoHeader;

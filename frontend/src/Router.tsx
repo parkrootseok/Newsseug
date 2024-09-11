@@ -1,15 +1,15 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Home from "./pages/Home";
-import Scrap from "./pages/Scrap";
-import AllScraps from "./pages/AllScraps";
-import MyPage from "./pages/MyPage";
-import AllSubscribes from "./pages/AllSubscribes";
-import Subscribes from "./pages/Subscribes";
-import AllArticles from "./pages/AllArticles";
-import Login from "./pages/Login";
-import Search from "./pages/Search";
-import Press from "./pages/Press";
-import Article from "./pages/Article";
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import Home from './pages/Home';
+import Scrap from './pages/Scrap';
+import AllScraps from './pages/AllScraps';
+import MyPage from './pages/MyPage';
+import AllSubscribes from './pages/AllSubscribes';
+import Subscribes from './pages/Subscribes';
+import AllArticles from './pages/AllArticles';
+import Login from './pages/Login';
+import Search from './pages/Search';
+import Press from './pages/Press';
+import Article from './pages/Article';
 
 function Router() {
   return (
