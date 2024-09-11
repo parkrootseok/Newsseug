@@ -1,6 +1,5 @@
 package com.a301.newsseug.global.execption;
 
-import com.a301.newsseug.global.enums.code.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

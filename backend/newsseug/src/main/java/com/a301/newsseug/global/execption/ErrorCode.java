@@ -1,4 +1,4 @@
-package com.a301.newsseug.global.enums.code;
+package com.a301.newsseug.global.execption;
 
 import static com.a301.newsseug.global.constant.ErrorMessage.*;
 
