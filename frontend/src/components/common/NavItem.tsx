@@ -33,10 +33,13 @@ const NavItemContainer = styled.div<{
   position: relative;
   top: ${({ $isMain }) =>
     $isMain ? '-16px' : '0'}; // 원하는 정도로 값을 조절 가능
-  svg path {
-    fill: ${({ $active, theme }) =>
-      $active ? theme.mainColor : theme.relaxColor.dark};
-  }
+  ${({ $isMain, $active, theme }) =>
+    !$isMain &&
+    `
+    svg path {
+      fill: ${$active ? theme.mainColor : theme.relaxColor.dark};
+    }
+  `}
 `;
 
 const NavText = styled.span`

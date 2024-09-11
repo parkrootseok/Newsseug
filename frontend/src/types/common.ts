@@ -15,6 +15,11 @@ export type LogoHeaderProps = {
   size?: number;
 };
 
+export type VectorWordProps = {
+  icon: React.ReactNode;
+  color?: string;
+};
+
 export type NavItemProps = {
   icon: React.ReactNode;
   text?: string;
