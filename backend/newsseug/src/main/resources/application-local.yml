@@ -1,0 +1,13 @@
+server:
+  port: 8080
+
+spring:
+
+  docker:
+    compose:
+      file: 'docker-compose.local.yml'
+      lifecycle-management: start_only
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
