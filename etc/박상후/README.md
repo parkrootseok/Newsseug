@@ -336,3 +336,10 @@
 
 <br/>
 
+# 🌏 Jenkins | 09.09(월)
+
+## docker container
+
+1. jenkins
+
+    - 0.0.0.0:9090->8080/tcp
