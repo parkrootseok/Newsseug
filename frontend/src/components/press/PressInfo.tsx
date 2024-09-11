@@ -1,9 +1,12 @@
 import styled from 'styled-components';
+import PressProfile from './PressProfile';
+import PressDescription from './PressDescription';
 
 function PressInfo() {
   return (
     <Wrapper>
-      <h1>hi</h1>
+      <PressProfile />
+      <PressDescription />
     </Wrapper>
   );
 }
@@ -11,7 +14,12 @@ function PressInfo() {
 export default PressInfo;
 
 const Wrapper = styled.div`
+  box-sizing: border-box;
   width: 100vw;
-  height: 240px;
-  background-color: #95c8ff;
+  display: flex;
+  padding: 12px 20px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
 `;

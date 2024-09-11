@@ -8,7 +8,7 @@ import { DefaultTheme } from 'styled-components/dist/types';
 
 export const lightTheme: DefaultTheme = {
   bgColor: 'white',
-  textColor: 'black',
+  textColor: '#202020',
   mainColor: '#58D7A2',
   relaxColor: {
     // 회색 종류
@@ -17,4 +17,5 @@ export const lightTheme: DefaultTheme = {
     light: '#D9D9D9', // 연한 회색
     dark: '#5E5F60', // 진한 회색
   },
+  descriptionBgColor: '#fafafa',
 };
