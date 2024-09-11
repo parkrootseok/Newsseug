@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import NavItem from './NavItem';
 
@@ -11,9 +10,8 @@ import NavItem from './NavItem';
 
 function NavBar() {
   const navigate = useNavigate();
-  const [activeIndex, setActiveIndex] = useState(0);
+  const location = useLocation();
   const handleItemClick = (index: number, to: string) => {
-    setActiveIndex(index);
     navigate(to);
   };
 
@@ -25,7 +23,7 @@ function NavBar() {
           icon={item.icon}
           text={item.text}
           isMain={item.isMain}
-          active={activeIndex === index}
+          active={location.pathname === `/${item.route}`}
           onClick={() => handleItemClick(index, `/${item.route}`)}
         />
       ))}
@@ -49,6 +47,7 @@ const NavBarContainer = styled.div`
   align-items: flex-end;
   flex-shrink: 0;
   background-color: white;
+  box-shadow: 0px -4px 10px rgba(0, 0, 0, 0.1);
 `;
 
 /**

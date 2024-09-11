@@ -6,7 +6,7 @@ function ArticleListCard({
   title,
   viewCount,
   pressName,
-}: ArticleListCardProps) {
+}: Readonly<ArticleListCardProps>) {
   return (
     <Wrapper>
       <Thumbnail src={imgUrl} />
