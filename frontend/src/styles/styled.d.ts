@@ -13,5 +13,6 @@ declare module 'styled-components' {
     bgColor: string;
     mainColor: string;
     relaxColor: RelaxColor;
+    descriptionBgColor: string;
   }
 }

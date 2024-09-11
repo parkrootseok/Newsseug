@@ -19,7 +19,7 @@ const SearchIcon = styled.img`
 
 const TextInput = styled.input`
   color: ${({ theme }) => theme.relaxColor.dark};
-  font-size: 14px;
+  font-size: 16px;
   font-style: normal;
   font-weight: 500;
   line-height: 140%;
