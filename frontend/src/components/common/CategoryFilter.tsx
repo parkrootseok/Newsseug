@@ -36,6 +36,7 @@ const Container = styled.div`
   align-items: flex-start;
   gap: 8px;
   flex-shrink: 0;
+  scroll-behavior: smooth;
 
   &::-webkit-scrollbar {
     display: none;
@@ -47,7 +48,7 @@ const FilterButton = styled.button<{
   active?: boolean;
 }>`
   display: flex;
-  border: none;
+  border: ${({ active }) => (active ? 'none' : '1px solid #EEEEEE')};
   font-size: 12px;
   width: 55px;
   height: 32px;
@@ -59,4 +60,5 @@ const FilterButton = styled.button<{
   background-color: ${({ active, theme }) =>
     active ? theme.mainColor : 'white'};
   cursor: pointer;
+  outline: none;
 `;

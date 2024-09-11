@@ -40,9 +40,10 @@ ${reset}
   src: url("../fonts/Pretendard-Thin.ttf");
 }
 
-body {
-    font-family: "Pretendard-Regular", sans-serif;
+* {
+    font-family: "Pretendard-Regular" !important;
   }
+
 `;
 
 export default GlobalStyle;
