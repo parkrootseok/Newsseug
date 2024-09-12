@@ -1,16 +1,22 @@
 import MainLayout from '../components/common/MainLayout';
 import Section from 'components/home/Section';
+import Login from './Login';
+import Splash from './Splash';
+import UserInput from './UserInput';
 function Home() {
   return (
-    <MainLayout>
-      {DummyData.map((data, index) => (
-        <Section
-          key={index}
-          subTitle={data.subTitle}
-          ArticleList={data.ArticleList}
-        />
-      ))}
-    </MainLayout>
+    // <MainLayout>
+    //   {DummyData.map((data, index) => (
+    //     <Section
+    //       key={index}
+    //       subTitle={data.subTitle}
+    //       ArticleList={data.ArticleList}
+    //     />
+    //   ))}
+    // </MainLayout>
+    // <Splash />
+    <UserInput />
+    // <Login />
   );
 }
 

@@ -2,10 +2,10 @@ import styled from 'styled-components';
 import ArticleListCard from 'components/common/ArticleListCard';
 import { ArticleSlideBoxProps } from '@/types/home';
 
-function ArticleSlideBox({ ArticleList }: Readonly<ArticleSlideBoxProps>) {
+function ArticleSlideBox({ articleList }: Readonly<ArticleSlideBoxProps>) {
   return (
     <ArticleSlideBoxStyle>
-      {ArticleList?.map((article, index) => (
+      {articleList?.map((article, index) => (
         <ArticleListCard key={index} {...article} />
       ))}
     </ArticleSlideBoxStyle>

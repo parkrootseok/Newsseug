@@ -1,7 +1,7 @@
-export type NormalWordProps = {
+export interface NormalWordProps {
   text: string;
-};
+}
 
-export type DelayProps = {
+export interface DelayProps {
   delay: string;
-};
+}

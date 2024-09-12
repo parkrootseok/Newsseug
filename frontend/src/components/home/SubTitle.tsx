@@ -26,6 +26,6 @@ const SubTitleStyle = styled.p`
   font-size: 14px;
   font-style: normal;
   font-weight: 600;
-  line-height: 18px; /* 128.571% */
+  line-height: 18px;
   letter-spacing: -0.42px;
 `;

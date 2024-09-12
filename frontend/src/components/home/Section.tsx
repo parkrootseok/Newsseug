@@ -3,11 +3,11 @@ import styled from 'styled-components';
 import SubTitle from './SubTitle';
 import ArticleSlideBox from './ArticleSlideBox';
 
-function Section({ subTitle, ArticleList }: Readonly<SectionProps>) {
+function Section({ subTitle, articleList }: Readonly<SectionProps>) {
   return (
     <SectionStyle>
       <SubTitle subTitle={subTitle} />
-      <ArticleSlideBox ArticleList={ArticleList} />
+      <ArticleSlideBox articleList={articleList} />
     </SectionStyle>
   );
 }

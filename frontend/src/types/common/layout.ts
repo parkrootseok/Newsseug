@@ -11,9 +11,9 @@ export type SubLayoutProps = {
   headerColor?: string;
 };
 
-export type LogoHeaderProps = {
+export interface LogoHeaderProps {
   size?: number;
-};
+}
 
 export type VectorWordProps = {
   icon: React.ReactNode;
