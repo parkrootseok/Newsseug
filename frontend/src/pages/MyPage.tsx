@@ -8,9 +8,9 @@ function MyPage() {
   return (
     <MainLayout>
       <UserInfo />
-      <SubTitle title="시청 기록" url="scraps" />
+      <SubTitle title="시청 기록" url="history" />
       <Histories />
-      <SubTitle title="스크랩" url="history" />
+      <SubTitle title="스크랩" url="scraps" />
       <Scraps />
     </MainLayout>
   );
