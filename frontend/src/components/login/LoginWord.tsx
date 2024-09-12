@@ -47,7 +47,7 @@ const VectorWordItems = [
 const StyledLoginWord = styled.div`
   display: flex;
   justify-content: center;
-  margin-top: calc(30vh);
+  margin-top: calc(22vh);
   gap: 15px;
 `;
 

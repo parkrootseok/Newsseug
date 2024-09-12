@@ -1,14 +1,14 @@
 import { ArticleListCardProps } from './common/common';
 
-export type SectionProps = {
+export interface SectionProps {
   subTitle: string;
-  ArticleList?: ArticleListCardProps[];
-};
+  articleList?: ArticleListCardProps[];
+}
 
-export type SubTitleProps = {
+export interface SubTitleProps {
   subTitle: string;
-};
+}
 
-export type ArticleSlideBoxProps = {
-  ArticleList?: ArticleListCardProps[];
-};
+export interface ArticleSlideBoxProps {
+  articleList?: ArticleListCardProps[];
+}
