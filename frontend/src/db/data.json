@@ -1,6 +1,29 @@
 {
   "subscribeData" : [
     {
+<<<<<<< HEAD
+      "imgUrl": "https://s3-alpha-sig.figma.com/img/b4d5/3d0f/103a4efd4d2d73d5579df2ae68bfb62a?Expires=1727049600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=bCibBHL8VpVT6D0cQDK-s5mShPEQxJrmPYVEGYUwM0160nZDIHP5TDFvgPBFe1~c53SQh0vEuVS7~2-bub5kE1cANrBDF1oUWqU7SqhPzJ3dTu3e26sZHj0zTtYtBCQV~9qfFABBfqgN0bHR3o10MBEjhjlfB52hK-24hk0PnEmbj0CDL29TXV9gs-UWiozl8rUIsH2u-TelgPka98eARIsL9gfQ7p7e-jiNMV-dwSSH3arpOSaIPFQ5jBj8uSKUrbbiD1ODv7gg7ZhqZP6o~PvmkIaVNQLh4GtY5boTqU1rtyuv2ZWiO188Kwz-tThj77V8-X4GHx8kXPArB3oFPg__",
+      "pressName": "YTN"
+    },
+    {
+      "imgUrl": "https://s3-alpha-sig.figma.com/img/040b/d313/600f3e479ead8ab6994454ceaafa2832?Expires=1727049600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=HaVzOepAPkm7y6tZ4PTkfn5IJUj1CRHZ3mU43Yhf2rbDKY15GVmEA4Cl2Kb-vXM1exvsPF2gG9V2uAW5KJqFHwTU8m2iPqBGACYHhk7nQkU2E3oOXzX~ikkdi97Cb20rZonE6XmkPVVtQJByQ2PVyhPDAuDhsnd5xNytR6GaT9pteBXnYNTJig5alxg6B0jxCxxu1KP6xXLGWlY1lw0UOFwTn7NOlC2Pcvhzo74lZevrJLfAofM0jBRzQQ0Cr4tiHKunOcCtI1JtCQnMbAjSAeRDVDCr2kfi0C0rYGTTlfJYFzYEcIwFZ9sUTiRrZ5I6-GTVanQNYMTBADHH8wQKJw__",
+      "pressName": "KBS"
+    },
+    {
+      "imgUrl": "https://s3-alpha-sig.figma.com/img/b2b3/b157/223ce4970ed0dc7746167ac18aab02aa?Expires=1727049600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=osUXFvY9uPriVzI0ZA3THKj5eWNR223k~Mrf4q~rhrajtuLCn6A4qyYf4rFgNJ0f1H0AJ9AMQ7DnSPRB3Adlj1V49Sy53KN8~a7MTdteNVAAqaMNLEx5TE9j4H5QgfJiks2f~ADiTJOKeNnPS1YyW3VEE8S23rQRhHBwFee7qRlcy~ITGMS3vYcuiVWKv5k0pB5EHEs0zHKCHbs9Ct3WyfJgBS4dQUgPW35zbOWqTaK6ccAGh2GG6NiJwiMuSOZ7Ac8iEg2yxxbGcuy4FeTxrNrON2p-FKvjB6Sf-6tg7u-iirefFQjRl~SpYYP-3EQBtVFdL1oUoGHKGJwqJVio-Q__",
+      "pressName": "연합뉴스 TV"
+    },
+    {
+      "imgUrl": "https://s3-alpha-sig.figma.com/img/5429/92b8/ea563bff94050e6001d9b09458e0864f?Expires=1727049600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=HnnJ6d9u9kTNAy3WonXKX~v34bmNVzLtOPsl-TZ-Z0JUD3Ncr9d1-C9AaA~C7CoRFT7Z8rRaTD2tybut2i~G2lCWA7FnuzngYuLjE2ts2PH2VfODyNgy7rFgFIY7xeYVqMBE1T6nnDJRgYoYfZuTwP0k~gbVJ0nu2FvEzcA1K~IoojTNIuSFg7CfMwHp6dBHYEr~KKO96YoxsXK8d73N3xM6CtUxEMPFdvUks9iPp0Ba4WMt8gtHoLwiO0q7jwThbFrFFXIuf9I2ahnolMaeCnHRUrGxnHnlAF0E0Em43~26ocd0kwtNZSrid4FTU3XTrY7M2nGtTj8twLu5IS674w__",
+      "pressName": "한겨레"
+    },
+    {
+      "imgUrl": "https://s3-alpha-sig.figma.com/img/84a5/017b/40ace5b75f1a2f623d239ecdca4b2146?Expires=1727049600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=ejW2YuG5NgMEx0R-qSw8Ha~3Y7p~mhEyV2J8pOg03ZE1nOk4EW566jsH3N4VtZ2eFANfxsaMcsSQfr8IG-dqZk4uIZWtRrJvMKwnPCzdaYGfAMXTVCMOnnBDqgO3Udi4MjsjptlL2B-pGEjRS~uV9f72tkAz462MMmByoIeRTrvXaZAK8QPssiOkBqhNyNl2GHCzwoO-AlhJjRse5hHH-1Ix-0ODFioHpnH0Sb4DDhGP19fIvoYCMCgf0oDGwdSO3WQ1O6Ld3nnVE2m1C8qpyQhxEHT2dj6PB3VYrIMg6t5xxPRQIzTObqBoLijQT7Zo8~0HXC-g5ixYmhQ9PPebGQ__",
+      "pressName": "경향신문"
+    },
+    {
+      "imgUrl": "https://s3-alpha-sig.figma.com/img/84a5/017b/40ace5b75f1a2f623d239ecdca4b2146?Expires=1727049600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=ejW2YuG5NgMEx0R-qSw8Ha~3Y7p~mhEyV2J8pOg03ZE1nOk4EW566jsH3N4VtZ2eFANfxsaMcsSQfr8IG-dqZk4uIZWtRrJvMKwnPCzdaYGfAMXTVCMOnnBDqgO3Udi4MjsjptlL2B-pGEjRS~uV9f72tkAz462MMmByoIeRTrvXaZAK8QPssiOkBqhNyNl2GHCzwoO-AlhJjRse5hHH-1Ix-0ODFioHpnH0Sb4DDhGP19fIvoYCMCgf0oDGwdSO3WQ1O6Ld3nnVE2m1C8qpyQhxEHT2dj6PB3VYrIMg6t5xxPRQIzTObqBoLijQT7Zo8~0HXC-g5ixYmhQ9PPebGQ__",
+=======
       "imgUrl": "https://s3-alpha-sig.figma.com/img/667a/5ec0/17d320f067f72c7c0715dd9d1850d4fc?Expires=1727049600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=hWM89vxi11NLSDAYOnvPfg35sMTalordg5aZQ-huHZZufY4lfIPR12tVBlHpuojcmpcNyOhk2WlihG8sAHNaUtxkPzEbqu7rvv-GHp3qR1qoIV~MPHS~UKhCg9CsjeQhj7hpnyJ93WqKXG6RFMLi1LUeiKlx4a3xmhM8muh68EX2d0nvm0oAE~MiJixrAWtvuuCKxO~m1ieQ1ZkIcXSxvk1RJ4t-Tt0bsowjuV~KB4hocdrdxVo0vlJ2amURMrxI0PburQjpFlDbbIHte6vjQmb8kZOTP9Bk9BiM9uDtaMvBL1oAUba-lh0KaBEQb~1U19mJ-0obCtJjIV4AhmKWzg__aa",
       "pressName": "YTN"
     },
@@ -22,6 +45,7 @@
     },
     {
       "imgUrl": "aa",
+>>>>>>> develop
       "pressName": "경향신문"
     }
   ],
