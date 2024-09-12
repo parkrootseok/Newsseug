@@ -1,16 +1,24 @@
 import { PressCardProps } from '@/types/subscribe';
 import styled from 'styled-components';
+import {
+  PressLogo,
+  LogoContainer,
+  PressName,
+  PressContainer,
+} from 'styles/subscribe-styles';
 
 function PressCard({
   imgUrl,
   pressName,
-  isActive,
-  isAllActive,
+  isSubscribed,
   onClick,
 }: PressCardProps) {
   return (
-    <Container isActive={isActive} isAllActive={isAllActive} onClick={onClick}>
-      <PressLogo />
+    <Container>
+      <CustomLogoContainer isSubscribed={isSubscribed} onClick={onClick}>
+        <PressLogo src={imgUrl} />
+        <Circle isSubscribed={isSubscribed}>{isSubscribed ? '-' : '+'}</Circle>
+      </CustomLogoContainer>
       <PressName>{pressName}</PressName>
     </Container>
   );
@@ -18,48 +26,33 @@ function PressCard({
 
 export default PressCard;
 
-const Container = styled.div<{ isActive: boolean; isAllActive: boolean }>`
+const Container = styled(PressContainer)`
+  position: relative;
+`;
+
+const CustomLogoContainer = styled(LogoContainer)<{
+  isSubscribed: boolean;
+}>`
+  border: ${({ isSubscribed, theme }) =>
+    `${isSubscribed ? '2px' : '1px'} solid ${isSubscribed ? theme.mainColor : '#f4f4f4'}`};
+
+  transition: border 0.8s ease-in-out;
+`;
+
+const Circle = styled.div<{
+  isSubscribed: boolean;
+}>`
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: ${({ isSubscribed, theme }) =>
+    isSubscribed ? 'gray' : theme.mainColor};
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
   display: flex;
-  flex-direction: column;
-  border-radius: 10px;
-  padding: 10px 8px;
-  gap: 8px;
-  opacity: ${({ isActive, isAllActive }) =>
-    isActive || isAllActive ? 1 : 0.5};
-  background-color: ${({ isActive, isAllActive }) =>
-    isActive && !isAllActive ? '#dfdfdf52' : 'transparent'};
   justify-content: center;
   align-items: center;
-  cursor: pointer;
-  /* transition:
-    opacity 0.4s ease-in-out,
-    background-color 0.4s ease-in-out; */
-
-  -webkit-transition:
-    opacity 0.4s ease-in-out,
-    background-color 0.4s ease-in-out;
-  -moz-transition:
-    opacity 0.4s ease-in-out,
-    background-color 0.4s ease-in-out;
-  -o-transition:
-    opacity 0.4s ease-in-out,
-    background-color 0.4s ease-in-out;
-  transition:
-    opacity 0.4s ease-in-out,
-    background-color 0.4s ease-in-out;
-`;
-
-const PressLogo = styled.div`
-  width: 48px;
-  height: 48px;
-  border-radius: 100%;
-  background-color: ${({ theme }) => theme.relaxColor.dark};
-  padding: 4px;
-`;
-
-const PressName = styled.p`
-  text-align: center;
-  font-size: 10px;
-  font-weight: 500;
-  /* color: #dfdfdf52; */
+  font-size: 20px;
 `;

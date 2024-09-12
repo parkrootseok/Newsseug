@@ -1,5 +1,7 @@
 export interface SubscribeHeaderProps {
-  subscribeNumber: number;
+  subscribeNumber?: number;
+  title: string;
+  variant: 'subscribed' | 'all';
 }
 
 export interface PressInfo {
@@ -7,7 +9,7 @@ export interface PressInfo {
   pressName: string;
 }
 
-export interface PressCardProps extends PressInfo {
+export interface SubscribePressCardProps extends PressInfo {
   isActive: boolean;
   isAllActive: boolean;
   onClick: () => void;
@@ -15,4 +17,9 @@ export interface PressCardProps extends PressInfo {
 
 export interface SubscribePressFilterProps {
   subscribeData: PressInfo[];
+}
+
+export interface PressCardProps extends PressInfo {
+  isSubscribed: boolean;
+  onClick: () => void;
 }

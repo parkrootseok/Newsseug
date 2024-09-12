@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import PressCard from 'components/subscribe/PressCard';
+import SubscribePressCard from 'components/subscribe/SubscribePressCard';
 import { SubscribePressFilterProps } from '@/types/subscribe';
 import { useState } from 'react';
 
@@ -12,7 +12,7 @@ function SubscribePressFilter({ subscribeData }: SubscribePressFilterProps) {
   return (
     <Container>
       {subscribeData.map((press, idx) => (
-        <PressCard
+        <SubscribePressCard
           key={idx}
           imgUrl={press.imgUrl}
           pressName={press.pressName}
