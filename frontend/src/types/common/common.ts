@@ -11,3 +11,7 @@ export interface CategoryFilterProps {
   activeCategory: string;
   setActiveCategory: (category: string) => void;
 }
+
+export interface ArticleListCardGroupProps {
+  articleList: ArticleListCardProps[];
+}

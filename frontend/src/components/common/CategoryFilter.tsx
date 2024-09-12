@@ -28,7 +28,7 @@ const Container = styled.div`
   white-space: nowrap;
   overflow-x: auto;
   display: flex;
-  padding: 8px 16px;
+  padding: 8px 0;
   align-items: flex-start;
   gap: 8px;
   flex-shrink: 0;
