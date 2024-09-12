@@ -9,4 +9,5 @@ export interface ScrapProps {
   thumbnailUrl: string;
   scrapTitle: string;
   scrapCnt: number;
+  onClick?: () => void;
 }

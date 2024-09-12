@@ -32,6 +32,7 @@ function SubHeader({
 export default SubHeader;
 
 const Wrapper = styled.div<{ headerColor?: string }>`
+  z-index: 1000;
   padding: 12px 16px;
   position: fixed;
   box-sizing: border-box;
