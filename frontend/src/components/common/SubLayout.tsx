@@ -15,6 +15,7 @@ function SubLayout({
   children,
   isSearch = false,
   headerColor = '#fff',
+  isPaddingZero = false,
 }: React.PropsWithChildren<Readonly<SubLayoutProps>>) {
   const [headerChildren, containerChildren] = React.Children.toArray(children);
   console.log(containerChildren);
@@ -23,7 +24,7 @@ function SubLayout({
       <SubHeader headerColor={headerColor} isSearch={isSearch}>
         {headerChildren}
       </SubHeader>
-      <Container>{containerChildren}</Container>
+      <Container isPaddingZero={isPaddingZero}>{containerChildren}</Container>
       <NavBar />
     </Layout>
   );

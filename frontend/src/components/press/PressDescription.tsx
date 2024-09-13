@@ -35,6 +35,7 @@ function PressDescription() {
 export default PressDescription;
 
 const Wrapper = styled.div`
+  box-sizing: border-box;
   display: flex;
   padding: 12px 16px;
   flex-direction: column;
