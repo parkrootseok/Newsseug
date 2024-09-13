@@ -3,12 +3,14 @@ import React from 'react';
 export type LayoutProps = {
   children: React.ReactNode;
   backgroundColor?: string;
+  isPaddingZero?: boolean;
 };
 
 export type SubLayoutProps = {
   children: React.ReactNode;
   isSearch?: boolean;
   headerColor?: string;
+  isPaddingZero?: boolean;
 };
 
 export interface LogoHeaderProps {

@@ -15,9 +15,9 @@ export default PressInfo;
 
 const Wrapper = styled.div`
   box-sizing: border-box;
-  width: 100vw;
+  width: 100%;
   display: flex;
-  padding: 12px 0;
+  padding: 12px 15px;
   flex-direction: column;
   align-items: flex-start;
   align-items: flex-start;

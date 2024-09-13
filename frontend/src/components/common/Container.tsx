@@ -6,17 +6,18 @@ import { LayoutProps } from '@/types/common/layout';
  * @param param0
  * @returns
  */
-function Container({ children }: Readonly<LayoutProps>) {
-  return <ContainerBox>{children}</ContainerBox>;
+function Container({ children, isPaddingZero = false }: LayoutProps) {
+  return <ContainerBox isPaddingZero={isPaddingZero}>{children}</ContainerBox>;
 }
 
 export default Container;
 
-const ContainerBox = styled.div`
+const ContainerBox = styled.div<{ isPaddingZero: boolean }>`
+  position: relative;
   display: flex;
   flex-direction: column;
-  padding: 0 15px;
-  padding-top: calc(6.7vh);
+  padding: ${({ isPaddingZero }) => (isPaddingZero ? '0' : '0 15px')};
+  padding-top: 48px;
   padding-bottom: calc(7vh);
   box-sizing: border-box;
 `;

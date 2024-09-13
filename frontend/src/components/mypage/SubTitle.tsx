@@ -5,12 +5,14 @@ import styled from 'styled-components';
 function SubTitle({ title, url }: SubTitleProps) {
   const navigate = useNavigate();
   const handleAllBtnClick = () => {
-    navigate(url);
+    if (url) {
+      navigate(url);
+    }
   };
   return (
     <Wrapper>
       <Name>{title}</Name>
-      <AllBtn onClick={handleAllBtnClick}>전체보기</AllBtn>
+      {url ? <AllBtn onClick={handleAllBtnClick}>전체보기</AllBtn> : null}
     </Wrapper>
   );
 }
@@ -20,7 +22,7 @@ export default SubTitle;
 const Wrapper = styled.div`
   display: flex;
   width: 100%;
-  padding: 10px 0;
+  padding: 10px 0px;
   align-items: center;
   justify-content: space-between;
   gap: 8px;

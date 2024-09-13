@@ -1,6 +1,6 @@
 export interface SubTitleProps {
   title: string;
-  url: string;
+  url?: string;
 }
 
 export interface ScrapProps {

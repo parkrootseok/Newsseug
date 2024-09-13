@@ -10,6 +10,9 @@ export interface ArticleListCardProps {
 export interface CategoryFilterProps {
   activeCategory: string;
   setActiveCategory: (category: string) => void;
+  isPressPage?: boolean;
+  bgColor?: string;
+  setParentSticky?: (isSticky: boolean) => void;
 }
 
 export interface ArticleListCardGroupProps {
