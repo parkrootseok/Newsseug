@@ -3,6 +3,7 @@ import Section from 'components/home/Section';
 import Login from './Login';
 import Splash from './Splash';
 import UserInput from './UserInput';
+import AllArticles from './AllArticles';
 function Home() {
   return (
     // <MainLayout>
@@ -15,8 +16,9 @@ function Home() {
     //   ))}
     // </MainLayout>
     // <Splash />
-    <UserInput />
+    // <UserInput />
     // <Login />
+    <AllArticles />
   );
 }
 
