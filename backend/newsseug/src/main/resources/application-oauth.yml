@@ -7,7 +7,7 @@ spring:
             client-id: 13c41f91afd94de2bf4f179bc7f7e84c
             client-secret: ab5fTcvg345mvCEmDjrAY6ms4hXrLUjE
             authorization-grant-type: authorization_code
-            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+            redirect-uri: "${app.base-url}/login/oauth2/code/kakao"
             client-name: Kakao
             client-authentication-method: client_secret_post
           google:
@@ -15,7 +15,7 @@ spring:
             client-secret: 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
             scope: profile, email
             authorization-grant-type: authorization_code
-            redirect-uri: http://localhost:8080/login/oauth2/code/google
+            redirect-uri: "${app.base-url}/login/oauth2/code/google"
             client-name: Google
         provider:
           kakao:
