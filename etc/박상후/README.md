@@ -135,7 +135,7 @@
 
 # 🙌 MVP 설계 | 08.30(금)
 
-> 뉴쓱
+> 서비스명 : **뉴쓱**
 
 ## 사용자
 
@@ -227,3 +227,119 @@
 2. 시청한 숏폼에 대한 정확도를 평가(신고)하는 기능
 
     - 도움 여부에 대해 측정하여 이를 통해 숏폼 영상 재생성
+
+<br/>
+
+# 📰 와이어프레임 | 09.02(월)
+
+## 홈
+
+<img src="images/home.png" alt="home" style="width: 50%; height: auto;">
+
+## 숏폼
+
+<img src="images/shortform.png" alt="shortform" style="width: 50%; height: auto;">
+
+## 검색 결과
+
+<img src="images/search_result.png" alt="search_result" style="width: 50%; height: auto;">
+
+<br/>
+
+# 📰 화면 디자인 | 09.03(화)
+
+### 메인 컬러 : 58D7A2
+
+<img src="images/main_color.png" alt="main_color" style="width: 10%; height: auto;">
+
+### 상단 헤더 로고
+
+<img src="images/header_logo.png" alt="header_logo" style="width: 10%; height: auto;">
+
+### 앱 로고
+
+<img src="images/app_logo.png" alt="app_logo" style="width: 5%; height: auto;">
+
+## AI 멘토링 준비
+
+### 추천 알고리즘
+
+1. AWS personalize 이용
+
+    - 기사를 보러 온 사용자를 타겟으로 맞춤형 추천이 가능한가?
+
+### 기사 원문 이미지 분석
+
+1. 유명 인사 detection
+
+2. 태깅을 통한 카테고리 세분화
+
+<br/>
+
+# 📰 화면 디자인 | 09.04(수)
+
+### 로그인
+
+<img src="images/login.png" style="width: 50%; height: auto;">
+
+### 단일 숏폼 재생
+
+<img src="images/main_shortform.png" style="width: 50%;height: auto;">
+
+### 구독
+
+<img src="images/subscribe.png" style="width: 50%; height: auto;">
+
+### 내 정보
+
+<img src="images/mypage.png" style="width: 50%; height: auto;">
+
+### 스크랩 목록
+
+<img src="images/scrap.png" style="width: 50%; height: auto;">
+
+<br/>
+
+# 📰 화면 디자인 | 09.05(목)
+
+### 스플래시
+
+<img src="images/splash.png" style="width: 50%; height: auto;">
+
+### 전체
+
+<img src="images/all.png" style="width: 50%; height: auto;">
+
+### 내 정보
+
+<img src="images/myInfo.png" style="width: 50%; height: auto;">
+
+### 검색 결과
+
+<img src="images/searchResult.png" style="width: 50%; height: auto;">
+
+### 언론사 채널 페이지
+
+<img src="images/press.png" style="width: 50%; height: auto;">
+
+<br/>
+
+# 📰 ERD & 기능 명세서 | 09.06(금)
+
+### ERD
+
+<img src="images/erd.png">
+
+### 기능 명세서
+
+[기능 명세서](https://www.notion.so/7bebf5770e7946b8afacb3df9d17f4f0?pvs=4)
+
+<br/>
+
+# 🌏 Jenkins | 09.09(월)
+
+## docker container
+
+1. jenkins
+
+    - 0.0.0.0:9090->8080/tcp
