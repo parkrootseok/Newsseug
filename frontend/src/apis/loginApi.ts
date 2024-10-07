@@ -1,7 +1,7 @@
 import api from 'apis/commonApi';
 import { isAxiosError } from 'axios';
 import { TokenResponse } from 'types/api/member';
-import { getCookie, removeCookie, setCookie } from 'utils/stateUtils';
+import { removeCookie } from 'utils/stateUtils';
 const AUTH_URL = '/api/v1/auth';
 
 /**
@@ -46,33 +46,6 @@ export const getLogout = async (providerId: string): Promise<void> => {
       removeCookie('ProviderId');
       window.location.href = '/login';
     }
-  } catch (error: unknown) {
-    if (isAxiosError(error)) {
-      if (error.response?.status === 404) throw new Error('Not Found');
-      else throw error;
-    } else throw error;
-  }
-};
-
-/**
- * IMP : reissue를 한다는 것은, Login이 되어 있는 상태라는 뜻!
- * IMP => 이것이 실패하면 LogOut을 해줘야 한다.
- * @param providerId
- * @returns
- */
-
-export const reissueToken = async (providerId: string): Promise<string> => {
-  try {
-    const refreshToken = getCookie('RefreshToken');
-    const response = await api.get(
-      `${AUTH_URL}/reissue?providerId=${encodeURIComponent(providerId)}`,
-      {
-        headers: {
-          'refresh-token': refreshToken,
-        },
-      },
-    );
-    return response.data.data.accessToken;
   } catch (error: unknown) {
     if (isAxiosError(error)) {
       if (error.response?.status === 404) throw new Error('Not Found');

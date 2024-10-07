@@ -6,6 +6,7 @@ import styled, { keyframes } from 'styled-components';
 import { Category, SectionType, SectionTypeMatch } from 'types/api/article';
 import { useNavigate } from 'react-router-dom';
 import { fetchArticles, fetchArticlesByToday } from 'apis/articleApi';
+import { getLogout } from 'apis/loginApi';
 
 function Home() {
   const navigate = useNavigate();
@@ -53,6 +54,12 @@ function Home() {
             isFetchingNextPage={section.isFetchingNextPage}
           />
         ))}
+        <button
+          onClick={() => navigate('?isFirst=false&providerId=3712892497')}
+        >
+          1111111111
+        </button>
+        <button onClick={() => getLogout('3712892497')}>22222222222</button>
       </FadeInWrapper>
     </MainLayout>
   );
