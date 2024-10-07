@@ -54,12 +54,6 @@ function Home() {
             isFetchingNextPage={section.isFetchingNextPage}
           />
         ))}
-        <button
-          onClick={() => navigate('?isFirst=false&providerId=3712892497')}
-        >
-          1111111111
-        </button>
-        <button onClick={() => getLogout('3712892497')}>22222222222</button>
       </FadeInWrapper>
     </MainLayout>
   );
