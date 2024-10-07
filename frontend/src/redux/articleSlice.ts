@@ -5,9 +5,11 @@ import { ArticleVideo } from 'types/api/articleVideo';
 interface ArticleState {
   articleIds: number[];
   sliceDetails: SliceDetails | {};
+  // articleInfos: [];
   articlesFrom: string;
   activeCategory: string;
-  activePress: string | null;
+  activePress: number | null;
+  folderId: number | null;
   videoList: { [id: number]: ArticleVideo };
 }
 
@@ -17,6 +19,7 @@ const initialArticleState: ArticleState = {
   articlesFrom: '',
   activeCategory: 'ALL',
   activePress: null,
+  folderId: null,
   videoList: {},
 };
 
@@ -36,14 +39,20 @@ const articleSlice = createSlice({
     setActiveCategory(state, action: PayloadAction<string>) {
       state.activeCategory = action.payload;
     },
-    setActviePress(state, action: PayloadAction<string | null>) {
+    setActviePress(state, action: PayloadAction<number | null>) {
       state.activePress = action.payload;
+    },
+    setFolderId(state, action: PayloadAction<number | null>) {
+      state.folderId = action.payload;
     },
     setVideoList(state, action: PayloadAction<{ [id: number]: ArticleVideo }>) {
       state.videoList = {
         ...state.videoList, // 기존 데이터를 유지
         ...action.payload, // 새로운 데이터를 추가
       };
+    },
+    removeVideo(state, action: PayloadAction<number>) {
+      delete state.videoList[action.payload]; // videoList에서 해당 비디오 삭제
     },
   },
 });
@@ -54,6 +63,8 @@ export const {
   setArticleFrom,
   setActiveCategory,
   setActviePress,
+  setFolderId,
   setVideoList,
+  removeVideo,
 } = articleSlice.actions;
 export default articleSlice.reducer;

@@ -10,6 +10,8 @@ import CategoryFilter from 'components/common/CategoryFilter';
 import SubscribeHeader from 'components/subscribe/SubscribeHeader';
 import ArticleListCardGroup from 'components/common/ArticleListCardGroup';
 import SubscribePressFilter from 'components/subscribe/SubscribePressFilter';
+import useStoreArticleDispatch from 'hooks/useStoreArticleDispatch';
+import Spinner from 'components/common/Spinner';
 
 function Subscribes() {
   const dispatch = useDispatch();
@@ -33,6 +35,7 @@ function Subscribes() {
     hasNextPage,
     isFetchingNextPage,
     sliceDetails,
+    isLoading,
   } = useContentsFetch<PageType>({
     queryKey: [
       'subscribedArticles',
@@ -44,8 +47,15 @@ function Subscribes() {
     pressId: activePress,
   });
 
+  useStoreArticleDispatch(
+    articleList,
+    sliceDetails,
+    'press',
+    Category[activeCategory as keyof typeof Category],
+    activePress,
+  );
+
   // 로딩 상태 처리
-  if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error?.message}</p>;
 
   return (
@@ -64,12 +74,16 @@ function Subscribes() {
         activeCategory={activeCategory}
         setActiveCategory={setActiveCategory}
       />
-      <ArticleListCardGroup
-        articleList={articleList || []}
-        fetchNextPage={fetchNextPage}
-        hasNextPage={hasNextPage}
-        isFetchingNextPage={isFetchingNextPage}
-      />
+      {isLoading ? (
+        <Spinner height="400px" />
+      ) : (
+        <ArticleListCardGroup
+          articleList={articleList || []}
+          fetchNextPage={fetchNextPage}
+          hasNextPage={hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+        />
+      )}
     </MainLayout>
   );
 }

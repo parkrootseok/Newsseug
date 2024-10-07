@@ -1,4 +1,5 @@
 import { ArticleListCardProps } from 'types/common/common';
+import { SliceDetails } from '../api/article';
 
 export interface SectionProps {
   subTitle: string;
@@ -7,6 +8,9 @@ export interface SectionProps {
   fetchNextPage?: () => void;
   hasNextPage?: boolean;
   isFetchingNextPage?: boolean;
+  isLoading?: boolean;
+  sectionType?: string;
+  sliceDetails?: SliceDetails | {};
 }
 
 export interface SubTitleProps {

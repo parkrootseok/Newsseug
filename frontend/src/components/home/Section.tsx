@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import SubTitle from 'components/home/SubTitle';
 import ArticleSlideBox from 'components/home/ArticleSlideBox';
 import { SectionProps } from 'types/props/home';
+import Spinner from '../common/Spinner';
 
 /**
  * IMP : Section Component ( Section )
@@ -16,16 +17,25 @@ function Section({
   fetchNextPage,
   hasNextPage,
   isFetchingNextPage,
+  isLoading,
+  sectionType,
+  sliceDetails,
 }: Readonly<SectionProps>) {
   return (
     <SectionStyle>
       <SubTitle subTitle={subTitle} moreLink={moreLink} />
-      <ArticleSlideBox
+      {isLoading ? (
+        <Spinner height="250px" />
+      ) : (
+        <ArticleSlideBox
         articleList={articleList}
         fetchNextPage={fetchNextPage}
         hasNextPage={hasNextPage}
         isFetchingNextPage={isFetchingNextPage}
+        sectionType={sectionType}
+        sliceDetails={sliceDetails}
       />
+      )}
     </SectionStyle>
   );
 }
