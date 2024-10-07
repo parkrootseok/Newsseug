@@ -51,7 +51,7 @@ function useAutoRefresh() {
           clearInterval(intervalId); // 토큰 재발급 시 interval 해제
           await reissueToken(providerId);
           scheduleNextTokenRefresh();
-        }, 10000);
+        }, 5000);
       }
     };
     scheduleNextTokenRefresh();

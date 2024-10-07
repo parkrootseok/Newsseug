@@ -25,11 +25,16 @@ function useAutoLogin() {
     const providerId = queryParams.get('providerId');
     if (providerId) {
       const isFirst = queryParams.get('isFirst') === 'true';
+      /**
+       * IMP : ProviderId를 기반으로 AccessToken & RefreshToken을 가져오는 API
+       * IMP : AccessToken과 RefreshToken을 Cookie에 저장함.
+       * IMP : ProviderId를 Redux Store & Session Cookie 형태로 저장함.
+       */
       getLogin(providerId).then((data) => {
         let accessTokenTime = getTokenExpiration(data.accessToken);
         let refreshTokenTime = getTokenExpiration(data.refreshToken);
         setCookie('AccessToken', data.accessToken, {
-          maxAge: 900,
+          maxAge: accessTokenTime,
           secure: true,
         });
         setCookie('RefreshToken', data.refreshToken, {

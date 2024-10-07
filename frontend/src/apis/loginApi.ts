@@ -64,16 +64,15 @@ export const getLogout = async (providerId: string): Promise<void> => {
 export const reissueToken = async (providerId: string): Promise<string> => {
   try {
     const refreshToken = getCookie('RefreshToken');
-    const response = await api.get(`${AUTH_URL}/reissue`, {
-      headers: {
-        'refresh-token': refreshToken,
+    const response = await api.get(
+      `${AUTH_URL}/reissue?providerId=${encodeURIComponent(providerId)}`,
+      {
+        headers: {
+          'refresh-token': refreshToken,
+        },
       },
-      params: {
-        providerId,
-      },
-    });
-    const accessToken = response.data.data.accessToken;
-    return accessToken;
+    );
+    return response.data.data.accessToken;
   } catch (error: unknown) {
     if (isAxiosError(error)) {
       if (error.response?.status === 404) throw new Error('Not Found');
