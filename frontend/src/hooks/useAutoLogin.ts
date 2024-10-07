@@ -1,10 +1,15 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from 'redux/index';
-import { setCookie, getCookie, removeCookie } from 'utils/stateUtils';
-import { getAccessToken } from 'apis/loginApi';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { getLogin } from 'apis/loginApi';
 import { setProviderInfo } from '../redux/memberSlice';
+import { useLocation, useNavigate } from 'react-router-dom';
+import {
+  setCookie,
+  getCookie,
+  removeCookie,
+  getTokenExpiration,
+} from 'utils/stateUtils';
 
 /**
  * IMP : 아래 Custom Hook은 사용자의 Login을 담당하는 Hook입니다.
@@ -20,15 +25,22 @@ function useAutoLogin() {
     const providerId = queryParams.get('providerId');
     if (providerId) {
       const isFirst = queryParams.get('isFirst') === 'true';
-      getAccessToken(providerId).then((accessToken) => {
-        setCookie('AccessToken', accessToken, {
+      getLogin(providerId).then((data) => {
+        let accessTokenTime = getTokenExpiration(data.accessToken);
+        let refreshTokenTime = getTokenExpiration(data.refreshToken);
+        setCookie('AccessToken', data.accessToken, {
           maxAge: 900,
           secure: true,
         });
-        setCookie('ProviderId', providerId, { maxAge: 604800, secure: true });
+        setCookie('RefreshToken', data.refreshToken, {
+          maxAge: refreshTokenTime,
+          secure: true,
+        });
+        setCookie('ProviderId', providerId, { secure: true });
         dispatch(
           setProviderInfo({
-            AccessToken: accessToken,
+            AccessToken: data.accessToken,
+            RefreshToken: data.refreshToken,
             providerId: providerId,
           }),
         );

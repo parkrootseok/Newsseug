@@ -1,6 +1,8 @@
 import api from 'apis/commonApi';
 import { isAxiosError } from 'axios';
+import { TokenResponse } from 'types/api/member';
 import { getCookie, removeCookie, setCookie } from 'utils/stateUtils';
+const AUTH_URL = '/api/v1/auth';
 
 /**
  * IMP : 아래 함수는 API가 아님. Redirect를 통해 외부 URL로 이동하는 함수
@@ -9,7 +11,7 @@ import { getCookie, removeCookie, setCookie } from 'utils/stateUtils';
  */
 // Type : remote
 const LOGIN_URL = `/oauth2/authorization`;
-export const getLogin = (provider: string): void => {
+export const loginRoute = (provider: string): void => {
   const loginUrl = `${LOGIN_URL}/${provider}`;
   console.log(loginUrl);
   window.location.href = loginUrl;
@@ -19,18 +21,31 @@ export const getLogin = (provider: string): void => {
  * IMP : Provider Id를 기반으로 AccessToken을 가져오는 API
  * IMP : Authorization Header가 필요하지 않은 API ( 비로그인 기능 )
  */
-// Type : remote
-const LOGIN_API_URL = `/api/v1/auth/login`;
-export const getAccessToken = async (providerId: string): Promise<string> => {
+export const getLogin = async (providerId: string): Promise<TokenResponse> => {
   try {
-    const {
-      data: {
-        data: { accessToken },
-      },
-    } = await api.get(
-      `${LOGIN_API_URL}?providerId=${encodeURIComponent(providerId)}`,
+    const response = await api.get(
+      `${AUTH_URL}/login?providerId=${encodeURIComponent(providerId)}`,
     );
-    return accessToken;
+    return response.data.data;
+  } catch (error: unknown) {
+    if (isAxiosError(error)) {
+      if (error.response?.status === 404) throw new Error('Not Found');
+      else throw error;
+    } else throw error;
+  }
+};
+
+export const getLogout = async (providerId: string): Promise<void> => {
+  try {
+    const response = await api.get(
+      `${AUTH_URL}/login?providerId=${encodeURIComponent(providerId)}`,
+    );
+    if (response.data.data) {
+      removeCookie('AccessToken');
+      removeCookie('RefreshToken');
+      removeCookie('ProviderId');
+      window.location.href = '/login';
+    }
   } catch (error: unknown) {
     if (isAxiosError(error)) {
       if (error.response?.status === 404) throw new Error('Not Found');
@@ -40,28 +55,29 @@ export const getAccessToken = async (providerId: string): Promise<string> => {
 };
 
 /**
- * IMP : Provider ID를 기반으로 AccessToken을 재발급 받는 API
- * TODO : AccessToken이 재발급되지 않으면, ProviderId를 재발급 받기 위한 처리가 필요함.
- * TODO : AccessToken maxAge는 900으로 설정해야 함.
+ * IMP : reissue를 한다는 것은, Login이 되어 있는 상태라는 뜻!
+ * IMP => 이것이 실패하면 LogOut을 해줘야 한다.
+ * @param providerId
+ * @returns
  */
-export async function scheduleTokenRefresh() {
-  let providerId = getCookie('ProviderId');
-  try {
-    const accessToken = await getAccessToken(providerId);
-    setCookie('AccessToken', accessToken, { maxAge: 900, secure: true });
-  } catch (error: unknown) {
-    console.error('AccessToken 재발급 실패:', error);
-    removeCookie('AccessToken');
-    removeCookie('ProviderId');
-    window.location.href = '/login';
-  }
-}
 
-/**
- * IMP : 아래 함수는 API가 아님. Cookie를 제거하여 Logout을 수행하고 Redirect를 통해 Login Page로 이동함
- */
-export const getLogout = () => {
-  removeCookie('AccessToken');
-  removeCookie('ProviderId');
-  window.location.href = '/login';
+export const reissueToken = async (providerId: string): Promise<string> => {
+  try {
+    const refreshToken = getCookie('RefreshToken');
+    const response = await api.get(`${AUTH_URL}/reissue`, {
+      headers: {
+        'refresh-token': refreshToken,
+      },
+      params: {
+        providerId,
+      },
+    });
+    const accessToken = response.data.data.accessToken;
+    return accessToken;
+  } catch (error: unknown) {
+    if (isAxiosError(error)) {
+      if (error.response?.status === 404) throw new Error('Not Found');
+      else throw error;
+    } else throw error;
+  }
 };

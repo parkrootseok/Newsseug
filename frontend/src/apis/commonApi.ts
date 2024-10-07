@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getAccessToken } from 'apis/loginApi';
+import { reissueToken } from 'apis/loginApi';
 import {
   getCookie,
   setCookie,
@@ -19,11 +19,14 @@ const api = axios.create({
   },
 });
 
+/**
+ * IMP : API Interceptor.request => 요청 시, AccessToken이 존재할 경우, Header에 추가함.
+ */
 api.interceptors.request.use((config) => {
   let accessToken = getCookie('AccessToken');
   if (accessToken) {
-    const tokenExpiration = getTokenExpiration(accessToken);
-    if (tokenExpiration && tokenExpiration > Date.now()) {
+    const accessTokenTime = getTokenExpiration(accessToken);
+    if (accessTokenTime && accessTokenTime > Date.now()) {
       config.headers.Authorization = accessToken;
     }
   }
@@ -31,7 +34,8 @@ api.interceptors.request.use((config) => {
 });
 
 /**
- * IMP : API Interceptor.response => 응답이 401일 경우, AccessToken, ProviderID 재발급을 통해, Login 상태를 유지함.
+ * IMP : API Interceptor.response => 응답이 401일 경우, AccessToken 재발급을 통해, Login 상태를 유지함.
+ * IMP : AccessToken 재발급이 실패한 경우, RefreshToken이 만료되었으므로, 로그아웃 처리를 함.
  */
 api.interceptors.response.use(
   (response) => response,
@@ -41,12 +45,17 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       const providerId = getCookie('ProviderId');
       try {
-        const token = await getAccessToken(providerId);
-        setCookie('AccessToken', token, { maxAge: 900, secure: true });
-        originalRequest.headers.Authorization = token;
+        const accessToken = await reissueToken(providerId);
+        let accessTokenTime = getTokenExpiration(accessToken);
+        setCookie('AccessToken', accessToken, {
+          maxAge: accessTokenTime,
+          secure: true,
+        });
+        originalRequest.headers.Authorization = accessToken;
       } catch (RefreshError) {
-        console.error('ProviderId is expired, redirecting to login.');
+        console.error('refreshToken is expired, redirecting to login.');
         removeCookie('AccessToken');
+        removeCookie('RefreshToken');
         removeCookie('ProviderId');
         window.location.href = '/login';
       }
