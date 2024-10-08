@@ -5,7 +5,7 @@ from datetime import datetime
 from contextlib import asynccontextmanager
 from starlette.responses import Response
 
-from config import config
+from config import config, log_format
 from article import create_article
 import boto3
 from io import BytesIO
@@ -29,7 +29,7 @@ console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.INFO)  # 핸들러 레벨 설정
 
 # 로그 포맷 설정
-formatter = logging.Formatter('%(levelname)s: %(asctime)s - %(name)s - %(message)s')
+formatter = logging.Formatter(log_format)
 console_handler.setFormatter(formatter)
 
 # 핸들러를 로거에 추가
