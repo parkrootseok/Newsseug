@@ -26,7 +26,7 @@ if es.ping():
 else:
     logger.exception("Could not connect to Elasticsearch")
 
-def save_article_into_es(article_id, press_name, title, view_count, source_created_at):
+def save_article_into_es(article_id, press_name, title, source_created_at):
     start = time.time()
     doc = {
         "id": article_id,
