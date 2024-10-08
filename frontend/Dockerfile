@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # 의존성 설치
-RUN NODE_OPTIONS="--max-old-space-size=4096" npm run build
+RUN npm run build
 
 # 소스 코드 복사
 COPY . .
