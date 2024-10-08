@@ -1,4 +1,4 @@
-import { SubscribePressCardProps } from '@/types/subscribe';
+import { SubscribePressCardProps } from 'types/props/subscribe';
 import styled from 'styled-components';
 import {
   PressLogo,
@@ -8,18 +8,21 @@ import {
 } from 'styles/subscribe-styles';
 
 function SubscribePressCard({
-  imgUrl,
-  pressName,
+  press,
   isActive,
   isAllActive,
   onClick,
-}: SubscribePressCardProps) {
+}: Readonly<SubscribePressCardProps>) {
   return (
-    <Container isActive={isActive} isAllActive={isAllActive} onClick={onClick}>
+    <Container
+      $isActive={isActive}
+      $isAllActive={isAllActive}
+      onClick={onClick}
+    >
       <LogoContainer>
-        <PressLogo src={imgUrl} />
+        <PressLogo src={press.imageUrl} />
       </LogoContainer>
-      <PressName>{pressName}</PressName>
+      <PressName>{press.name}</PressName>
     </Container>
   );
 }
@@ -27,13 +30,13 @@ function SubscribePressCard({
 export default SubscribePressCard;
 
 const Container = styled(PressContainer)<{
-  isActive: boolean;
-  isAllActive: boolean;
+  $isActive: boolean;
+  $isAllActive: boolean;
 }>`
-  opacity: ${({ isActive, isAllActive }) =>
-    isActive || isAllActive ? 1 : 0.5};
-  background-color: ${({ isActive, isAllActive }) =>
-    isActive && !isAllActive ? '#dfdfdf52' : 'transparent'};
+  opacity: ${({ $isActive, $isAllActive }) =>
+    $isActive || $isAllActive ? 1 : 0.5};
+  background-color: ${({ $isActive, $isAllActive }) =>
+    $isActive && !$isAllActive ? '#dfdfdf52' : 'transparent'};
 
   -webkit-transition:
     opacity 0.4s ease-in-out,

@@ -48,9 +48,10 @@ ${reset}
   font-family: "Pretendard-Thin";
   src: url(${PretendardThin});
 }
-
+                      
 * {
-    font-family: "Pretendard-Regular";
+    font-family: "Pretendard-Regular" !important;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
 `;

@@ -1,12 +1,18 @@
 package com.a301.newsseug.domain.article.service;
 
-import com.a301.newsseug.domain.article.model.dto.response.HomeArticlesResponse;
-import com.a301.newsseug.domain.article.model.dto.response.ListArticleResponse;
+import com.a301.newsseug.domain.article.model.dto.response.*;
+import com.a301.newsseug.domain.auth.model.entity.CustomUserDetails;
+import com.a301.newsseug.global.model.dto.SlicedResponse;
+import java.util.List;
 
 public interface ArticleService {
 
-    HomeArticlesResponse getHomeArticles();
+    GetArticleDetailsResponse getArticleDetail(CustomUserDetails userDetails, Long articleId);
 
-    ListArticleResponse getArticlesByCategory(String categoryName);
+    SlicedResponse<List<GetArticleResponse>> getTodayArticleListByCategory(String category, int pageNumber);
+
+    SlicedResponse<List<GetArticleResponse>> getArticleListByCategory(String category, int pageNumber);
+
+    SlicedResponse<List<GetArticleResponse>> getArticlesByPress(CustomUserDetails userDetails, Long pressId, int pageNumber, String category);
 
 }

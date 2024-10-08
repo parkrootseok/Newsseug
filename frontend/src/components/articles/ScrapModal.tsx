@@ -2,42 +2,63 @@ import { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { motion, useAnimation, PanInfo } from 'framer-motion';
 import scrapPlusIcon from 'assets/scrapPlusIcon.svg';
-import scrapCheckIcon from 'assets/scrapCheckIcon.svg';
-import { ScrapModalProps } from 'types/article';
+import { ScrapModalProps } from 'types/props/articleVideo';
+import { FolderInfo } from 'types/api/folder';
+import { useQuery } from 'react-query';
+import { getFolderList, saveArticleToFolder } from 'apis/folderApi';
 
 function ScrapModal({
+  articleId,
   isOpen,
   onRequestClose,
   onCreateModalOpen,
-}: ScrapModalProps) {
-  const [checkedItems, setCheckedItems] = useState<boolean[]>([]);
+}: Readonly<ScrapModalProps>) {
+  const [checkedItems, setCheckedItems] = useState<
+    { id: number; hasThisArticle: boolean }[]
+  >([]);
   const contentRef = useRef<HTMLDivElement>(null);
   const controls = useAnimation();
 
   const windowHeight = window.screen.height;
-  const defaultHeight = windowHeight * 0.6;
+  const maxHeight = windowHeight * 0.6;
+
+  // 수정 필요
+  const {
+    data: folderList,
+    isLoading,
+    error,
+  } = useQuery<FolderInfo[]>(['folderList'], () => getFolderList(), {
+    onSuccess: (data) => {
+      const initialCheckedItems = data.map((folder) => ({
+        id: folder.id,
+        hasThisArticle: folder.articles.some(
+          (article) => article === Number(articleId),
+        ),
+      }));
+      setCheckedItems(initialCheckedItems);
+    },
+  });
 
   useEffect(() => {
     if (isOpen) {
-      controls.start({ y: 0, height: defaultHeight });
+      controls.start({ y: 0 });
       document.body.style.overflow = 'hidden';
     } else {
-      controls.start({ y: '100%' });
+      controls.start({ y: window.innerHeight });
       document.body.style.overflow = 'auto';
     }
     return () => {
       document.body.style.overflow = 'auto';
     };
-  }, [controls, defaultHeight, isOpen]);
+  }, [controls, isOpen]);
 
-  useEffect(() => {
-    // 초기 상태로 모든 아이템의 체크 상태를 false로 설정
-    setCheckedItems(new Array(25).fill(false));
-  }, []);
-
-  const handleClick = (index: number) => {
+  const handleClick = (id: number) => {
     setCheckedItems((prev) =>
-      prev.map((checked, i) => (i === index ? !checked : checked)),
+      prev.map((item) =>
+        item.id === id
+          ? { ...item, hasThisArticle: !item.hasThisArticle }
+          : item,
+      ),
     );
   };
 
@@ -77,12 +98,37 @@ function ScrapModal({
   };
 
   const handleOverlayClick = () => {
-    controls.start({ y: '100%' }).then(onRequestClose);
+    controls.start({ y: '100vh' }).then(() => {
+      onRequestClose(); // 모달 상태 변경은 애니메이션 후에 실행
+    });
   };
 
   const handleCreateFolderClick = () => {
     onCreateModalOpen();
   };
+
+  const handleSubmitClick = async () => {
+    try {
+      const folderIds = checkedItems
+        .filter((item) => item.hasThisArticle)
+        .map((item) => item.id);
+
+      saveArticleToFolder(folderIds, Number(articleId));
+      controls.start({ y: '100vh' }).then(onRequestClose);
+    } catch (err) {
+      console.error('비디오 폴더에 저장 실패', err);
+    }
+  };
+
+  if (isLoading) {
+    return <div>로딩 중</div>;
+  }
+
+  if (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : '알 수 없는 오류';
+    return <div>비디오 별 폴더 목록 조회 실패: {errorMessage}</div>;
+  }
 
   return (
     <ModalOverlay
@@ -92,11 +138,11 @@ function ScrapModal({
       onClick={handleOverlayClick}
     >
       <ModalContent
-        initial={{ y: '100%' }}
-        animate={controls}
-        exit={{ y: '100%' }}
-        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        style={{ height: defaultHeight }}
+        initial={{ y: '100vh' }}
+        animate={{ y: '0' }}
+        exit={{ y: '100vh' }}
+        transition={{ type: 'spring', stiffness: 200, damping: 30 }}
+        style={{ maxHeight }}
         drag="y"
         dragConstraints={{ top: 0, bottom: 0 }}
         dragElastic={1}
@@ -114,27 +160,40 @@ function ScrapModal({
         </ModalHeader>
         <ContentWrapper ref={contentRef}>
           <ModalBody>
-            {[...Array(25)].map((_, index) => (
-              <ScrapItem key={index} onClick={() => handleClick(index)}>
-                <HiddenCheckbox />
-                <StyledCheckbox $checked={checkedItems[index]}>
-                  <svg width="16px" height="16px" viewBox="0 0 24 24">
-                    <polyline
-                      points="20 6 9 17 4 12"
-                      stroke="white"
-                      strokeWidth="2"
-                      fill="none"
-                    />
-                  </svg>
-                </StyledCheckbox>
-                <ScrapName>폴더 {index + 1}</ScrapName>
-              </ScrapItem>
-            ))}
+            {Array.isArray(folderList) &&
+              folderList.map((folder, index) => (
+                <ScrapItem
+                  key={folder.id}
+                  onClick={() => handleClick(folder.id)}
+                >
+                  <HiddenCheckbox />
+                  <StyledCheckbox
+                    $checked={
+                      checkedItems.find((item) => item.id === folder.id)
+                        ?.hasThisArticle ?? false
+                    }
+                  >
+                    <svg width="16px" height="16px" viewBox="0 0 24 24">
+                      <polyline
+                        points="20 6 9 17 4 12"
+                        stroke="white"
+                        strokeWidth="2"
+                        fill="none"
+                      />
+                    </svg>
+                  </StyledCheckbox>
+                  <ScrapName>{folder.title}</ScrapName>
+                </ScrapItem>
+              ))}
           </ModalBody>
         </ContentWrapper>
-        <ModalFooter onClick={handleOverlayClick}>
-          <img src={scrapCheckIcon} alt="완료 버튼" />
-          <BtnText>완료</BtnText>
+        <ModalFooter>
+          <Btn onClick={handleOverlayClick} $isSubmit={false}>
+            취소
+          </Btn>
+          <Btn onClick={handleSubmitClick} $isSubmit={true}>
+            완료
+          </Btn>
         </ModalFooter>
       </ModalContent>
     </ModalOverlay>
@@ -166,12 +225,17 @@ const ModalContent = styled(motion.div)`
   position: relative;
   margin: 20px 0;
   border: none;
+  height: auto; // 내용에 맞춰 높이 설정
+  max-height: 60vh; // 최대 높이는 화면의 60%
 `;
 
 const ContentWrapper = styled.div`
   overflow-y: auto;
   flex-grow: 1;
   overscroll-behavior: contain;
+  max-height: calc(
+    60vh - 80px
+  ); // 헤더 및 푸터 높이를 제외한 내용 영역의 최대 높이 설정
 `;
 
 const DraggableBar = styled.div`
@@ -185,21 +249,21 @@ const DraggableBar = styled.div`
 const ModalHeader = styled.div`
   height: 44px;
   width: 100%;
-  border-bottom: 1px solid ${({ theme }) => theme.relaxColor.light};
   margin: 0;
-  padding: 12px 10px;
+  padding: 18px 20px;
   box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: space-between;
   position: sticky;
+  border-bottom: 1px solid ${({ theme }) => theme.relaxColor.light};
   top: 0;
   background: ${({ theme }) => theme.bgColor};
   z-index: 1;
 `;
 
 const ModalTitle = styled.h1`
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   color: ${({ theme }) => theme.textColor};
 `;
@@ -208,7 +272,7 @@ const CreateScrap = styled.button`
   border: none;
   outline: none;
   background: none;
-  color: ${({ theme }) => theme.scrapModalColor};
+  color: ${({ theme }) => theme.mainColor};
   font-size: 12px;
   display: flex;
   align-items: center;
@@ -235,13 +299,13 @@ const ModalBody = styled.div`
 
 const ScrapItem = styled.div`
   width: 100%;
-  padding: 12px 15px;
+  padding: 14px 20px;
   box-sizing: border-box;
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 15px;
-  line-height: 20px;
+  gap: 12px;
+  font-size: 14px;
+  line-height: 140%;
   overflow: hidden;
   border: 1px solid ${({ theme }) => theme.bgColor};
   &:active {
@@ -272,9 +336,10 @@ const StyledCheckbox = styled.div<{ $checked: boolean }>`
   width: 16px;
   height: 16px;
   background: ${({ $checked, theme }) =>
-    $checked ? theme.scrapModalColor : theme.bgColor};
+    $checked ? theme.mainColor : theme.bgColor};
   border-radius: 3px;
-  border: 2px solid ${({ theme }) => theme.scrapModalColor};
+  border: 2px solid
+    ${({ $checked, theme }) => ($checked ? theme.mainColor : theme.textColor)};
   transition: all 150ms;
 
   display: flex;
@@ -291,30 +356,41 @@ const ScrapName = styled.span`
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  color: ${({ theme }) => theme.textColor};
 `;
 
-const ModalFooter = styled.button`
+const ModalFooter = styled.div`
   height: 50px;
   width: 100%;
   margin: 0;
-  padding: 12px 10px;
+  padding: 18px;
   box-sizing: border-box;
   position: sticky;
   bottom: 0;
+  gap: 10px;
   display: flex;
   align-items: center;
-  border: none;
+  justify-content: flex-end;
   border-top: 1px solid ${({ theme }) => theme.relaxColor.light};
-  background: ${({ theme }) => theme.bgColor};
-  outline: none;
-  gap: 10px;
-  &:active {
-    background-color: ${({ theme }) => theme.textColor + '3b'};
-    transition: 0.3s;
-  }
 `;
 
-const BtnText = styled.span`
-  color: ${({ theme }) => theme.textColor};
+const Btn = styled.button<{ $isSubmit: boolean }>`
+  color: ${({ theme, $isSubmit }) =>
+    $isSubmit ? theme.mainColor : theme.textColor};
   font-size: 15px;
+  border: none;
+  background: ${({ theme }) => theme.bgColor};
+  outline: none;
+  border-radius: 20px;
+  border: none;
+  outline: none;
+  padding: 5px 10px;
+  &:active {
+    background-color: ${({ theme }) => theme.textColor + '3b'};
+    transition: none;
+  }
+
+  &:not(:active) {
+    transition: background-color 0.5s;
+  }
 `;

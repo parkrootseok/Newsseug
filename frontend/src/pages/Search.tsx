@@ -1,53 +1,31 @@
 import InputSection from 'components/search/InputSection';
 import SubLayout from 'components/common/SubLayout';
 import Keyword from 'components/search/Keyword';
-import { useState } from 'react';
-import ScrapModal from 'components/articles/ScrapModal';
-import CreateScrapModal from 'components/articles/CreateScrapModal';
+import { useEffect, useState } from 'react';
+import { KeywordItem } from 'types/props/search';
 
-const keywordlist = [
-  { keywordText: '미국 ETF', isHistory: true },
-  { keywordText: 'YTN', isHistory: false },
-  { keywordText: '미국', isHistory: false },
-];
+const STORAGE_KEY = 'searchHistory';
 
 function Search() {
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
+  const [keywordHistoryList, setKeywordHistoryList] = useState<KeywordItem[]>(
+    [],
+  );
 
-  const handleClick = () => {
-    setIsModalOpen((prev) => !prev);
-  };
+  useEffect(() => {
+    const savedKeywords = localStorage.getItem(STORAGE_KEY);
+    if (savedKeywords) {
+      setKeywordHistoryList(JSON.parse(savedKeywords));
+    }
+  }, []);
+
   return (
     <SubLayout isSearch={true}>
       <InputSection />
       <>
-        <button style={{ height: '100px' }} onClick={handleClick}>
-          스크랩
-        </button>
-        {isModalOpen && (
-          <ScrapModal
-            isOpen={isModalOpen}
-            onRequestClose={() => setIsModalOpen(false)}
-            onCreateModalOpen={() => {
-              setIsModalOpen(false);
-              setIsCreateModalOpen(true);
-            }}
-          />
-        )}
-        {isCreateModalOpen && (
-          <CreateScrapModal
-            isOpen={isCreateModalOpen}
-            onRequestClose={() => {
-              setIsModalOpen(true);
-              setIsCreateModalOpen(false);
-            }}
-          />
-        )}
-        {keywordlist.map((keyword, idx) => {
+        {keywordHistoryList.map((keyword, idx) => {
           return (
             <Keyword
-              key={idx}
+              key={`${keyword.keywordText}-${idx}`}
               isHistory={keyword.isHistory}
               keywordText={keyword.keywordText}
             />

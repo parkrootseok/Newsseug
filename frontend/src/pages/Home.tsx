@@ -1,28 +1,78 @@
-import MainLayout from 'components/common/MainLayout';
-import data from 'db/data.json';
 import Section from 'components/home/Section';
-import UserInput from './UserInput';
-import AllArticles from './AllArticles';
-import ConfirmModal from 'components/userInput/ConfirmModal';
+import MainLayout from 'components/common/MainLayout';
+import useAutoLogin from 'hooks/useAutoLogin';
+import useContentsFetch from 'hooks/useContentsFetch';
+import styled, { keyframes } from 'styled-components';
+import { Category, SectionType, SectionTypeMatch } from 'types/api/article';
+import { useNavigate } from 'react-router-dom';
+import { fetchArticles, fetchArticlesByToday } from 'apis/articleApi';
+import Spinner from 'components/common/Spinner';
 
-/**
- * IMP : Home Page
- * TODO : Home Page의 Section에서 '더보기'를 누르면 All Articles Page로 이동하도록 구현
- * @returns
- */
 function Home() {
+  const navigate = useNavigate();
+  useAutoLogin();
+  const sections = [
+    useContentsFetch({
+      queryKey: ['todayArticles', 'ALL'],
+      fetchData: fetchArticlesByToday,
+      sectionType: 'today',
+      category: 'ALL' as Category,
+    }),
+    useContentsFetch({
+      queryKey: ['ageArticles', 'ALL'],
+      fetchData: fetchArticlesByToday,
+      sectionType: 'age',
+      category: 'ALL' as Category,
+    }),
+    useContentsFetch({
+      queryKey: ['allArticles', 'ALL'],
+      fetchData: fetchArticles,
+      sectionType: 'all',
+      category: 'ALL' as Category,
+    }),
+  ];
   return (
     <MainLayout>
-      {data.todyNews.map((data, index) => (
-        <Section
-          key={index}
-          subTitle={data.subTitle}
-          moreLink={'/'}
-          articleList={data.ArticleList}
-        />
-      ))}
+      <FadeInWrapper>
+        {sections.map((section) => (
+          <Section
+            key={section.sectionType}
+            subTitle={SectionTypeMatch[section.sectionType as SectionType]}
+            moreLink={() =>
+              navigate(`/articles/section/${section.sectionType}`, {
+                state: {
+                  sectionType: section.sectionType,
+                  queryKey: section.queryKey,
+                  articleList: section.articleList,
+                  sliceDetails: section.sliceDetails,
+                },
+              })
+            }
+            articleList={section.articleList}
+            fetchNextPage={section.fetchNextPage}
+            hasNextPage={section.hasNextPage}
+            isFetchingNextPage={section.isFetchingNextPage}
+            isLoading={section.isLoading}
+            sectionType={section.sectionType}
+            sliceDetails={section.sliceDetails}
+          />
+        ))}
+      </FadeInWrapper>
     </MainLayout>
   );
 }
 
 export default Home;
+
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
+
+const FadeInWrapper = styled.div`
+  animation: ${fadeIn} 0.8s ease-in-out;
+`;

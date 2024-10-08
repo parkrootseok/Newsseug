@@ -1,28 +1,14 @@
 package com.a301.newsseug.domain.article.model.entity;
 
-import com.a301.newsseug.domain.article.model.entity.type.Category;
+import com.a301.newsseug.domain.article.model.entity.type.CategoryType;
+import com.a301.newsseug.domain.article.model.entity.type.ConversionStatus;
 import com.a301.newsseug.domain.press.model.entity.Press;
 import com.a301.newsseug.global.model.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-/**
- * CREATE TABLE `articles` (
- * 	`article_id`	BIGINT	NOT NULL,
- * 	`press_id`	BIGINT	NOT NULL,
- * 	`title`	VARCHAR	NOT NULL,
- * 	`source`	VARCHAR(255)	NOT NULL,
- * 	`content_url`	VARCHAR(255)	NOT NULL,
- * 	`video_url`	VARCHAR(255)	NOT NULL,
- * 	`view_count`	BIGINT	NOT NULL	DEFAULT 0,
- * 	`category`	ENUM(POLITICS, ECONOMY, DIPLOMACY, INCIDENTS, SCIENCE)	NOT NULL
- * 	`created_at`	TIMESTAMP	NOT NULL,
- * 	`updated_at`	TIMESTAMP	NOT NULL
- * );
- */
+import java.time.LocalDateTime;
+
 @Getter
 @Entity
 @Table(name = "articles")
@@ -30,43 +16,58 @@ import lombok.NoArgsConstructor;
 public class Article extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "articles_seq")
+    @SequenceGenerator(name = "articles_seq", sequenceName = "articles_seq", allocationSize = 1)
     private Long articleId;
-
-    @Column(nullable = false)
-    private String title;
-
-    @Column(nullable = false)
-    private String source; // 출처 URL
-
-    @Column(nullable = false)
-    private String contentUrl; // 원문 URL
-
-    @Column(nullable = false)
-    private String videoUrl; // 영상 URL
-
-    @Column(nullable = false)
-    private String thumbnailUrl; // 썸네일 URL
-
-    @Column(nullable = false)
-    private Long viewCount = 0L;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Category category;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "press_id", nullable = false)
     private Press press;
 
+    @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false)
+    private String sourceUrl;
+
+    @Column(updatable = false, columnDefinition = "TIMESTAMP")
+    private LocalDateTime sourceCreatedAt;
+
+    private String contentUrl;
+
+    private String videoUrl;
+
+    private String thumbnailUrl;
+
+    @Column(nullable = false)
+    private Long viewCount;
+
+    @Column(nullable = false)
+    private Long likeCount;
+
+    @Column(nullable = false)
+    private Long hateCount;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ConversionStatus conversionStatus;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CategoryType category;
+
     @Builder
-    public Article(String title, String source, String contentUrl, String videoUrl, String thumbnailUrl, Category category) {
+    public Article(
+            Press press, String title, String sourceUrl, String contentUrl, String videoUrl, String thumbnailUrl, CategoryType category) {
+        this.press = press;
         this.title = title;
-        this.source = source;
+        this.sourceUrl = sourceUrl;
         this.contentUrl = contentUrl;
         this.videoUrl = videoUrl;
         this.thumbnailUrl = thumbnailUrl;
         this.viewCount = 0L;
+        this.likeCount = 0L;
+        this.hateCount = 0L;
         this.category = category;
     }
 }

@@ -1,5 +1,7 @@
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { ArticleListCardProps } from '@/types/common/common';
+import { ArticleListCardProps } from 'types/common/common';
+import { formatNumber } from 'utils/formatNumber';
 
 /**
  * IMP : ArticleListCard ( News Card ) Component
@@ -8,22 +10,25 @@ import { ArticleListCardProps } from '@/types/common/common';
  * @returns
  */
 function ArticleListCard({
-  imgUrl,
+  thumbnailUrl,
   title,
   viewCount,
   pressName,
+  id,
   width = '180px',
   height = '250px',
 }: Readonly<ArticleListCardProps>) {
+  const navigate = useNavigate();
+  const handleClick = () => {
+    navigate(`/articles/${id}`);
+  };
   return (
-    <Wrapper width={width} height={height}>
-      <Thumbnail src={imgUrl} />
+    <Wrapper width={width} height={height} onClick={handleClick}>
+      <Thumbnail src={thumbnailUrl} />
       <PressTag width={width}>{pressName}</PressTag>
       <ArticleInfo>
         <ArticleTitle width={width}>{title}</ArticleTitle>
-        <ViewCount width={width}>
-          조회수 {formatViewCount(viewCount)}회
-        </ViewCount>
+        <ViewCount width={width}>조회수 {formatNumber(viewCount)}회</ViewCount>
       </ArticleInfo>
     </Wrapper>
   );
@@ -54,19 +59,21 @@ const ArticleInfo = styled.div`
   justify-content: space-between;
   align-items: flex-start;
   position: absolute;
-  padding: 5px;
+  padding: 20px 6px 8px 6px;
   bottom: 0px;
   left: 0px;
-  gap: 2px;
+  gap: 4px;
   background: linear-gradient(
     180deg,
     rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.05) 25%,
+
     rgba(0, 0, 0, 0.8) 100%
   );
 `;
 
 const ArticleTitle = styled.h1<{ width: string }>`
-  color: ${({ theme }) => theme.bgColor};
+  color: #fff;
   font-feature-settings:
     'liga' off,
     'clig' off;
@@ -86,7 +93,7 @@ const ArticleTitle = styled.h1<{ width: string }>`
 `;
 
 const ViewCount = styled.p<{ width: string }>`
-  color: ${({ theme }) => theme.bgColor};
+  color: #fff;
   font-feature-settings:
     'liga' off,
     'clig' off;
@@ -109,26 +116,14 @@ const PressTag = styled.div<{ width: string }>`
   position: absolute;
   top: 5px;
   left: 5px;
-  color: ${({ theme }) => theme.bgColor};
+  color: #fff;
   font-feature-settings:
     'liga' off,
     'clig' off;
   font-size: ${({ width }) =>
-    width === '180px' || width === '100%' ? '12px' : '8px'};
+    width === '180px' || width === '100%' ? '14px' : '8px'};
   font-style: normal;
-  font-weight: 600;
+  font-weight: 400;
   line-height: 140%;
   letter-spacing: -0.2px;
 `;
-
-function formatViewCount(viewCount: number): string {
-  if (viewCount >= 1000000000) {
-    return (viewCount / 1000000000).toFixed(1) + 'B'; // billion 단위
-  } else if (viewCount >= 1000000) {
-    return (viewCount / 1000000).toFixed(1) + 'M'; // million 단위
-  } else if (viewCount >= 1000) {
-    return (viewCount / 1000).toFixed(1) + 'K'; // thousand 단위
-  } else {
-    return viewCount.toString(); // 천 이하일 경우 그대로 출력
-  }
-}

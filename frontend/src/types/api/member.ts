@@ -1,53 +1,53 @@
-/**
- * IMP : Member에 대한 Type을 정의하고 있습니다.
- * IMP : GenderType, ProviderType, Role은 ENUM 타입으로 Union Literal을 사용하고 있어, type Keyword를 사용했습니다.
- * IMP : Java에서 정의된 Type을 TS로 옮긴 형태입니다.
- * TODO : 그러므로, API를 통해 받아오는 데이터의 형식을 정의하고 싶다면, 직접 추가해야 할 수도 있습니다.
- */
+import { SliceDetails } from './article';
 
-export interface Member {
-  id: number;
+export type GenderType = 'MALE' | 'FEMALE';
+export type ProviderType = 'kakao' | 'google' | 'none';
+/**
+ * IMP : API와 관련된 Member의 정보를 정의한 Type
+ */
+export interface MemberState {
   nickname: string;
-  gender: GenderType;
-  birth: Date;
-  oAuth2Details: OAuth2Details;
+  gender: string;
+  age: number;
+  profileImageUrl: string;
 }
 
-type GenderType = 'MALE' | 'FEMALE';
-type ProviderType = 'KAKAO' | 'GOOGLE';
-type Role = 'ROLE_MEMBER' | 'ROLE_ADMIN';
-
-interface OAuth2Details {
+export interface MemberStore {
+  member: MemberState;
+  accessToken: string;
+  refreshToken: string;
   providerType: ProviderType;
   providerId: string;
-  role: Role;
 }
 
-interface History {
-  historyId: number;
-  memberId: number;
-  articleId: number;
-  playTime: number;
-  createdAt: Date;
+export interface DecodedToken {
+  exp: number;
 }
 
-/**
- * * INFO : 이것은 FE 개발자가 직접 추가한 Type입니다.
- */
+export interface TokenResponse {
+  accessToken: string;
+  refreshToken: string;
+}
 
-/**
- * IMP : 새로 회원가입 하는 Member에 대한 Random Nickname을 받아오는 Response Type
- */
-export interface RandomNicknameResponse {
+// IMP : 회원 정보 조회에 대한 Response Type
+export interface MemberInfo {
   nickname: string;
-  success: boolean;
+  profileImageUrl: string;
 }
 
-/**
- *
- */
-export interface MemberLoginResponse {
-  timestamp: string;
-  trackId: string;
-  data: boolean;
+export interface MemberHistoryDetail {
+  id: number;
+  name: string;
+  thumbnailUrl: string;
+  viewCount: number;
+  pressName: string;
+}
+
+export interface MemberHistories {
+  histories: MemberHistoryDetail[];
+}
+
+export interface MemberHistoryInfo {
+  content: MemberHistories;
+  sliceDetails: SliceDetails;
 }

@@ -1,71 +1,74 @@
-import api from '@/apis/commonApi';
-import { AxiosResponse, isAxiosError } from 'axios';
-import { Article } from '@/types/api/article';
+import api from 'apis/commonApi';
+import { isAxiosError } from 'axios';
+import { PageParamsType, PageType } from 'types/api/article';
 const ARTICLES_URL = `/api/v1/articles`;
 
 /**
  * IMP : 비동기 함수에서 Promise 기반으로 asnyc/await과 try/catch를 통해 호출자가 CallBack 정의 없이 직접 처리
+ * IMP : Article을 상황에 맞게 Fetch하는 API를 구현하고 있음. Mock Data로 dummy.json을 사용하고 있음.
  * Type : Promise<AxiosResponse> => AxiosResponse의 Case에 대한 Promise를 반환해야 함.
  */
 
-/**
- * IMP : Home 화면에서 사용하는 Articles를 Fetch하는 API
- * TODO : pageTitle : 오늘의 뉴스 Articles[] , 20대 관심 기사 Articles[], 전체 기사 Articles[]
- * TODO => 각 특성에 맞는 Articles[] Array를 Fetch하는 API가 필요함.
- */
-export const fetchArticles = async (): Promise<Article[]> => {
+export const fetchArticles = async ({
+  category = 'ALL',
+  page = 1,
+}: PageParamsType): Promise<PageType> => {
   try {
-    const response: AxiosResponse<Article[]> = await api.get(ARTICLES_URL);
-    console.log(response.data);
-    return response.data;
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const response = await api.get(ARTICLES_URL, {
+      params: { pageNumber: page, filter: category },
+    });
+    return response.data.data;
   } catch (error: unknown) {
     if (isAxiosError(error)) {
-      if (error.response?.status === 404) {
-        throw new Error('Not Found');
-      } else throw error;
+      if (error.response?.status === 404) throw new Error('Not Found');
+      else throw error;
+    } else throw error;
+  }
+};
+
+export const fetchArticlesByToday = async ({
+  category = 'ALL',
+  page = 1,
+}: PageParamsType): Promise<PageType> => {
+  try {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const response = await api.get(`${ARTICLES_URL}/today`, {
+      params: { pageNumber: page, filter: category },
+    });
+    return response.data.data;
+  } catch (error: unknown) {
+    if (isAxiosError(error)) {
+      if (error.response?.status === 404) throw new Error('Not Found');
+      else throw error;
     } else throw error;
   }
 };
 
 /**
- * IMP : 각 Article을 Fetch하는 API
- * *  ArticleId를 통해 각 Article 1개를 Fetch한다.
- * @param articleId
+ * IMP : 구독 페이지의 기사 조회를 위한 API
+ * IMP : 1.1 pressId가 없다면, 구독한 언론사의 전체 기사를 조회함.
+ * IMP : 1.2 pressId가 있다면, 해당 언론사의 전체 기사를 조회함.
+ * IMP : 2.1 category가 없다면, 전체 카테고리의 기사를 조회함.
+ * IMP : 2.2 category가 있다면, 해당 카테고리의 기사를 조회함.
+ * @param param0
+ * @returns
  */
-export const fetchEachArticle = async (articleId: number): Promise<Article> => {
+export const fetchArticlesByPress = async ({
+  category = 'ALL',
+  page = 1,
+  pressId,
+}: PageParamsType): Promise<PageType> => {
   try {
-    const response: AxiosResponse<Article> = await api.get(
-      `${ARTICLES_URL}/${articleId}`,
-    );
-    console.log(response.data);
-    return response.data;
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const response = await api.get(`${ARTICLES_URL}/press/${pressId ?? ''}`, {
+      params: { filter: category, pageNumber: page },
+    });
+    return response.data.data;
   } catch (error: unknown) {
     if (isAxiosError(error)) {
-      if (error.response?.status === 404) {
-        throw new Error('Not Found');
-      } else throw error;
-    } else throw error;
-  }
-};
-
-/**
- * IMP : 각 Category에 해당하는 Articles[]를 Fetch하는 API => Query Parameter로 Category를 받아서 Fetch
- * @param category
- */
-export const fetchArticlesByCategory = async (
-  category: string,
-): Promise<Article[]> => {
-  try {
-    const response: AxiosResponse<Article[]> = await api.get(
-      `${ARTICLES_URL}?category=${encodeURIComponent(category)}`,
-    );
-    console.log(response.data);
-    return response.data;
-  } catch (error) {
-    if (isAxiosError(error)) {
-      if (error.response?.status === 404) {
-        throw new Error('Not Found');
-      } else throw error;
+      if (error.response?.status === 404) throw new Error('Not Found');
+      else throw error;
     } else throw error;
   }
 };

@@ -1,30 +1,22 @@
 import api from 'apis/commonApi';
-import { AxiosResponse, isAxiosError } from 'axios';
-import { UserInputProps } from '@/types/userInput';
-import {
-  RandomNicknameResponse,
-  MemberLoginResponse,
-} from '@/types/api/member';
-
+import { isAxiosError } from 'axios';
+import { UserInputProps } from 'types/props/register';
+import { MemberFolder } from 'types/api/folder';
+import { PageType } from 'types/api/article';
+import { MemberInfo } from 'types/api/member';
 const MEMBER_URL = '/api/v1/members';
 
 /**
- * IMP : 비동기 함수에서 Promise 기반으로 asnyc/await과 try/catch를 통해 호출자가 CallBack 정의 없이 직접 처리
- * Type : Promise<AxiosResponse> => AxiosResponse의 Case에 대한 Promise를 반환해야 함.
+ * IMP : 회원 정보 등록을 위한 API
+ * @requestBody input
+ * @returns data : boolean
  */
-
-/**
- * IMP : Random Nickname을 받아오는 API ( 외부 API 호출 )
- */
-export const getRandomNickname = async (): Promise<RandomNicknameResponse> => {
+export const registerMember = async (
+  input: UserInputProps,
+): Promise<boolean> => {
   try {
-    const response = await api.post<RandomNicknameResponse>(
-      '/nickname/getRandomNickname.ajax',
-      { lang: 'ko' },
-      { baseURL: 'https://www.rivestsoft.com/nickname.html' },
-    );
-    console.log(response);
-    return response.data;
+    const resonse = await api.put(MEMBER_URL, input);
+    return resonse.data.data;
   } catch (error: unknown) {
     if (isAxiosError(error)) {
       if (error.response?.status === 404) {
@@ -35,26 +27,70 @@ export const getRandomNickname = async (): Promise<RandomNicknameResponse> => {
 };
 
 /**
- * IMP : 회원가입을 위한 API
- * @param input
- * @returns
+ * IMP : 회원 정보 조회를 위한 API
+ * @param null => AccessToken을 통해 조회
+ * @returns MemberInfo Type
  */
-export const registerMember = async (
-  input: UserInputProps,
-): Promise<MemberLoginResponse> => {
-  console.log('입력하는 Data :', input);
+export const getMemberInfo = async (): Promise<MemberInfo> => {
   try {
-    const response: AxiosResponse<MemberLoginResponse> = await api.put(
-      MEMBER_URL,
-      input,
-    );
-    console.log('회원가입 결과 : ', response.data);
+    const response = await api.get(MEMBER_URL);
     return response.data;
   } catch (error: unknown) {
     if (isAxiosError(error)) {
       if (error.response?.status === 404) {
         throw new Error('Not Found');
-      } else throw error;
+      } else {
+        console.error('사용자 정보 조회 실패:', error);
+        throw error;
+      }
+    } else throw error;
+  }
+};
+
+/**
+ * IMP : 사용자 폴더 목록 조회를 위한 API
+ */
+export const getMemberFolderList = async (
+  page: number,
+): Promise<MemberFolder> => {
+  try {
+    const response = await api.get(`${MEMBER_URL}/folders`, {
+      params: { pageNumber: page },
+    });
+    return response.data;
+  } catch (error: unknown) {
+    if (isAxiosError(error)) {
+      if (error.response?.status === 404) {
+        throw new Error('Not Found');
+      } else {
+        console.error('마이페이지 폴더 목록 조회 실패:', error);
+        throw error;
+      }
+    } else throw error;
+  }
+};
+
+/**
+ * IMP : 사용자 시청 기록 조회를 위한 API
+ */
+export const getMemberHistoryList = async ({
+  page = 1,
+}: {
+  page: number;
+}): Promise<PageType> => {
+  try {
+    const response = await api.get(`/api/v1/histories`, {
+      params: { page },
+    });
+    return response.data;
+  } catch (error: unknown) {
+    if (isAxiosError(error)) {
+      if (error.response?.status === 404) {
+        throw new Error('Not Found');
+      } else {
+        console.error('시청 기록 조회 실패:', error);
+        throw error;
+      }
     } else throw error;
   }
 };

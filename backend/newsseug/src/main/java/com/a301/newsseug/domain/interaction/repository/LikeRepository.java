@@ -18,6 +18,8 @@ public interface LikeRepository extends CrudRepository<Like, Long> {
 
     Optional<Like> findByMemberAndArticle(Member member, Article article);
 
-//    void deleteByMemberAndArticle(Member member, Article article);
+    int countByArticle(Article article);
+
+    Boolean existsByMemberAndArticle(Member member, Article article);
 
 }

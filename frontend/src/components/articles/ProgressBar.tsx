@@ -1,11 +1,23 @@
+import { useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { ProgressBarProps } from '@/types/article';
+import { ProgressBarProps } from 'types/props/articleVideo';
 
-function ProgressBar({ progress, isPlaying, onSeek }: ProgressBarProps) {
+function ProgressBar({
+  progress,
+  isPlaying,
+  onSeek,
+}: Readonly<ProgressBarProps>) {
+  const progressBarRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (progressBarRef.current) {
+      progressBarRef.current.style.width = `${progress * 100}%`;
+    }
+  }, [progress]);
   return (
     <ProgressSection $isPlaying={isPlaying}>
       <ProgressBarWrap>
-        <ProgressBarFill $progress={progress} />
+        <ProgressBarFill ref={progressBarRef} />
         {!isPlaying && (
           <ProgressInput
             type="range"
@@ -34,11 +46,10 @@ const ProgressBarWrap = styled.div`
   cursor: pointer;
 `;
 
-const ProgressBarFill = styled.div<{ $progress: number }>`
+const ProgressBarFill = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-  width: ${({ $progress }) => `${$progress * 100}%`};
   background: ${({ theme }) => theme.mainColor};
   height: 100%;
 `;
@@ -55,9 +66,9 @@ const ProgressInput = styled.input`
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 15px; /* Customize size */
-    height: 15px; /* Customize size */
-    background-color: white; /* Set thumb color */
+    width: 15px;
+    height: 15px;
+    background-color: ${({ theme }) => theme.bgColor};
     border-radius: 50%;
     cursor: pointer;
   }

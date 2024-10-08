@@ -1,54 +1,79 @@
+import { ArticleListCardProps } from 'types/common/common';
+
+export interface SliceDetails {
+  currentPage: number;
+  hasFirst: boolean;
+  hasNext: boolean;
+}
+
 /**
- * IMP : Article에 대한 Type을 정의하고 있습니다.
- * IMP : Category와 ReportType은 ENUM 타입으로 Union Literal을 사용하고 있어, type Keyword를 사용했습니다.
- * IMP : Java에서 정의된 Type을 TS로 옮긴 형태입니다.
- * TODO : 그러므로, API를 통해 받아오는 데이터의 형식을 정의하고 싶다면, 직접 추가해야 할 수도 있습니다.
+ * IMP : Section Type
  */
+export const SectionTypeMatch = {
+  today: '오늘의 기사',
+  age: '연령별 기사',
+  all: '전체 기사',
+};
+export type SectionType = keyof typeof SectionTypeMatch;
 
-export interface Article {
-  articleId: number;
-  title: string;
-  source: string;
-  contentUrl: string;
-  videoUrl: string;
-  viewCount: number;
-  category: Category;
-  likes: Like[];
-  hates: Hate[];
-  histories: History[];
-  reports: Report[];
-  createdAt: Date;
-  updatedAt: Date;
+/**
+ * IMP : Category Enum Type
+ */
+export enum Category {
+  '전체' = 'ALL',
+  '정치' = 'POLITICS',
+  '경제' = 'ECONOMY',
+  '국제' = 'WORLD',
+  '사건' = 'ACCIDENT',
+  '과학' = 'SCIENCE',
+  '사회' = 'SOCIETY',
+  '스포츠' = 'SPORTS',
 }
 
-// Type : 정치, 경제, 외교, 사건, 과학
-type Category = 'POLITICS' | 'ECONOMY' | 'DIPLOMACY' | 'INCIDENTS' | 'SCIENCE';
-
-// Type : "마음에 들지 않습니다.", "스팸", "혐오 발언 또는 상징", "거짓 정보", "선정적인 컨텐츠"
-type ReportType =
-  | 'DISLIKE'
-  | 'SPAM'
-  | 'HATE_SPEECH_OR_SYMBOLS'
-  | 'MISINFORMATION'
-  | 'EXPLICIT_CONTENT';
-
-interface Like {
-  likeId: number;
-  memberId: number;
-  articleId: number;
-  createdAt: Date;
+/**
+ * IMP : 페이지별로 Article을 Fetch하는 Params
+ * @param category : default = 'ALL'
+ * @param page : default = 1
+ * @param pressId : default = null
+ */
+export interface PageParamsType {
+  category?: Category | string;
+  page: number;
+  pressId?: number | null;
 }
 
-interface Hate {
-  hateId: number;
-  memberId: number;
-  articleId: number;
-  createdAt: Date;
+/**
+ * IMP : 페이지별로 Article을 Fetch하는 Response Type
+ * @param sliceDetails : 페이지별로 Slice된 정보
+ * @param content : ArticleListCardProps[] : ArticleListCardProps의 배열
+ */
+export interface PageType {
+  sliceDetails: SliceDetails;
+  content: ArticleListCardProps[];
 }
 
-interface Report {
-  reportId: number;
-  articleId: number;
-  reportType: ReportType;
-  createdAt: Date;
+/**
+ * IMP : Allarticle에게 넘겨주는 Section State 상태 ( 동적 Page 구성을 위한 상태 )
+ * @param articleList : ArticleListCardProps[] : ArticleListCardProps의 배열
+ * @param queryKey : string[] : Query Key
+ * @param sliceDetails : SliceDetails : Slice된 정보
+ * @param sectionType : SectionType : Section Type
+ */
+export interface SectionState {
+  articleList: ArticleListCardProps[];
+  queryKey: string[];
+  sliceDetails: SliceDetails;
+  sectionType: SectionType;
+}
+
+/**
+ * IMP : Contents Fetch Type
+ */
+export interface ContentsFetchType<T extends PageType> {
+  queryKey: string[];
+  fetchData: ({ category, page, pressId }: PageParamsType) => Promise<T>;
+  category?: Category;
+  pressId?: number | null;
+  sectionType?: string;
+  initialPage?: number;
 }

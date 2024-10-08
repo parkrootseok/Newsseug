@@ -1,16 +1,30 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { UserInputProps } from '@/types/userInput';
-import { MaleIcon, FemaleIcon } from 'components/icon/GenderIcon';
+import { UserInputProps } from 'types/props/register';
+import { useNavigate } from 'react-router-dom';
+import { AppDispatch } from 'redux/index';
+import { useDispatch } from 'react-redux';
+import { setMemberInfo } from '../redux/memberSlice';
 import { registerMember } from 'apis/memberApi';
-
-const defaultValues: UserInputProps = {
-  nickname: '기쁜 두꺼비',
-  birth: '',
-  gender: '',
-};
+import { MaleIcon, FemaleIcon } from 'components/icon/GenderIcon';
+import { getCookie, removeCookie } from 'utils/stateUtils';
+import {
+  GetOrSetRandomNickname,
+  birthRule,
+  FormatDateToCompact,
+  CalculateAge,
+} from 'utils/formUtils';
 
 function useFormState() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+  const defaultValues: UserInputProps = {
+    nickname: GetOrSetRandomNickname(),
+    birth: '',
+    gender: '',
+    profileImageUrl: '',
+  };
+
   const { control, formState, setValue, trigger, getValues, handleSubmit } =
     useForm<UserInputProps>({
       defaultValues,
@@ -18,9 +32,9 @@ function useFormState() {
     });
 
   const validationRules = {
-    nickname: nicknameValidation,
-    gender: genderValidation,
-    birth: birthValidation,
+    nickname: { fixedValue: defaultValues.nickname },
+    gender: { required: true },
+    birth: birthRule,
   };
 
   const [genderList, setGenderList] = useState([
@@ -43,7 +57,7 @@ function useFormState() {
     e: React.ChangeEvent<HTMLInputElement>,
     onChange: (value: string) => void,
   ) => {
-    let value = e.target.value.replace(/\D/g, '').slice(0, 8); // Ensures only digits, truncated to 8
+    let value = e.target.value.replace(/\D/g, '').slice(0, 8);
     if (value.length > 4)
       value =
         `${value.slice(0, 4)}.${value.slice(4, 6)}` +
@@ -52,8 +66,16 @@ function useFormState() {
     await trigger('birth');
   };
 
-  const onSubmit = (data: UserInputProps) => {
-    registerMember(data);
+  const onSubmit = async (data: UserInputProps) => {
+    data.birth = FormatDateToCompact(data.birth);
+    const age = CalculateAge(data.birth);
+    dispatch(setMemberInfo({ ...data, age }));
+    if (await registerMember(data)) {
+      navigate(getCookie('redirect') || '/');
+      removeCookie('redirect');
+    } else {
+      throw new Error('회원가입에 실패했습니다.');
+    }
   };
 
   return {
@@ -68,31 +90,5 @@ function useFormState() {
     getValues,
   };
 }
-
-const nicknameValidation = { fixedValue: '기쁜 두꺼비' };
-const genderValidation = { required: true };
-const birthValidation = {
-  required: '생년월일을 입력해 주세요.',
-  pattern: {
-    value: /^\d{4}\.\d{2}\.\d{2}$/,
-    message: '생년월일 형식이 올바르지 않습니다. (YYYY.MM.DD)',
-  },
-  validate: {
-    validDate: (value: string) => {
-      const [year, month, day] = value.split('.').map(Number);
-      const inputDate = new Date(year, month - 1, day);
-      const today = new Date();
-      const minDate = new Date(1900, 0, 1);
-
-      if (month < 1 || month > 12) return '월은 1에서 12 사이여야 합니다.';
-      if (day < 1 || day > new Date(year, month, 0).getDate())
-        return `해당 월에는 ${new Date(year, month, 0).getDate()}일까지 있습니다.`;
-      if (inputDate < minDate) return '1900년 이후의 날짜를 입력해주세요.';
-      if (inputDate > today) return '미래 날짜는 선택할 수 없습니다.';
-
-      return true;
-    },
-  },
-};
 
 export default useFormState;

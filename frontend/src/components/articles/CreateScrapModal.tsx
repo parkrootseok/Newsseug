@@ -1,27 +1,39 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { ModalProps } from 'types/article';
-import styled from 'styled-components';
+import { ModalBasicProps } from 'types/props/articleVideo';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import styled from 'styled-components';
+import { createFolder } from 'apis/folderApi';
 
-function CreateScrapModal({ isOpen, onRequestClose }: ModalProps) {
+function CreateScrapModal({
+  isOpen,
+  onRequestClose,
+}: Readonly<ModalBasicProps>) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [inputValue, setInputValue] = useState<string>('');
+  const [folderName, setFolderName] = useState<string>('');
   const [isFocused, setIsFocused] = useState<boolean>(false);
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [isOpen]);
+  }, [isOpen, folderName]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFolderName(e.currentTarget.value);
+  };
 
   const handleCloseClick = () => {
     onRequestClose();
   };
 
-  const handleSubmitClick = () => {};
+  const handleSubmitClick = async () => {
+    try {
+      await createFolder(folderName);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.currentTarget.value);
+      onRequestClose();
+    } catch (error) {
+      console.error('폴더 생성 실패', error);
+    }
   };
 
   return (
@@ -34,22 +46,26 @@ function CreateScrapModal({ isOpen, onRequestClose }: ModalProps) {
         onClick={(e) => e.stopPropagation()}
       >
         <ModalHeader>
-          <ModalTitle>새로운 폴더</ModalTitle>
+          <ModalTitle>새 폴더 생성</ModalTitle>
         </ModalHeader>
         <ModalBody>
           <TextInput
             ref={inputRef}
-            placeholder="폴더 이름"
-            maxLength={50}
+            placeholder="폴더 이름을 입력해주세요."
+            maxLength={10}
             onChange={handleInputChange}
-            onFocus={() => setIsFocused(true)} // 포커스 시 상태 변경
-            onBlur={() => setIsFocused(false)} // 포커스 해제 시 상태 변경
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
           />
-          <TextCnt $disabled={!isFocused}>{inputValue.length}/50</TextCnt>
+          <TextCnt $disabled={!isFocused}>{folderName.length}/10</TextCnt>
         </ModalBody>
         <ModalFooter>
-          <Btn onClick={handleCloseClick}>취소</Btn>
-          <Btn onClick={handleSubmitClick}>완료</Btn>
+          <Btn onClick={handleCloseClick} $isSubmit={false}>
+            취소
+          </Btn>
+          <Btn onClick={handleSubmitClick} $isSubmit={true}>
+            완료
+          </Btn>
         </ModalFooter>
       </ModalContent>
     </ModalOverlay>
@@ -58,58 +74,9 @@ function CreateScrapModal({ isOpen, onRequestClose }: ModalProps) {
 
 export default CreateScrapModal;
 
-const ModalOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  z-index: 1001;
-`;
-
-const ModalContent = styled(motion.div)`
-  /* motion.div로 변경 */
-  background: ${({ theme }) => theme.bgColor};
-  border-radius: 10px;
-  display: flex;
-  width: 250px;
-  flex-direction: column;
-  align-items: flex-start;
-  position: absolute;
-  top: 25vh;
-`;
-
-const ModalHeader = styled.div`
-  display: flex;
-  padding: 15px;
-  align-items: center;
-  gap: 10px;
-  align-self: stretch;
-`;
-
-const ModalTitle = styled.div`
-  color: ${({ theme }) => theme.textColor};
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 20px;
-  letter-spacing: 0.25px;
-`;
-
-const ModalBody = styled.div`
-  display: flex;
-  padding: 5px 10px;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
-  align-self: stretch;
-`;
-
 const TextInput = styled.input`
+  background-color: ${({ theme }) => theme.bgColor};
+
   color: ${({ theme }) => theme.relaxColor.littlelight};
   font-size: 16px;
   font-style: normal;
@@ -118,12 +85,12 @@ const TextInput = styled.input`
   letter-spacing: 0.25px;
   width: 100%;
   box-sizing: border-box;
-  caret-color: ${({ theme }) => theme.scrapModalColor};
+  caret-color: ${({ theme }) => theme.relaxColor.dark};
   border: none;
   border-radius: 0;
   border-bottom: 1px solid ${({ theme }) => theme.relaxColor.littlelight};
   &:focus {
-    border-bottom: 2px solid ${({ theme }) => theme.scrapModalColor};
+    border-bottom: 2px solid ${({ theme }) => theme.mainColor};
     outline: none;
     transition: 0.1s;
   }
@@ -139,23 +106,75 @@ const TextCnt = styled.span<{ $disabled: boolean }>`
   box-sizing: border-box;
 `;
 
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  z-index: 1001;
+`;
+
+const ModalContent = styled(motion.div)`
+  background: ${({ theme }) => theme.bgColor};
+  border-radius: 10px;
+  display: flex;
+  width: 300px;
+  flex-direction: column;
+  align-items: flex-start;
+  position: absolute;
+  top: 25vh;
+`;
+
+const ModalHeader = styled.div`
+  display: flex;
+  padding: 18px 20px;
+  align-items: center;
+  gap: 10px;
+  align-self: stretch;
+`;
+
+const ModalTitle = styled.div`
+  color: ${({ theme }) => theme.textColor};
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: 0.25px;
+`;
+
+const ModalBody = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: stretch;
+  padding: 14px 20px;
+  flex-direction: column;
+  gap: 10px;
+`;
+
 const ModalFooter = styled.div`
   display: flex;
-  padding: 10px 15px 15px 30px;
+  padding: 18px 30px;
   justify-content: flex-end;
   align-items: center;
   gap: 15px;
   align-self: stretch;
 `;
-const Btn = styled.button`
-  color: ${({ theme }) => theme.scrapModalColor};
+const Btn = styled.button<{ $isSubmit: boolean }>`
+  color: ${({ theme, $isSubmit }) =>
+    $isSubmit ? theme.mainColor : theme.textColor};
   font-size: 15px;
   font-style: normal;
   font-weight: 400;
   line-height: 20px;
   letter-spacing: 0.25px;
   background: none;
-  padding: 5px 7px;
+  padding: 5px 10px;
   border-radius: 20px;
   border: none;
   outline: none;

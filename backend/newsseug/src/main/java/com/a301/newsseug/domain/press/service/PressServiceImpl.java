@@ -1,53 +1,55 @@
 package com.a301.newsseug.domain.press.service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-import com.a301.newsseug.domain.press.model.dto.GetPressBrandingResponseDto;
-import com.a301.newsseug.domain.press.model.dto.GetPressResponseDto;
+import com.a301.newsseug.domain.auth.model.entity.CustomUserDetails;
+import com.a301.newsseug.domain.member.model.entity.Member;
+import com.a301.newsseug.domain.member.repository.SubscribeRepository;
+import com.a301.newsseug.domain.press.model.dto.SimplePressDto;
+import com.a301.newsseug.domain.press.model.dto.response.GetPressResponse;
+import com.a301.newsseug.domain.press.model.dto.response.ListSimplePressResponse;
 import com.a301.newsseug.domain.press.model.entity.Press;
-import com.a301.newsseug.domain.press.model.entity.PressBranding;
 import com.a301.newsseug.domain.press.repository.PressRepository;
 
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class PressServiceImpl implements PressService {
+
     private final PressRepository pressRepository;
+    private final SubscribeRepository subscribeRepository;
 
     @Override
-    public GetPressBrandingResponseDto getPressBranding() {
+    public ListSimplePressResponse getSimplePress(CustomUserDetails userDetails) {
 
         List<Press> press = pressRepository.findAll();
 
-        List<PressBranding> pressBranding = new ArrayList<>();
-        for (Press p : press) {
-            pressBranding.add(p.getPressBranding());
-        }
+        Member member = userDetails.getMember();
 
-        return new GetPressBrandingResponseDto(pressBranding);
+        List<SimplePressDto> simplePressDtoList = press.stream().map(p ->
+            SimplePressDto.of(p, subscribeRepository.existsByMemberAndPress(member, p))
+        ).toList();
+
+        return ListSimplePressResponse.of(simplePressDtoList);
     }
 
     @Override
-    public Optional<GetPressResponseDto> getPress(Long pressId) {
+    public GetPressResponse getPress(Long pressId) {
 
-        Optional<Press> optionalPress = pressRepository.findById(pressId);
+        Press press = pressRepository.getOrThrow(pressId);
 
-        if (optionalPress.isEmpty()) {
-            return Optional.empty();
-        }
+        return GetPressResponse.of(press);
+    }
 
-        Press press = optionalPress.get();
+    @Override
+    public GetPressResponse getPress(Long pressId, CustomUserDetails userDetailsOptional) {
+        Press press = pressRepository.getOrThrow(pressId);
 
-        return Optional.of(GetPressResponseDto.builder()
-            .pressId(press.getPressId())
-            .name(press.getPressBranding().getName())
-            .imageUrl(press.getPressBranding().getImageUrl())
-            .description(press.getDescription())
-            .subscribeCount(press.getSubscribeCount())
-            .build());
+        Member member = userDetailsOptional.getMember();
+
+        return GetPressResponse.of(press, subscribeRepository.existsByMemberAndPress(member, press));
     }
 }
