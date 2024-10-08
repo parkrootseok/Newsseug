@@ -103,50 +103,38 @@ def generate_scenes(article_content: str) -> tuple[Optional[List[Scene]], Option
     """
     
     prompt = f"""
-You are a Storytelling Expert, specialized in creating compelling scripts for short-form videos.
-You are going to write a script based on a text-based article, transforming it into a short-form video script.
-The script should include descriptions of each scene and dialogues that explain the scenes.
-The script should be in a storytelling format, ensuring the video does not exceed 1 minute and is composed of exactly {scene_count} scenes.
+You are a storytelling expert in short-form videos.
 
-Here is how you will develop the script:
+Task: Convert an article into a 1-minute script with {scene_count} scenes.
 
-Step 1: Article Analysis:
-Read and understand the key points and messages of the article. Identify the main story elements that need to be conveyed.
+Process:
+1.Article Analysis: Identify key points and main story elements.
+2.Scene Breakdown: Create 6 scenes capturing the story, with cultural diversity in visuals (race, nationality, etc.).
+3.Scene Description: Briefly describe each scene's visuals and actions, including cultural details.
+4.Dialogue Creation: Write concise, effective dialogues for each scene, reflecting cultural nuances where relevant.
+5.Timing and Flow: Ensure smooth transitions between scenes, with a total duration under 1 minute.
 
-Step 2: Scene Breakdown:
-Divide the story into {scene_count} distinct scenes. Each scene should represent a key part of the story. Ensure that each scene reflects cultural diversity by incorporating visual details related to race, nationality, and cultural background as relevant to the story.
+Now, generate a {scene_count} script in JSON format. Each scene should include diverse cultural descriptions, English dialogue, and Korean dialogue, based on the provided article.
+Take a deep breath and lets work this out in a step by step way to be sure we have the right answer.
 
-Step 3: Scene Description:
-Write a brief description for each scene, detailing the visual elements and actions. Include cultural elements, such as characters' racial and national backgrounds, to enhance the scene's authenticity and relatability.
-
-Step 4: Dialogue Creation:
-Create engaging dialogues for each scene that effectively convey the story and message. Ensure the dialogues are concise and impactful. The dialogues should also reflect cultural nuances when applicable.
-
-Step 5: Timing and Flow:
-Ensure the script flows smoothly from one scene to the next and that the total duration does not exceed 1 minute.
-
-Take a deep breath, and let’s work this out step by step to make sure we have the right answer.
-
-"Now, please generate a script with {scene_count} scenes in JSON format. Each scene should include a description that reflects cultural diversity and provide both English and Korean dialogues, based on the article to be provided."
-  
-Here is the article:
+Article:
 {article_content}
 
-Sample answer:
-
-  script: [{{
-    "number": 1,
-    "description(en)": "A young man dreams of becoming an artist in the bustling city.",
-    "dialogue(en)": "At this moment, the key idea is: He is filled with hope, but knows the journey ahead will be challenging."
-    "dialogue(ko)": "지금 이 순간 중요한 것은 그는 희망으로 가득 차 있지만, 앞길이 험난할 것임을 알고 있다는 것이다."
-  }},
-  {{
-    "number": 2,
-    "description(en)": "A young man dreams of becoming an artist in the bustling city.",
-    "dialogue(en)": "At this moment, the key idea is: He is filled with hope, but knows the journey ahead will be challenging."
-    "dialogue(ko)": "지금 이 순간 중요한 것은 그는 희망으로 가득 차 있지만, 앞길이 험난할 것임을 알고 있다는 것이다."
-  }}
-  ]
+Example:
+[
+  {
+    "scene": 1,
+    "description": "A young man dreams of becoming an artist in the bustling city.",
+    "dialogue_en": "He is filled with hope but knows the road ahead will be tough.",
+    "dialogue_ko": "그는 희망으로 가득 차 있지만, 앞길이 험난할 것임을 알고 있다."
+  },
+  {
+    "scene": 2,
+    "description": "The man meets a diverse group of artists who inspire him.",
+    "dialogue_en": "This is the beginning of his artistic journey.",
+    "dialogue_ko": "이것은 그의 예술 여정의 시작이다."
+  }
+]
 """
     try:
         response = client.chat.completions.create(
