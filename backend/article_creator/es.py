@@ -33,7 +33,7 @@ def save_article_into_es(article_id, press_name, title, view_count, source_creat
         "type": 'article',
         "title": title,
         "vector": embedd(title).tolist(),
-        "viewCount": view_count,
+        "viewCount": 0,
         "pressName": press_name,
         "sourceCreatedAt": source_created_at
     }
