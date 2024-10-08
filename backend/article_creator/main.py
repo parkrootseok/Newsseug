@@ -28,7 +28,7 @@ console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.INFO)  # 핸들러 레벨 설정
 
 # 로그 포맷 설정
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter('%(levelname)s: %(asctime)s - %(name)s - %(message)s')
 console_handler.setFormatter(formatter)
 
 # 핸들러를 로거에 추가
