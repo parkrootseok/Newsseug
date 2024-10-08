@@ -17,6 +17,7 @@ from models.article import Article, ConversionStatus, Category
 from crud import insert_article, update_article
 
 from es import save_article_into_es
+from embedd import embedd
 
 import logging
 
@@ -69,8 +70,8 @@ class CreateArticleRequestDto(BaseModel):
     source_created_at: datetime
     press_id: int
     press_name: int
-    
-@app.post("/video")
+
+@app.post("/ai/video")
 async def create_and_register_article(article_request_dto: CreateArticleRequestDto, session = Depends(get_session)):
     
     logger.info(article_request_dto)
@@ -167,3 +168,7 @@ def upload_video_to_s3(id: int, video):
         s3_key,
         {'ContentType': ContentType.MP4.value}
     )
+    
+@app.get("/ai/embedd/")
+async def embedd_keyword(keyword: str):
+    return embedd(keyword).tolist()
