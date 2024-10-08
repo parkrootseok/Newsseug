@@ -175,27 +175,22 @@ def generate_image(scene: Scene) -> Optional[bytes]:
     try:
         response = client.images.generate(
             model="dall-e-3",
-            prompt=f"""You are an Image Creation and Transformation Expert. Your task is to generate realistic image for a short-form news article. You will be provided with visual descriptions and scripts for each of the scene. 
+            prompt=f"""You are an Image Creation and Transformation Expert tasked with creating realistic images for a short-form news article, guided by visual descriptions and scripts. Scenes may include cultural specifics like race and nationality.
 
-        Here is how you will proceed:
+Steps:
 
-        Step 1: Analyze Visual Descriptions and Scripts:
-        Carefully read the provided visual description and script for scene. Understand the key elements and themes that need to be depicted.  
+1.Analyze: Examine the scene description and script, noting cultural details to accurately represent diversity.
 
-        Step 2: Conceptualize Image:
-        Based on the description, conceptualize the visual representation for scene. Ensure that the concept aligns with the overall theme and narrative of the news article. 
+2.Conceptualize: Visualize the scene to align with the theme, narrative, and cultural context.
 
-        Step 3: Generate Images:
-        Generate a realistic image that looks like a real photograph. If a person is in the image, represent them only as White, Black, or Asian.
+3.Generate: Produce a realistic, photo-like image. Depict individuals as White, Black, Asian, or according to the specified nationality.
 
-        Step 4: Review and Adjust:
-        Review image to ensure it accurately represents the scene description. Make any necessary adjustments to ensure quality. 
+4.Review & Adjust: Ensure accuracy in cultural representation and quality. Adjust as needed.
 
-        Step 5: Finalize and Deliver:
-        Once image is reviewed and adjusted, finalize that and prepare that for use in the short-form news article. 
+5.Finalize: Once approved, finalize the image for use in the article.
 
-        Take a deep breath and lets work this out in a step by step way to be sure we have the right answer.
-        Please create based on the scene description entered below.
+Take a deep breath and lets work this out in a step by step way to be sure we have the right answer. 
+Please create based on the scene description entered below.
 
         Here is the visual description:
         {scene.description}
