@@ -12,6 +12,7 @@ import StoreArticleDispatch from 'hooks/useStoreArticleDispatch';
  */
 function ArticleSlideBox({
   articleList,
+  resultList,
   fetchNextPage,
   hasNextPage,
   isFetchingNextPage,
@@ -53,7 +54,7 @@ function ArticleSlideBox({
 
   return (
     <ArticleSlideBoxStyle ref={slideBoxRef} onClick={() => articleDispatch()}>
-      {articleList.map((article) => (
+      {articleList?.map((article) => (
         <ArticleListCard key={article.id} {...article} />
       ))}
       <LoadingContainer ref={observerRef}>
