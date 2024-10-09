@@ -32,6 +32,7 @@ export interface GenderSelectBoxProps {
 }
 
 export interface ProfileImageProps {
+  profileImage: File | null;
   profileImageUrl: string | null;
   selectImage: (e: React.ChangeEvent<HTMLInputElement>) => void;
   saveImage: (newImageFile: File) => void;
@@ -39,9 +40,10 @@ export interface ProfileImageProps {
 }
 
 export interface ProfileImageModalProps {
+  profileImage: File;
   profileImageUrl: string;
   onClose: () => void;
-  onSave: (newImageUrl: string) => void;
+  onSave: (newImageFile: File) => void;
   onRemove: () => void;
 }
 

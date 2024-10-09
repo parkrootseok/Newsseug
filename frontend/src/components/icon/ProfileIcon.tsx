@@ -3,9 +3,10 @@ import { ProfileImageProps } from 'types/props/register';
 import ProfileIconDefault from 'components/icon/ProfileIconDefault';
 import ProfileIconImage from 'components/icon/ProfileIconImage';
 import ProfileIconSelect from 'components/icon/ProfileIconSelect';
-import ProfileImageModal from 'components/register/ProfileImageModal';
+import ProfileImageCropper from 'components/register/ProfileImageCropper';
 
 function ProfileIcon({
+  profileImage,
   profileImageUrl,
   selectImage,
   saveImage,
@@ -19,10 +20,6 @@ function ProfileIcon({
 
   const handleImageAdjustClick = () => {
     setIsModalOpen(true);
-  };
-
-  const handleSaveImage = () => {
-    setIsModalOpen(false);
   };
   const handleRemoveImage = () => {
     removeImage();
@@ -51,14 +48,15 @@ function ProfileIcon({
         {profileImageUrl && <ProfileIconImage imgUrl={profileImageUrl} />}
         <ProfileIconSelect onClick={handleSelectImageClick} />
       </svg>
-      {/* {isModalOpen && profileImageUrl && (
-        <ProfileImageModal
+      {isModalOpen && profileImageUrl && profileImage && (
+        <ProfileImageCropper
+          profileImage={profileImage}
           profileImageUrl={profileImageUrl}
           onClose={() => setIsModalOpen(false)}
-          onSave={handleSaveImage}
+          onSave={saveImage}
           onRemove={handleRemoveImage}
         />
-      )} */}
+      )}
       <input
         type="file"
         accept="image/*"

@@ -55,6 +55,7 @@ function UserInput() {
         <InputSectionStyle>
           <ProfileWrapper>
             <ProfileIcon
+              profileImage={profileImage}
               profileImageUrl={profileImageUrl}
               selectImage={handleSelectImage}
               saveImage={handleSaveImage}
