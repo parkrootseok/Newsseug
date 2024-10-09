@@ -18,7 +18,13 @@ async function enableMocking() {
   return worker.start();
 }
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false, // 포커스가 돌아올 때 자동으로 refetch하지 않음
+    },
+  },
+});
 
 const ThemeWrapper = ({ children }: { children: React.ReactNode }) => {
   const isDarkMode = useSelector(

@@ -7,6 +7,7 @@ import { ArticleListCardProps } from 'types/common/common';
 import useStoreArticleDispatch from 'hooks/useStoreArticleDispatch';
 import ErrorSection from '../common/ErrorSection';
 import Spinner from '../common/Spinner';
+import { useDispatch } from 'react-redux';
 
 function Histories() {
   const width = '120px';
@@ -19,10 +20,13 @@ function Histories() {
   } = useQuery<PageType>(['myPageHistory'], () =>
     getMemberHistoryList({ page: 1 }),
   );
-
   const articles = myPageHistory?.content || [];
   const sliceDetails = myPageHistory?.sliceDetails || {};
-  useStoreArticleDispatch(articles, sliceDetails, 'history');
+
+  const dispatch = useDispatch();
+  const articleDispatch = () => {
+    StoreArticleDispatch(dispatch, articles, sliceDetails, 'history');
+  };
 
   if (isLoading) {
     return <Spinner height={height} />;
@@ -38,8 +42,13 @@ function Histories() {
   }
 
   return (
+<<<<<<< frontend/src/components/mypage/Histories.tsx
     <Wrapper>
       {myPageHistory?.content ? (
+=======
+    <Wrapper onClick={() => articleDispatch()}>
+      {myPageHistory &&
+>>>>>>> frontend/src/components/mypage/Histories.tsx
         Array.isArray(myPageHistory?.content) &&
         myPageHistory.content.map((history: ArticleListCardProps) => {
           return (
