@@ -1,4 +1,4 @@
-import { Category, SliceDetails } from 'types/api/article';
+import { SliceDetails } from 'types/api/article';
 import { EsContentInfo } from '../api/search';
 
 export interface ArticleListCardProps {
@@ -27,4 +27,9 @@ export interface ArticleListCardGroupProps {
   isFetchingNextPage?: boolean;
   sectionType?: string;
   sliceDetails?: SliceDetails | {};
+}
+
+export interface ErrorProps {
+  height: string;
+  text: string;
 }
