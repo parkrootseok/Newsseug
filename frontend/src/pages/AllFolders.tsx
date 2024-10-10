@@ -8,24 +8,31 @@ import { useInfiniteQuery } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import { MemberFolderInfo } from 'types/api/folder';
 import { getMemberFolderList } from 'apis/memberApi';
+import ErrorSection from 'components/common/ErrorSection';
+import Spinner from 'components/common/Spinner';
 
 function AllFolders() {
   const navigate = useNavigate();
-
-  // useInfiniteQuery로 데이터 가져오기
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useInfiniteQuery(
-      'folders',
-      ({ pageParam = 0 }) => getMemberFolderList(pageParam), // axios 함수 호출
-      {
-        getNextPageParam: (lastPage) => {
-          if (lastPage.sliceDetails.hasNext) {
-            return lastPage.sliceDetails.currentPage + 1;
-          }
-          return undefined; // 다음 페이지가 없으면 undefined 반환
-        },
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isError,
+    isLoading,
+    refetch,
+  } = useInfiniteQuery(
+    'folders',
+    ({ pageParam = 0 }) => getMemberFolderList(pageParam),
+    {
+      getNextPageParam: (lastPage) => {
+        if (lastPage.sliceDetails.hasNext) {
+          return lastPage.sliceDetails.currentPage + 1;
+        }
+        return undefined;
       },
-    );
+    },
+  );
 
   const handleClick = (folderId: number) => {
     navigate(`${folderId}`);
@@ -37,7 +44,6 @@ function AllFolders() {
     setIsCreateOpen(true);
   };
 
-  // 스크롤 이벤트 감지
   useEffect(() => {
     const handleScroll = () => {
       const { scrollHeight, scrollTop, clientHeight } =
@@ -58,17 +64,28 @@ function AllFolders() {
   return (
     <SubLayout>
       <Header>
-        <Title>기사.zip</Title>
+        <Title>내 폴더</Title>
         <CreateScrap onClick={handleCreateFolderClick}>
           <img src={scrapPlusIcon} alt="새 폴더 생성" />
           <span>새 폴더</span>
         </CreateScrap>
       </Header>
+      {isError && (
+        <ErrorSection
+          text="내 폴더 목록을 불러오는 데 실패했어요...😥"
+          height="300px"
+        />
+      )}
+      {isLoading && <Spinner height="300px" />}
+
       <ScrapContainer>
         {isCreateOpen && (
           <CreateScrapModal
             isOpen={isCreateOpen}
-            onRequestClose={() => setIsCreateOpen(false)}
+            onRequestClose={() => {
+              setIsCreateOpen(false);
+              refetch(); // 모달 닫을 때 폴더 목록을 다시 불러옴
+            }}
           />
         )}
         {data?.pages.map((page) =>
@@ -83,7 +100,7 @@ function AllFolders() {
             />
           )),
         )}
-        {isFetchingNextPage && <div>불러오는 중...</div>}
+        {isFetchingNextPage && <Spinner height="50px" />}
       </ScrapContainer>
     </SubLayout>
   );
@@ -93,6 +110,7 @@ export default AllFolders;
 
 const CreateScrap = styled.button`
   border: none;
+  cursor: pointer;
   outline: none;
   background: none;
   color: ${({ theme }) => theme.textColor};
@@ -122,6 +140,7 @@ const Title = styled.h1`
 
 const Header = styled.div`
   width: 100vw;
+  max-width: 500px;
   display: flex;
   align-items: center;
   position: relative;

@@ -1,43 +1,32 @@
-import { RootState } from '../../redux/index';
-import {
-  addPress,
-  fetchSubscribedPress,
-  removePress,
-  updateSubscribedPress,
-} from '../../redux/subscribeSlice';
-import {
-  getSubscribedPressList,
-  subscribePress,
-  unsubscribePress,
-} from 'apis/subscribe';
+import { getCookie } from 'utils/stateUtils';
+import { subscribePress, unsubscribePress } from 'apis/subscribe';
 import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { ArticleVideo } from 'types/api/articleVideo';
+import { ArticleDetailInfoProp } from 'types/props/articleVideo';
 
-function ArticleDetailInfo({ articleInfo }: { articleInfo: ArticleVideo }) {
+function ArticleDetailInfo({
+  articleInfo,
+  handleButtonClickWithoutLogin,
+}: Readonly<ArticleDetailInfoProp>) {
   const [isSubscribed, setIsSubscribed] = useState<boolean>(
     articleInfo.press.isSubscribed,
   );
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
-  const { subscribedPress } = useSelector(
-    (state: RootState) => state.subscribedPress,
-  );
-
+  const isAuthenticated = () => {
+    const token = getCookie('AccessToken');
+    return !!token; // 토큰이 있으면 true, 없으면 false
+  };
   const handleClick = async () => {
-    if (subscribedPress.length === 0) {
-      const fetchedPressList = await getSubscribedPressList();
-      dispatch(updateSubscribedPress(fetchedPressList));
+    if (!isAuthenticated()) {
+      handleButtonClickWithoutLogin();
+      return;
     }
     if (isSubscribed) {
       unsubscribePress(articleInfo.press.id);
-      dispatch(removePress(articleInfo.press.id));
     } else {
       subscribePress(articleInfo.press.id);
-      dispatch(addPress(articleInfo.press));
     }
     setIsSubscribed((prev) => !prev);
   };
@@ -82,7 +71,7 @@ function ArticleDetailInfo({ articleInfo }: { articleInfo: ArticleVideo }) {
       </ArticleCommonInfo>
       <PressContainer>
         <PressInfo onClick={handlePressClick}>
-          <PressIcon />
+          <PressIcon src={articleInfo.press.imageUrl} />
           <PressName>{articleInfo.press.name}</PressName>
         </PressInfo>
         <PressSubscribe $isSubscribed={isSubscribed} onClick={handleClick}>
@@ -175,9 +164,10 @@ const PressInfo = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
+  cursor: pointer;
 `;
 
-const PressIcon = styled.div`
+const PressIcon = styled.img`
   width: 36px;
   height: 36px;
   background-color: #797979;
@@ -202,4 +192,5 @@ const PressSubscribe = styled.button<{ $isSubscribed: boolean }>`
   border-radius: 999px;
   transition: 0.2s;
   padding: 6px 12px;
+  cursor: pointer;
 `;

@@ -9,10 +9,14 @@ public interface ArticleService {
 
     GetArticleDetailsResponse getArticleDetail(CustomUserDetails userDetails, Long articleId);
 
+    SlicedResponse<List<GetArticleResponse>>  getRandomArticle(CustomUserDetails userDetails);
+
     SlicedResponse<List<GetArticleResponse>> getTodayArticleListByCategory(String category, int pageNumber);
 
     SlicedResponse<List<GetArticleResponse>> getArticleListByCategory(String category, int pageNumber);
 
     SlicedResponse<List<GetArticleResponse>> getArticlesByPress(CustomUserDetails userDetails, Long pressId, int pageNumber, String category);
+
+    SlicedResponse<List<GetArticleResponse>> getArticlesByBirthYear(CustomUserDetails userDetails, int pageNumber);
 
 }

@@ -9,39 +9,93 @@ import ReportModal from './ReportModal';
 import { useEffect, useRef, useState } from 'react';
 import { ArticleVideoProp } from 'types/props/articleVideo';
 import { AnimatePresence } from 'framer-motion';
+import LoginModal from '../login/LoginModal';
+import { getCookie, setCookie } from 'utils/stateUtils';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 function ArticleVideo({
   articleInfo,
   setIsModalOpen,
+  isPlaying,
 }: Readonly<ArticleVideoProp>) {
+  const navigate = useNavigate();
+  const location = useLocation();
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(true);
   const [progress, setProgress] = useState(0);
+  const [isNowPlaying, setIsNowPlaying] = useState(isPlaying);
 
   const [isScrapModalOpen, setIsScrapModalOpen] = useState<boolean>(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState<boolean>(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    setIsModalOpen(isScrapModalOpen || isCreateModalOpen || isReportModalOpen);
-  }, [setIsModalOpen, isCreateModalOpen, isScrapModalOpen, isReportModalOpen]);
+    setIsModalOpen(
+      isScrapModalOpen ||
+        isCreateModalOpen ||
+        isReportModalOpen ||
+        isLoginModalOpen,
+    );
+  }, [
+    setIsModalOpen,
+    isCreateModalOpen,
+    isScrapModalOpen,
+    isReportModalOpen,
+    isLoginModalOpen,
+  ]);
+
+  const isAuthenticated = () => {
+    const token = getCookie('AccessToken');
+    return !!token; // 토큰이 있으면 true, 없으면 false
+  };
 
   const handleScrapClick = () => {
+    if (!isAuthenticated()) {
+      handleButtonClickWithoutLogin();
+      return;
+    }
     setIsScrapModalOpen((prev) => !prev);
   };
 
   const handleReportClick = () => {
+    if (!isAuthenticated()) {
+      handleButtonClickWithoutLogin();
+      return;
+    }
     setIsReportModalOpen((prev) => !prev);
   };
 
-  const togglePlay = () => {
+  const handleButtonClickWithoutLogin = () => {
+    setIsLoginModalOpen((prev) => !prev);
+  };
+
+  useEffect(() => {
     if (videoRef.current) {
       if (isPlaying) {
-        videoRef.current.pause();
+        setIsNowPlaying(true);
       } else {
-        videoRef.current.play();
+        setIsNowPlaying(false);
       }
-      setIsPlaying(!isPlaying);
+    }
+  }, [isPlaying]);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      if (isNowPlaying) {
+        videoRef.current.play().catch((error) => {});
+      } else {
+        videoRef.current.pause();
+      }
+    }
+  }, [isNowPlaying]);
+
+  const togglePlay = () => {
+    if (videoRef.current) {
+      if (isNowPlaying) {
+        setIsNowPlaying(false);
+      } else {
+        setIsNowPlaying(true);
+      }
     }
   };
 
@@ -61,12 +115,18 @@ function ArticleVideo({
       setProgress(parseFloat(event.target.value));
     }
   };
+
+  const handleLogin = () => {
+    setIsLoginModalOpen(false);
+    setCookie('redirect', location.pathname, { maxAge: 60 });
+    navigate('/login');
+  };
+
   return (
-    <Container>
+    <Container className="container">
       <VideoWrapper>
         <ShortForm
-          muted
-          autoPlay
+          className="shortform"
           playsInline
           loop
           src={articleInfo.article.videoUrl}
@@ -74,7 +134,7 @@ function ArticleVideo({
           onClick={togglePlay}
           onTimeUpdate={updateProgress}
         />
-        {!isPlaying && (
+        {!isNowPlaying && (
           <PlayButton onClick={togglePlay}>
             <img src={playIcon} alt="play icon" />
           </PlayButton>
@@ -85,6 +145,7 @@ function ArticleVideo({
           hateInfo={articleInfo.hateInfo}
           handleScrapClick={handleScrapClick}
           handleReportClick={handleReportClick}
+          handleButtonClickWithoutLogin={handleButtonClickWithoutLogin}
         />
         <AnimatePresence>
           {isScrapModalOpen && (
@@ -112,17 +173,25 @@ function ArticleVideo({
           <ReportModal
             articleId={articleInfo.article.id}
             isOpen={isReportModalOpen}
-            onRequestClose={() => {
-              setIsReportModalOpen(false);
-            }}
+            onRequestClose={() => setIsReportModalOpen(false)}
+          />
+        )}
+        {isLoginModalOpen && (
+          <LoginModal
+            isVideo={true}
+            onCancel={handleButtonClickWithoutLogin}
+            onLogin={handleLogin}
           />
         )}
       </VideoWrapper>
       <ArticleContainer>
-        <ArticleDetailInfo articleInfo={articleInfo} />
+        <ArticleDetailInfo
+          articleInfo={articleInfo}
+          handleButtonClickWithoutLogin={handleButtonClickWithoutLogin}
+        />
         <ProgressBar
           progress={progress}
-          isPlaying={isPlaying}
+          isPlaying={isNowPlaying}
           onSeek={handleSeek}
         />
       </ArticleContainer>
@@ -133,16 +202,30 @@ function ArticleVideo({
 export default ArticleVideo;
 
 const Container = styled.div`
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   max-width: 500px;
   z-index: 1;
   position: relative;
-  background-color: #202020;
+  background-color: #000;
+  display: flex;
+  align-items: center;
 `;
 
+// const ShortForm = styled.video`
+//   width: auto;
+//   height: 100vh;
+//   object-fit: cover;
+//   /* overflow: hidden; 여분의 영역 숨기기 */
+// `;
+
 const ShortForm = styled.video`
+  position: absolute;
+  top: 50%;
+  left: 50%;
   width: 100%;
+  height: 100vh;
+  transform: translate(-50%, -50%);
   object-fit: cover;
 `;
 

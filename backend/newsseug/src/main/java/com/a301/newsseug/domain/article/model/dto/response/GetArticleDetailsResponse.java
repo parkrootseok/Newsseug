@@ -4,7 +4,7 @@ import com.a301.newsseug.domain.article.model.dto.ArticleDto;
 import com.a301.newsseug.domain.article.model.entity.Article;
 import com.a301.newsseug.domain.interaction.model.dto.SimpleHateDto;
 import com.a301.newsseug.domain.interaction.model.dto.SimpleLikeDto;
-import com.a301.newsseug.domain.press.model.dto.SimplePressDto;
+import com.a301.newsseug.domain.press.model.dto.response.GetPressResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -17,10 +17,7 @@ public record GetArticleDetailsResponse(
         ArticleDto article,
 
         @Schema(description = "언론사 정보", examples = {"Object"})
-        SimplePressDto press,
-
-        @Schema(description = "구독 유무", examples = {"TRUE"})
-        Boolean isSubscribed,
+        GetPressResponse press,
 
         @Schema(description = "좋아요 유무와 개수", examples = {"Object"})
         SimpleLikeDto likeInfo,
@@ -36,8 +33,7 @@ public record GetArticleDetailsResponse(
 
         return GetArticleDetailsResponse.builder()
                 .article(ArticleDto.of(article, currentViewCount))
-                .press(SimplePressDto.of(article.getPress()))
-                .isSubscribed(isSubscribed)
+                .press(GetPressResponse.of(article.getPress(), isSubscribed))
                 .likeInfo(likeInfo)
                 .hateInfo(hateInfo)
                 .build();

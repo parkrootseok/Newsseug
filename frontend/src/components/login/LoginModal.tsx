@@ -1,21 +1,35 @@
+import { darkenColor } from 'utils/darkenColor';
 import { Helmet } from 'react-helmet-async';
 import styled, { useTheme } from 'styled-components';
 import { LoginModalProps } from 'types/props/login';
+import { motion } from 'framer-motion';
 
-function LoginModal({ onCancel, onLogin }: Readonly<LoginModalProps>) {
+function LoginModal({
+  isVideo = false,
+  onCancel,
+  onLogin,
+}: Readonly<LoginModalProps>) {
   const theme = useTheme();
   return (
     <>
       <Helmet>
-        <meta name="theme-color" content={theme.relaxColor.light} />
+        <meta
+          name="theme-color"
+          content={isVideo ? '#000' : darkenColor(theme.bgColor, -50)}
+        />
       </Helmet>
       <ModalOverlay onClick={onCancel}>
-        <ModalContainer onClick={(e) => e.stopPropagation()}>
+        <ModalContainer
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.9 }}
+          transition={{ type: 'spring', stiffness: 100 }}
+          onClick={(e) => e.stopPropagation()}
+        >
           <Content>
             <Message>로그인이 필요한 서비스 입니다</Message>
             <Message>로그인을 하시겠습니까?</Message>
           </Content>
-
           <ButtonGroup>
             <CancelButton onClick={onCancel}>돌아가기</CancelButton>
             <ConfirmButton onClick={onLogin}>로그인</ConfirmButton>
@@ -29,19 +43,26 @@ function LoginModal({ onCancel, onLogin }: Readonly<LoginModalProps>) {
 export default LoginModal;
 
 const ModalOverlay = styled.div`
-  background-color: ${({ theme }) => theme.relaxColor.light};
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  height: 100vh;
+  max-width: 500px;
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100vw;
-  max-width: 500px;
-  height: 100vh;
+  z-index: 1001;
+  box-shadow: 0 0 100px ${({ theme }) => theme.textColor + '25'};
 `;
 
-const ModalContainer = styled.div`
+const ModalContainer = styled(motion.div)`
   display: flex;
   flex-direction: column;
   width: 80%;
+  max-width: 500px;
   background: ${({ theme }) => theme.bgColor};
   padding: 20px;
   border-radius: 8px;
@@ -92,6 +113,7 @@ const CancelButton = styled.button`
   border-radius: 4px;
   flex: 1 0 0;
   color: ${({ theme }) => theme.textColor};
+  cursor: pointer;
 `;
 
 const ConfirmButton = styled.button`
@@ -104,4 +126,5 @@ const ConfirmButton = styled.button`
   align-items: center;
   border-radius: 4px;
   flex: 1 0 0;
+  cursor: pointer;
 `;

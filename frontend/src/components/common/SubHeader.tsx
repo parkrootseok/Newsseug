@@ -77,7 +77,7 @@ export default SubHeader;
 
 const Wrapper = styled.div<{ $headerColor?: string }>`
   z-index: 1000;
-  padding: 12px 16px 16px 16px;
+  padding: 12px 16px;
   position: fixed;
   box-sizing: border-box;
   display: flex;
@@ -101,6 +101,7 @@ const BackBtn = styled.button`
   align-items: center;
   justify-content: center;
   z-index: 10000;
+  cursor: pointer;
   &:focus {
     transition: 0.2s;
     background-color: ${({ theme }) => theme.relaxColor.light + 70};

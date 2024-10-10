@@ -3,20 +3,26 @@ package com.a301.newsseug.domain.article.service;
 import com.a301.newsseug.domain.article.model.dto.response.GetArticleResponse;
 import com.a301.newsseug.domain.article.model.dto.response.*;
 import com.a301.newsseug.domain.article.model.entity.Article;
+import com.a301.newsseug.domain.article.model.entity.type.ConversionStatus;
 import com.a301.newsseug.domain.article.repository.ArticleRepository;
 import com.a301.newsseug.domain.auth.model.entity.CustomUserDetails;
 import com.a301.newsseug.domain.interaction.model.dto.SimpleHateDto;
 import com.a301.newsseug.domain.interaction.model.dto.SimpleLikeDto;
+import com.a301.newsseug.domain.interaction.model.entity.History;
 import com.a301.newsseug.domain.interaction.repository.HateRepository;
 import com.a301.newsseug.domain.interaction.repository.LikeRepository;
+import com.a301.newsseug.domain.interaction.service.HistoryService;
 import com.a301.newsseug.domain.member.model.entity.Member;
 import com.a301.newsseug.domain.member.repository.SubscribeRepository;
+import com.a301.newsseug.domain.member.service.SubscribeService;
 import com.a301.newsseug.domain.press.repository.PressRepository;
-import com.a301.newsseug.external.redis.config.RedisProperties;
 import com.a301.newsseug.global.enums.SortingCriteria;
 import com.a301.newsseug.global.model.dto.SlicedResponse;
+import com.a301.newsseug.global.model.entity.ActivationStatus;
 import com.a301.newsseug.global.model.entity.SliceDetails;
 import com.a301.newsseug.global.util.ClockUtil;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -31,32 +37,35 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ArticleServiceImpl implements ArticleService {
 
+    private final RedisCounterService redisCounterService;
+    private final BirthYearCountService birthYearCountService;
+    private final HistoryService historyService;
+    private final SubscribeService subscribeService;
+
     private final ArticleRepository articleRepository;
     private final PressRepository pressRepository;
     private final LikeRepository likeRepository;
     private final HateRepository hateRepository;
     private final SubscribeRepository subscribeRepository;
-    private final RedisCounterService redisCounterService;
-    private final RedisProperties redisProperties;
 
     @Override
     public GetArticleDetailsResponse getArticleDetail(CustomUserDetails userDetails, Long articleId) {
 
         Article article = articleRepository.getOrThrow(articleId);
         Long incrementedViewCount = redisCounterService.increment("article:viewCount:", articleId, 1L);
-
-        // 현재 조회수가 임계치에 도달했을 경우 DB에 업데이트 후 Redis에서 초기화
-        if (incrementedViewCount >= redisProperties.viewCounter().threshold()) {
-            articleRepository.updateCount("viewCount", articleId, incrementedViewCount);
-            redisCounterService.deleteByKey("article:viewCount:", articleId);
-        }
         Long likeCount = redisCounterService.findByKey("article:likeCount:", articleId).orElse(0L);
         Long hateCount = redisCounterService.findByKey("article:hateCount:", articleId).orElse(0L);
 
         if (Objects.nonNull(userDetails)) {
-            return GetArticleDetailsResponse.of(article,
+
+            Member member = userDetails.getMember();
+            historyService.createHistory(member, article);
+            birthYearCountService.incrementBirthYearCount(member, article);
+
+            return GetArticleDetailsResponse.of(
+                    article,
                     article.getViewCount() + incrementedViewCount,
-                    subscribeRepository.existsByMemberAndPress(userDetails.getMember(), article.getPress()),
+                    subscribeService.isSubscribed(member, article.getPress()),
                     SimpleLikeDto.of(
                             likeRepository.existsByMemberAndArticle(userDetails.getMember(), article),
                             article.getLikeCount() + likeCount
@@ -66,6 +75,7 @@ public class ArticleServiceImpl implements ArticleService {
                             article.getHateCount() + hateCount
                     )
             );
+
         }
 
         return GetArticleDetailsResponse.of(
@@ -76,6 +86,26 @@ public class ArticleServiceImpl implements ArticleService {
                 SimpleHateDto.of(false, article.getHateCount() + hateCount)
         );
 
+    }
+
+    @Override
+    public SlicedResponse<List<GetArticleResponse>> getRandomArticle(CustomUserDetails userDetails) {
+
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Member loginMember = userDetails.getMember();
+        History lastestHistory = historyService.getLatestHistoryByMember(loginMember);
+        Slice<Article> sliced = articleRepository.findAllByCategoryRandom(
+                lastestHistory.getArticle().getCategory(),
+                ActivationStatus.ACTIVE,
+                ConversionStatus.SUCCESS,
+                pageable
+        );
+
+        return SlicedResponse.of(
+                SliceDetails.of(sliced.getNumber(), sliced.isFirst(), sliced.hasNext()),
+                GetArticleResponse.of(sliced.getContent())
+        );
     }
 
     @Override
@@ -120,7 +150,6 @@ public class ArticleServiceImpl implements ArticleService {
             CustomUserDetails userDetails, Long pressId, int pageNumber, String category
     ) {
 
-        Member loginMember = userDetails.getMember();
         Pageable pageable = PageRequest.of(
                 pageNumber,
                 20,
@@ -134,9 +163,37 @@ public class ArticleServiceImpl implements ArticleService {
             );
         } else {
             sliced = articleRepository.findByPress(
-                    subscribeRepository.findPressByMember(loginMember), category, pageable
+                    subscribeRepository.findPressByMember(userDetails.getMember()), category, pageable
             );
         }
+
+        return SlicedResponse.of(
+                SliceDetails.of(sliced.getNumber(), sliced.isFirst(), sliced.hasNext()),
+                GetArticleResponse.of(sliced.getContent())
+        );
+
+    }
+
+    @Override
+    public SlicedResponse<List<GetArticleResponse>> getArticlesByBirthYear(CustomUserDetails userDetails, int pageNumber) {
+
+        Pageable pageable = PageRequest.of(
+                pageNumber,
+                10
+        );
+
+        int age = 0;
+
+        if (Objects.isNull(userDetails)) {
+            age = 20;
+        } else {
+            age = LocalDate.now().getYear() - userDetails.getMember().getBirth().getYear();
+        }
+
+        int ageBegin = (int) Math.floor((double) age / 10) * 10;
+        int ageEnd = (int) Math.ceil((double) age / 10) * 10 - 1;
+
+        Slice<Article> sliced = articleRepository.findAllByBirthYearOrderByViewCount(ageBegin, ageEnd, pageable);
 
         return SlicedResponse.of(
                 SliceDetails.of(sliced.getNumber(), sliced.isFirst(), sliced.hasNext()),

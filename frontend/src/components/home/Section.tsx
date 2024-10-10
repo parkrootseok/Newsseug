@@ -29,11 +29,11 @@ function Section({
       {isError && (
         <ErrorSection
           height="250px"
-          text={`${subTitle}를 불러오는 데 실패했어요.😥`}
+          text={`${subTitle}를 불러오는 데 실패했어요...😥`}
         />
       )}
       {isLoading && <Spinner height="250px" />}
-      {articleList.length > 0 ? (
+      {!isError && !isLoading && articleList.length > 0 ? (
         <ArticleSlideBox
           articleList={articleList}
           fetchNextPage={fetchNextPage}
@@ -42,9 +42,9 @@ function Section({
           sectionType={sectionType}
           sliceDetails={sliceDetails}
         />
-      ) : (
-        <ErrorSection height="250px" text={`❌ ${subTitle}가 없습니다.`} />
-      )}
+      ) : !isError && !isLoading && articleList.length === 0 ? (
+        <ErrorSection height="250px" text={`${subTitle}가 없습니다.`} />
+      ) : null}
     </SectionStyle>
   );
 }

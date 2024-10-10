@@ -3,6 +3,9 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { formatNumber } from 'utils/formatNumber';
 import { subscribePress, unsubscribePress } from 'apis/subscribe';
+import { getCookie, setCookie } from 'utils/stateUtils';
+import { useLocation, useNavigate } from 'react-router-dom';
+import LoginModal from 'components/login/LoginModal';
 
 function PressProfile({
   id,
@@ -12,13 +15,37 @@ function PressProfile({
   isSubscribed,
 }: Readonly<PressInfoProps>) {
   const [isSub, setIsSub] = useState<boolean>(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     setIsSub(isSubscribed);
+    console.log(isSubscribed);
   }, []);
+
+  const isAuthenticated = () => {
+    const token = getCookie('AccessToken');
+    return !!token; // 토큰이 있으면 true, 없으면 false
+  };
+
+  const handleLogin = () => {
+    setIsLoginModalOpen(false);
+    setCookie('redirect', location.pathname, { maxAge: 60 });
+    navigate('/login');
+  };
+
+  const handleButtonClickWithoutLogin = () => {
+    setIsLoginModalOpen((prev) => !prev);
+  };
 
   const handleSubscribe = async () => {
     try {
+      if (!isAuthenticated()) {
+        handleButtonClickWithoutLogin();
+        return;
+      }
+
       if (isSub) {
         await unsubscribePress(id);
         setIsSub(false);
@@ -32,13 +59,19 @@ function PressProfile({
   };
   return (
     <Wrapper>
+      {isLoginModalOpen && (
+        <LoginModal
+          onCancel={handleButtonClickWithoutLogin}
+          onLogin={handleLogin}
+        />
+      )}
       <Logo src={imageUrl} />
       <TextArea>
         <InfoArea>
           <PressName>{name}</PressName>
           <PressSubCnt>구독자 {formatNumber(subscribeCount)}명</PressSubCnt>
         </InfoArea>
-        <SubscribeBtn onClick={handleSubscribe} isSubscribed={isSub}>
+        <SubscribeBtn onClick={handleSubscribe} $isSubscribed={isSub}>
           {isSub ? '구독 중' : '구독하기'}
         </SubscribeBtn>
       </TextArea>
@@ -78,7 +111,7 @@ const InfoArea = styled.div`
   align-items: flex-start;
   gap: 4px;
 `;
-const SubscribeBtn = styled.button<{ isSubscribed: boolean }>`
+const SubscribeBtn = styled.button<{ $isSubscribed: boolean }>`
   display: flex;
   padding: 6px 12px;
   justify-content: center;
@@ -86,11 +119,12 @@ const SubscribeBtn = styled.button<{ isSubscribed: boolean }>`
   gap: 8px;
   border-radius: 999px;
   border: 1px solid ${({ theme }) => theme.mainColor};
-  color: ${({ theme, isSubscribed }) =>
-    isSubscribed ? theme.mainColor : theme.bgColor};
-  background: ${({ theme, isSubscribed }) =>
-    isSubscribed ? theme.bgColor : theme.mainColor};
+  color: ${({ theme, $isSubscribed }) =>
+    $isSubscribed ? theme.mainColor : theme.bgColor};
+  background: ${({ theme, $isSubscribed }) =>
+    $isSubscribed ? theme.bgColor : theme.mainColor};
   transition: 0.15s;
+  cursor: pointer;
 `;
 
 const PressName = styled.h1`

@@ -16,9 +16,7 @@ import com.a301.newsseug.domain.auth.model.entity.CustomUserDetails;
 import com.a301.newsseug.domain.member.factory.entity.MemberFactory;
 import com.a301.newsseug.domain.member.model.entity.Member;
 import com.a301.newsseug.domain.press.factory.PressFactory;
-import com.a301.newsseug.domain.press.model.dto.SimplePressDto;
 import com.a301.newsseug.domain.press.model.dto.response.GetPressResponse;
-import com.a301.newsseug.domain.press.model.dto.response.ListSimplePressResponse;
 import com.a301.newsseug.domain.press.model.entity.Press;
 import com.a301.newsseug.domain.press.service.PressService;
 
@@ -38,7 +36,7 @@ class PressControllerTest {
 	PressService pressService;
 
 	@Test
-	void getSimplePressSubscribed() throws Exception {
+	void getPressSubscribed() throws Exception {
 
 		// Given
 		Member member = MemberFactory.memberOfKakao(0L);
@@ -47,28 +45,53 @@ class PressControllerTest {
 		Press press1 = PressFactory.press(0L);
 		Press press2 = PressFactory.press(1L);
 
-		List<SimplePressDto> simplePressDtoList = Stream.of(press1, press2).map(p -> SimplePressDto.of(p, true)).toList();
-		ListSimplePressResponse responseBody = ListSimplePressResponse.of(simplePressDtoList);
-
-		given(pressService.getSimplePress(customUserDetails)).willReturn(responseBody);
+		List<GetPressResponse> getPressResponseList = Stream.of(press1, press2).map(p -> GetPressResponse.of(p, true)).toList();
+		given(pressService.getPress(customUserDetails)).willReturn(getPressResponseList);
 
 		// When&Then
 		mockMvc.perform(get("/api/v1/press")
 			.with(SecurityMockMvcRequestPostProcessors.user(customUserDetails))
 		).andExpect(status().isOk())
-			.andExpect(jsonPath("$.data.press[0].id").value(0L))
-			.andExpect(jsonPath("$.data.press[0].name").value("name"))
-			.andExpect(jsonPath("$.data.press[0].imageUrl").value("imageUrl"))
-			.andExpect(jsonPath("$.data.press[0].isSubscribed").value(true))
+			.andExpect(jsonPath("$.data[0].id").value(0L))
+			.andExpect(jsonPath("$.data[0].name").value("name"))
+			.andExpect(jsonPath("$.data[0].imageUrl").value("imageUrl"))
+			.andExpect(jsonPath("$.data[0].isSubscribed").value(true))
 
-			.andExpect(jsonPath("$.data.press[1].id").value(1L))
-			.andExpect(jsonPath("$.data.press[1].name").value("name"))
-			.andExpect(jsonPath("$.data.press[1].imageUrl").value("imageUrl"))
-			.andExpect(jsonPath("$.data.press[1].isSubscribed").value(true));
+			.andExpect(jsonPath("$.data[1].id").value(1L))
+			.andExpect(jsonPath("$.data[1].name").value("name"))
+			.andExpect(jsonPath("$.data[1].imageUrl").value("imageUrl"))
+			.andExpect(jsonPath("$.data[1].isSubscribed").value(true));
 	}
 
 	@Test
-	void getSimplePressNotSubscribed() throws Exception {
+	void getPressNotSubscribed() throws Exception {
+
+		// Given
+		Member member = MemberFactory.memberOfKakao(0L);
+		CustomUserDetails customUserDetails = CustomUserDetails.of(member);
+
+		Press press1 = PressFactory.press(0L);
+		Press press2 = PressFactory.press(1L);
+		List<GetPressResponse> getPressResponseList = Stream.of(press1, press2).map(p -> GetPressResponse.of(p, false)).toList();
+		given(pressService.getPress(customUserDetails)).willReturn(getPressResponseList);
+
+		// When&Then
+		mockMvc.perform(get("/api/v1/press")
+				.with(SecurityMockMvcRequestPostProcessors.user(customUserDetails))
+			).andExpect(status().isOk())
+			.andExpect(jsonPath("$.data[0].id").value(0L))
+			.andExpect(jsonPath("$.data[0].name").value("name"))
+			.andExpect(jsonPath("$.data[0].imageUrl").value("imageUrl"))
+			.andExpect(jsonPath("$.data[0].isSubscribed").value(false))
+
+			.andExpect(jsonPath("$.data[1].id").value(1L))
+			.andExpect(jsonPath("$.data[1].name").value("name"))
+			.andExpect(jsonPath("$.data[1].imageUrl").value("imageUrl"))
+			.andExpect(jsonPath("$.data[1].isSubscribed").value(false));
+	}
+
+	@Test
+	void getPressComplexSubscribed() throws Exception {
 
 		// Given
 		Member member = MemberFactory.memberOfKakao(0L);
@@ -77,58 +100,29 @@ class PressControllerTest {
 		Press press1 = PressFactory.press(0L);
 		Press press2 = PressFactory.press(1L);
 
-		List<SimplePressDto> simplePressDtoList = Stream.of(press1, press2).map(p -> SimplePressDto.of(p, false)).toList();
-		ListSimplePressResponse responseBody = ListSimplePressResponse.of(simplePressDtoList);
+		List<GetPressResponse> getPressResponseList = List.of(
+				GetPressResponse.of(press1, true), GetPressResponse.of(press2, false)
+		);
 
-		given(pressService.getSimplePress(customUserDetails)).willReturn(responseBody);
-
-		// When&Then
-		mockMvc.perform(get("/api/v1/press")
-				.with(SecurityMockMvcRequestPostProcessors.user(customUserDetails))
-			).andExpect(status().isOk())
-			.andExpect(jsonPath("$.data.press[0].id").value(0L))
-			.andExpect(jsonPath("$.data.press[0].name").value("name"))
-			.andExpect(jsonPath("$.data.press[0].imageUrl").value("imageUrl"))
-			.andExpect(jsonPath("$.data.press[0].isSubscribed").value(false))
-
-			.andExpect(jsonPath("$.data.press[1].id").value(1L))
-			.andExpect(jsonPath("$.data.press[1].name").value("name"))
-			.andExpect(jsonPath("$.data.press[1].imageUrl").value("imageUrl"))
-			.andExpect(jsonPath("$.data.press[1].isSubscribed").value(false));
-	}
-
-	@Test
-	void getSimplePressComplexSubscribed() throws Exception {
-
-		// Given
-		Member member = MemberFactory.memberOfKakao(0L);
-		CustomUserDetails customUserDetails = CustomUserDetails.of(member);
-
-		Press press1 = PressFactory.press(0L);
-		Press press2 = PressFactory.press(1L);
-
-		List<SimplePressDto> simplePressDtoList = List.of(SimplePressDto.of(press1, true), SimplePressDto.of(press2, false));
-		ListSimplePressResponse responseBody = ListSimplePressResponse.of(simplePressDtoList);
-
-		given(pressService.getSimplePress(customUserDetails)).willReturn(responseBody);
+		given(pressService.getPress(customUserDetails)).willReturn(getPressResponseList);
 
 		// When&Then
 		mockMvc.perform(get("/api/v1/press")
 				.with(SecurityMockMvcRequestPostProcessors.user(customUserDetails))
 			).andExpect(status().isOk())
-			.andExpect(jsonPath("$.data.press[0].id").value(0L))
-			.andExpect(jsonPath("$.data.press[0].name").value("name"))
-			.andExpect(jsonPath("$.data.press[0].imageUrl").value("imageUrl"))
-			.andExpect(jsonPath("$.data.press[0].isSubscribed").value(true))
+			.andExpect(jsonPath("$.data[0].id").value(0L))
+			.andExpect(jsonPath("$.data[0].name").value("name"))
+			.andExpect(jsonPath("$.data[0].imageUrl").value("imageUrl"))
+			.andExpect(jsonPath("$.data[0].isSubscribed").value(true))
 
-			.andExpect(jsonPath("$.data.press[1].id").value(1L))
-			.andExpect(jsonPath("$.data.press[1].name").value("name"))
-			.andExpect(jsonPath("$.data.press[1].imageUrl").value("imageUrl"))
-			.andExpect(jsonPath("$.data.press[1].isSubscribed").value(false));
+			.andExpect(jsonPath("$.data[1].id").value(1L))
+			.andExpect(jsonPath("$.data[1].name").value("name"))
+			.andExpect(jsonPath("$.data[1].imageUrl").value("imageUrl"))
+			.andExpect(jsonPath("$.data[1].isSubscribed").value(false));
 	}
 
 	@Test
-	void getPressNotLogin() throws Exception {
+	void getPressDetailNotLogin() throws Exception {
 
 		// // Given
 		// Press press = PressFactory.press(0L);
@@ -140,10 +134,10 @@ class PressControllerTest {
 		// // When&Then
 		// mockMvc.perform(get("/api/v1/press/0"))
 		// 	.andExpect(status().isOk())
-		// 	.andExpect(jsonPath("$.data.press.id").value(0L))
-		// 	.andExpect(jsonPath("$.data.press.name").value("name"))
-		// 	.andExpect(jsonPath("$.data.press.imageUrl").value("imageUrl"))
-		// 	.andExpect(jsonPath("$.data.press.isSubscribed").doesNotExist());
+		// 	.andExpect(jsonPath("$.data.id").value(0L))
+		// 	.andExpect(jsonPath("$.data.name").value("name"))
+		// 	.andExpect(jsonPath("$.data.imageUrl").value("imageUrl"))
+		// 	.andExpect(jsonPath("$.data.isSubscribed").doesNotExist());
 	}
 
 }

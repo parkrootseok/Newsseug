@@ -7,7 +7,8 @@ import com.a301.newsseug.domain.auth.model.entity.CustomUserDetails;
 import com.a301.newsseug.domain.interaction.model.dto.response.SearchResponse;
 import com.a301.newsseug.domain.member.model.entity.Subscribe;
 import com.a301.newsseug.domain.member.repository.SubscribeRepository;
-import com.a301.newsseug.domain.press.model.dto.response.GetPressResponse;
+import com.a301.newsseug.domain.member.service.SubscribeService;
+import com.a301.newsseug.domain.press.model.dto.response.GetPressDetailsResponse;
 import com.a301.newsseug.domain.press.model.entity.Press;
 import com.a301.newsseug.domain.press.repository.PressRepository;
 import com.a301.newsseug.external.elasticsearch.model.document.PressAndArticleDocument;
@@ -34,6 +35,8 @@ import org.springframework.stereotype.Service;
 public class SearchServiceImpl implements SearchService {
 
     private final EmbeddingServiceClient embeddingServiceClient;
+    private final SubscribeService subscribeService;
+
     private final ArticleRepository articleRepository;
     private final PressRepository pressRepository;
     private final SubscribeRepository subscribeRepository;
@@ -54,13 +57,13 @@ public class SearchServiceImpl implements SearchService {
         if (userDetails.isEnabled()) {
 
             Set<Press> subscribedPress = new HashSet<>(
-                    subscribeRepository.findAllByMember(userDetails.getMember()).stream()
+                    subscribeService.getSubscribeByMember(userDetails.getMember()).stream()
                             .map(Subscribe::getPress)
                             .toList()
             );
 
             return SearchResponse.of(
-                    GetPressResponse.of(press, subscribedPress),
+                    GetPressDetailsResponse.of(press, subscribedPress),
                     SlicedResponse.of(
                             SliceDetails.of(articles.getNumber(), articles.isFirst(), articles.hasNext()),
                             GetArticleResponse.of(articles.getContent())
@@ -70,7 +73,7 @@ public class SearchServiceImpl implements SearchService {
         }
 
         return SearchResponse.of(
-                GetPressResponse.of(press),
+                GetPressDetailsResponse.of(press),
                 SlicedResponse.of(
                         SliceDetails.of(articles.getNumber(), articles.isFirst(), articles.hasNext()),
                         GetArticleResponse.of(articles.getContent())
@@ -93,7 +96,7 @@ public class SearchServiceImpl implements SearchService {
 
         if (userDetails.isEnabled()) {
             Set<Long> pressIds = new HashSet<>(
-                    subscribeRepository.findAllByMember(userDetails.getMember()).stream()
+                    subscribeService.getSubscribeByMember(userDetails.getMember()).stream()
                             .map(subscribe -> subscribe.getPress().getPressId())
                             .toList()
             );

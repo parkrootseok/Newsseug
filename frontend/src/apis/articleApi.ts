@@ -72,7 +72,7 @@ export const fetchArticlesByAge = async ({
  */
 export const fetchArticlesByPress = async ({
   category = 'ALL',
-  page = 1,
+  page = 0,
   pressId,
 }: PageParamsType): Promise<PageType> => {
   try {
@@ -84,6 +84,18 @@ export const fetchArticlesByPress = async ({
     const response = await api.get(fetchPressUrl, {
       params: { filter: category, pageNumber: page },
     });
+    return response.data.data;
+  } catch (error: unknown) {
+    if (isAxiosError(error)) {
+      if (error.response?.status === 404) throw new Error('Not Found');
+      else throw error;
+    } else throw error;
+  }
+};
+
+export const fetchRandomArticles = async () => {
+  try {
+    const response = await api.get(`${ARTICLES_URL}/random`);
     return response.data.data;
   } catch (error: unknown) {
     if (isAxiosError(error)) {

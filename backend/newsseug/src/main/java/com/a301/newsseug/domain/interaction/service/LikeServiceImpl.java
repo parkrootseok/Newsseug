@@ -20,7 +20,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
-@Transactional
 @Service
 @RequiredArgsConstructor
 public class LikeServiceImpl implements LikeService {
@@ -31,12 +30,11 @@ public class LikeServiceImpl implements LikeService {
     private final RedisCounterService redisCounterService;
 
     @Override
-    public void postLikeToArticle(CustomUserDetails userDetails, Long articleId) {
+    @Transactional
+    public void createLike(CustomUserDetails userDetails, Long articleId) {
 
         Member loginMember = userDetails.getMember();
-
         Article article = articleRepository.getOrThrow(articleId);
-
         Optional<Hate> hate = hateRepository.findByMemberAndArticle(loginMember, article);
         hate.ifPresent(hateRepository::delete);
 
@@ -46,37 +44,25 @@ public class LikeServiceImpl implements LikeService {
                 .build()
         );
 
-        // Redis에서 likeCount 증가
-        String likeHashKey = "article:likecount";
-        Long incrementValue = 1L;
-        redisCounterService.increment(likeHashKey, articleId, incrementValue);
-
     }
 
     @Override
-    public void deleteLikeFromArticle(CustomUserDetails userDetails, Long articleId) {
+    @Transactional
+    public void deleteLike(CustomUserDetails userDetails, Long articleId) {
 
         Member loginMember = userDetails.getMember();
-
         Article article = articleRepository.getOrThrow(articleId);
-
         Like like = likeRepository.getOrThrow(loginMember, article);
-
         likeRepository.delete(like);
-
-        // Redis에서 likeCount 감소
-        String likeHashKey = "article:likecount";
-        Long incrementValue = -1L;
-        redisCounterService.increment(likeHashKey, articleId, incrementValue);
+        redisCounterService.increment("article:likeCount", articleId,  -1L);
 
     }
 
     @Scheduled(cron = "0 0/5 * * * ?")
     public void syncLikeCounts() {
 
-        String likeHashKey = "article:likecount";
 
-        Map<Object, Object> likeCountLogs = redisCounterService.findByHash(likeHashKey);
+        Map<Object, Object> likeCountLogs = redisCounterService.findByHash("article:likeCount");
 
         if (Objects.nonNull(likeCountLogs)) {
             for (Map.Entry<Object, Object> entry : likeCountLogs.entrySet()) {
@@ -86,7 +72,7 @@ public class LikeServiceImpl implements LikeService {
                 if (Objects.nonNull(likeCount)) {
                     log.info("Updating articleId: {}, New likeCount: {}", articleId, likeCount);
                     articleRepository.updateCount("likeCount", articleId, Long.parseLong(likeCount));
-                    redisCounterService.deleteByKey("article:likecount", articleId);
+                    redisCounterService.deleteByKey("article:likeCount", articleId);
                 }
             }
         }

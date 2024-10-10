@@ -36,7 +36,7 @@ function Histories() {
     return (
       <ErrorSection
         height={height}
-        text="시청 기록을 불러오는 데 실패했어요.😥"
+        text="시청 기록을 불러오는 데 실패했어요...😥"
       />
     );
   }
@@ -60,7 +60,7 @@ function Histories() {
           );
         })
       ) : (
-        <ErrorSection height={height} text="❌시청 기록이 없습니다." />
+        <ErrorSection height={height} text="시청 기록이 없습니다." />
       )}
     </Wrapper>
   );

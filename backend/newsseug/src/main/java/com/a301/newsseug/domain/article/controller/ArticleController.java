@@ -24,13 +24,23 @@ public class ArticleController {
 
     private final ArticleService articleService;
 
-   @Operation(summary = "단일 기사 상세 정보 조회 API", description = "단일 기사 상세 정보를 조회한다.")
+    @Operation(summary = "단일 기사 상세 정보 조회 API", description = "단일 기사 상세 정보를 조회한다.")
     @GetMapping("/{articleId}")
     public ResponseEntity<Result<GetArticleDetailsResponse>> getArticle(
             @NullableUserDetails CustomUserDetails userDetails,
             @PathVariable(name = "articleId") Long articleId
    ) {
         return ResponseUtil.ok(Result.of(articleService.getArticleDetail(userDetails, articleId)));
+    }
+
+    @Operation(summary = "랜덤 기사 조회 API", description = "랜덤 기사 리스트를 조회한다.")
+    @GetMapping("/random")
+    public ResponseEntity<Result<SlicedResponse<List<GetArticleResponse>>>> getRandomArticle(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        return ResponseUtil.ok(
+                Result.of(articleService.getRandomArticle(userDetails))
+        );
     }
 
     @Operation(summary = "오늘의 뉴스 조회 API", description = "\"오늘의 뉴스\"를 조회한다.")
@@ -43,7 +53,7 @@ public class ArticleController {
     }
 
     @Operation(summary = "전체 기사 조회 API", description = "전체 기사 리스트를 조회한다.")
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<Result<SlicedResponse<List<GetArticleResponse>>>> getArticlesByCategory(
             @RequestParam(required = false, defaultValue = "0", value = "pageNumber") int pageNumber,
             @RequestParam(required = false, defaultValue = "ALL", value = "filter") String filter
@@ -63,6 +73,17 @@ public class ArticleController {
         return ResponseUtil.ok(
                 Result.of(articleService.getArticlesByPress(userDetails, pressId, pageNumber, filter))
         );
+    }
+
+    @Operation(summary = "연령대별 기사 조회 API", description = "연령대별 많이 보는 기사 리스트를 조회한다.")
+    @GetMapping("/age")
+    public ResponseEntity<Result<SlicedResponse<List<GetArticleResponse>>>> getArticlesByBirthYear(
+            @NullableUserDetails CustomUserDetails userDetails,
+            @RequestParam(required = false, defaultValue = "0", value = "pageNumber") int pageNumber
+    ) {
+       return ResponseUtil.ok(
+               Result.of(articleService.getArticlesByBirthYear(userDetails, pageNumber))
+       );
     }
 
 }

@@ -12,7 +12,6 @@ import { useDispatch } from 'react-redux';
  */
 function ArticleSlideBox({
   articleList,
-  resultList,
   fetchNextPage,
   hasNextPage,
   isFetchingNextPage,
