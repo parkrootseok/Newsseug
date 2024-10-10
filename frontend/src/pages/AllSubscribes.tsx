@@ -4,12 +4,18 @@ import PressCardList from 'components/subscribe/PressCardList';
 import { useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { PressBasic } from 'types/api/press';
-import { getAllPressList, getSubscribedPressList } from 'apis/subscribe';
+import {
+  getAllPressList,
+  getSubscribedPressList,
+  subscribePress,
+  unsubscribePress,
+} from 'apis/subscribe';
+import ErrorSection from 'components/common/ErrorSection';
 
 function AllSubscribes() {
   const [subscribePressList, setSubscribePressList] = useState<PressBasic[]>(
     [],
-  ); // 구독된 언론사 리스트 상태
+  );
   const [subscriptionStatus, setSubscriptionStatus] = useState<{
     [key: number]: boolean;
   }>({});
@@ -39,7 +45,7 @@ function AllSubscribes() {
         {} as { [key: number]: boolean },
       );
       setSubscriptionStatus(statusMap);
-      setSubscribePressList(initialSubscribedPressList); // 초기 구독 리스트 설정
+      setSubscribePressList(initialSubscribedPressList);
     }
   }, [allPressList, initialSubscribedPressList]);
 
@@ -52,15 +58,39 @@ function AllSubscribes() {
     }));
     setSubscribePressList((prevList) => {
       if (isSubscribed) {
-        return prevList.filter((subscribed) => subscribed.id !== press.id); // 구독 취소
+        return prevList.filter((subscribed) => subscribed.id !== press.id);
       } else {
-        return [...prevList, press]; // 구독 추가
+        return [...prevList, press];
       }
     });
   };
 
+  // 페이지 떠나기 전 구독 상태 업데이트
+  useEffect(() => {
+    const handleSubscriptionUpdate = async () => {
+      const subscribeIds = Object.keys(subscriptionStatus)
+        .filter((id) => subscriptionStatus[Number(id)])
+        .map(Number);
+      const unsubscribeIds = Object.keys(subscriptionStatus)
+        .filter((id) => !subscriptionStatus[Number(id)])
+        .map(Number);
+
+      try {
+        await Promise.all([
+          ...subscribeIds.map((id) => subscribePress(id)),
+          ...unsubscribeIds.map((id) => unsubscribePress(id)),
+        ]);
+
+        await getSubscribedPressList();
+      } catch (error) {
+        console.error('구독 상태 동기화 실패:', error);
+      }
+    };
+    handleSubscriptionUpdate();
+  }, [subscriptionStatus]);
+
   return (
-    <SubLayout>
+    <SubLayout isAllSubPage={true} pressList={subscriptionStatus}>
       <div>내 구독 목록</div>
       <div>
         <SubscribeHeader
@@ -68,12 +98,17 @@ function AllSubscribes() {
           subscribeNumber={subscribePressList.length}
           variant="all"
         />
-        <PressCardList
-          pressList={subscribePressList}
-          subscriptionStatus={subscriptionStatus}
-          toggleSubscribe={toggleSubscribe}
-          isAll={false}
-        />
+        {subscribePressList.length > 0 ? (
+          <PressCardList
+            pressList={subscribePressList}
+            subscriptionStatus={subscriptionStatus}
+            toggleSubscribe={toggleSubscribe}
+            isAll={false}
+          />
+        ) : (
+          <ErrorSection height="100px" text="구독 중인 언론사가 없습니다." />
+        )}
+
         <SubscribeHeader title="전체 언론사" variant="all" />
         <PressCardList
           pressList={allPressList || []}

@@ -18,29 +18,30 @@ import ErrorSection from 'components/common/ErrorSection';
 import { useQuery } from 'react-query';
 import { PressBasic } from 'types/api/press';
 import { getSubscribedPressList } from 'apis/subscribe';
+import { useQueryClient } from 'react-query';
 
 function Subscribes() {
-  const dispatch = useDispatch();
   const [activeCategory, setActiveCategory] = useState<string>('전체');
   const [activePress, setActivePress] = useState<number | null>(null);
-  const [isFetched, setIsFetched] = useState<boolean>(false); // 구독 목록을 불러왔는지 상태 추가
 
   const {
     data: subscribedPressList,
     isLoading: isPressLoading,
     isError: isPressError,
+    refetch,
   } = useQuery<PressBasic[]>(
     ['subscribedPressList'],
     () => getSubscribedPressList(),
     {
-      enabled: !isFetched,
       onSuccess: (data) => {
-        console.log(data);
         updateSubscribedPress(data);
-        setIsFetched(true);
       },
     },
   );
+
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
 
   const {
     articleList,
@@ -59,7 +60,6 @@ function Subscribes() {
     fetchData: fetchArticlesByPress,
     category: Category[activeCategory as keyof typeof Category],
     pressId: activePress,
-    enabled: isFetched,
   });
 
   return (
