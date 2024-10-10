@@ -1,54 +1,30 @@
 import styled from 'styled-components';
-import { useState, useRef, useEffect } from 'react';
-import ReactCrop, {
-  Crop,
-  centerCrop,
-  makeAspectCrop,
-  PixelCrop,
-} from 'react-image-crop';
+import Snowflake from 'utils/snowflake';
 import 'react-image-crop/dist/ReactCrop.css';
+import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
+import { useState, useRef, useEffect } from 'react';
+import { centerAspectCrop, canvasPreview } from 'utils/imageCropUtils';
 import { ProfileImageModalProps } from 'types/props/register';
-import { canvasPreview } from './canvasPreview';
-import { useDebounceEffect } from './useDebounceEffect';
-
-function centerAspectCrop(
-  mediaWidth: number,
-  mediaHeight: number,
-  aspect: number,
-) {
-  return centerCrop(
-    makeAspectCrop(
-      {
-        unit: '%',
-        width: 50,
-        height: 50,
-      },
-      aspect,
-      mediaWidth,
-      mediaHeight,
-    ),
-    mediaWidth,
-    mediaHeight,
-  );
-}
 
 function ProfileImageCropper({
-  profileImage,
   profileImageUrl,
   onClose,
   onSave,
   onRemove,
 }: Readonly<ProfileImageModalProps>) {
+  const snowflake = new Snowflake(1, 1);
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
-  const hiddenAnchorRef = useRef<HTMLAnchorElement>(null);
-  const blobUrlRef = useRef('');
   const imgRef = useRef<HTMLImageElement>(null);
   const [crop, setCrop] = useState<Crop>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const [scale, setScale] = useState(1);
   const [rotate, setRotate] = useState(0);
-  const [aspect, setAspect] = useState<number | undefined>(16 / 9);
+  const [aspect, setAspect] = useState<number>(1);
 
+  /**
+   * IMP : Image Load Event
+   * @param e
+   */
   function onImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
     if (aspect) {
       const { width, height } = e.currentTarget;
@@ -56,27 +32,23 @@ function ProfileImageCropper({
     }
   }
 
+  /**
+   * IMP : Download Crop Image Event
+   */
   async function onDownloadCropClick() {
     const image = imgRef.current;
     const previewCanvas = previewCanvasRef.current;
-    if (!image || !previewCanvas || !completedCrop) {
+    if (!image || !previewCanvas || !completedCrop)
       throw new Error('Crop canvas does not exist');
-    }
 
-    // This will size relative to the uploaded image
-    // size. If you want to size according to what they
-    // are looking at on screen, remove scaleX + scaleY
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
 
-    const offscreen = new OffscreenCanvas(
-      completedCrop.width * scaleX,
-      completedCrop.height * scaleY,
-    );
-    const ctx = offscreen.getContext('2d');
-    if (!ctx) {
-      throw new Error('No 2d context');
-    }
+    const canvas = document.createElement('canvas');
+    canvas.width = completedCrop.width * scaleX;
+    canvas.height = completedCrop.height * scaleY;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('No 2d context');
 
     ctx.drawImage(
       previewCanvas,
@@ -86,41 +58,28 @@ function ProfileImageCropper({
       previewCanvas.height,
       0,
       0,
-      offscreen.width,
-      offscreen.height,
+      canvas.width,
+      canvas.height,
     );
-    // You might want { type: "image/jpeg", quality: <0 to 1> } to
-    // reduce image size
-    const blob = await offscreen.convertToBlob({
-      type: 'image/png',
-    });
-    const newFile = new File([blob], 'cropped-image.png', {
-      type: 'image/png',
-    });
+    const blob = await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob(resolve, 'image/png'),
+    );
+    if (!blob) throw new Error('Failed to create blob');
 
-    // File 객체를 저장하는 함수 호출
+    const newFile = new File([blob], `${snowflake.generate()}.png`, {
+      type: 'image/png',
+    });
     onSave(newFile);
-
-    if (blobUrlRef.current) {
-      URL.revokeObjectURL(blobUrlRef.current);
-    }
-    blobUrlRef.current = URL.createObjectURL(blob);
-
-    if (hiddenAnchorRef.current) {
-      hiddenAnchorRef.current.href = blobUrlRef.current;
-      hiddenAnchorRef.current.click();
-    }
   }
 
-  useDebounceEffect(
-    async () => {
+  useEffect(() => {
+    const handler = setTimeout(async () => {
       if (
         completedCrop?.width &&
         completedCrop?.height &&
         imgRef.current &&
         previewCanvasRef.current
       ) {
-        // We use canvasPreview as it's much faster than imgPreview.
         canvasPreview(
           imgRef.current,
           previewCanvasRef.current,
@@ -129,36 +88,27 @@ function ProfileImageCropper({
           rotate,
         );
       }
-    },
-    100,
-    [completedCrop, scale, rotate],
-  );
-
-  // useEffect(() => {
-  //   const reader = new FileReader();
-  //   reader.onload = () => {
-  //     setImgSrc(reader.result as string);
-  //     // setCrop(centerAscpectCrop(300, 300, 1));
-  //   };
-  //   reader.readAsDataURL(profileImage);
-  // }, []);
+    }, 100);
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [completedCrop, scale, rotate]);
 
   return (
-    <ModalOverlay>
-      <ModalContent>
+    <ModalOverlay onClick={onClose}>
+      <ModalContent onClick={(e) => e.stopPropagation()}>
         <ImageContainer>
           <ReactCrop
             crop={crop}
             onChange={(_, percentCrop) => setCrop(percentCrop)}
             onComplete={(c) => setCompletedCrop(c)}
             aspect={aspect}
-            // minWidth={400}
+            minWidth={400}
             minHeight={100}
-            // circularCrop
+            circularCrop
           >
             <img
               ref={imgRef}
-              alt="Crop me"
               src={profileImageUrl}
               style={{ transform: `scale(${scale}) rotate(${rotate}deg)` }}
               onLoad={onImageLoad}
@@ -166,43 +116,22 @@ function ProfileImageCropper({
           </ReactCrop>
         </ImageContainer>
         {!!completedCrop && (
-          <>
-            <div>
-              <canvas
-                ref={previewCanvasRef}
-                style={{
-                  border: '1px solid black',
-                  objectFit: 'contain',
-                  width: completedCrop.width,
-                  height: completedCrop.height,
-                }}
-              />
-            </div>
-            <div>
-              <button onClick={onDownloadCropClick}>Download Crop</button>
-              <div style={{ fontSize: 12, color: '#666' }}>
-                If you get a security error when downloading try opening the
-                Preview in a new tab (icon near top right).
-              </div>
-              <a
-                href="#hidden"
-                ref={hiddenAnchorRef}
-                download
-                style={{
-                  position: 'absolute',
-                  top: '-200vh',
-                  visibility: 'hidden',
-                }}
-              >
-                Hidden download
-              </a>
-            </div>
-          </>
+          <div>
+            <canvas
+              ref={previewCanvasRef}
+              style={{
+                objectFit: 'contain',
+                borderRadius: '50%',
+                width: completedCrop.width,
+                height: completedCrop.height,
+              }}
+            />
+          </div>
         )}
         <ButtonContainer>
-          {/* <Button onClick={handleSave}>저장</Button> */}
-          <Button onClick={onRemove}>사진 삭제</Button>
-          <Button onClick={onClose}>취소</Button>
+          <Button onClick={onDownloadCropClick}>저장하기</Button>
+          <Button onClick={onClose}>돌아가기</Button>
+          <Button onClick={onRemove}>삭제하기</Button>
         </ButtonContainer>
       </ModalContent>
     </ModalOverlay>
@@ -236,8 +165,8 @@ const ModalContent = styled.div`
 `;
 
 const ImageContainer = styled.div`
-  max-width: 100%;
-  max-height: 300px;
+  max-width: 400px;
+  max-height: 400px;
   cursor: grab;
   overflow: hidden;
 
@@ -247,28 +176,19 @@ const ImageContainer = styled.div`
   }
 `;
 
-const Controls = styled.div`
-  margin-top: 10px;
-
-  label {
-    margin-right: 10px;
-  }
-`;
-
 const ButtonContainer = styled.div`
   margin-top: 20px;
   display: flex;
+  justify-content: space-between;
   gap: 10px;
 `;
 
 const Button = styled.button`
   padding: 10px 20px;
-  background-color: #4caf50;
-  color: white;
+  background-color: #58d7a2;
+  color: #ffffff;
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
-  &:hover {
-    background-color: #45a049;
-  }
+  flex: 1;
 `;

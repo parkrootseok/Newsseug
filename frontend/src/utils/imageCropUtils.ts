@@ -1,6 +1,27 @@
-import { PixelCrop } from 'react-image-crop';
+import { centerCrop, makeAspectCrop, PixelCrop } from 'react-image-crop';
 
 const TO_RADIANS = Math.PI / 180;
+
+export function centerAspectCrop(
+  mediaWidth: number,
+  mediaHeight: number,
+  aspect: number,
+) {
+  return centerCrop(
+    makeAspectCrop(
+      {
+        unit: '%',
+        width: 50,
+        height: 50,
+      },
+      aspect,
+      mediaWidth,
+      mediaHeight,
+    ),
+    mediaWidth,
+    mediaHeight,
+  );
+}
 
 export async function canvasPreview(
   image: HTMLImageElement,

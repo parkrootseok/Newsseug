@@ -6,8 +6,8 @@ import ProfileIconSelect from 'components/icon/ProfileIconSelect';
 import ProfileImageCropper from 'components/register/ProfileImageCropper';
 
 function ProfileIcon({
-  profileImage,
   profileImageUrl,
+  profileImageCroppedUrl,
   selectImage,
   saveImage,
   removeImage,
@@ -21,6 +21,12 @@ function ProfileIcon({
   const handleImageAdjustClick = () => {
     setIsModalOpen(true);
   };
+
+  const handleSaveImage = (newImageFile: File) => {
+    saveImage(newImageFile);
+    setIsModalOpen(false);
+  };
+
   const handleRemoveImage = () => {
     removeImage();
     setIsModalOpen(false);
@@ -45,15 +51,17 @@ function ProfileIcon({
           strokeWidth="1.5"
         />
         {!profileImageUrl && <ProfileIconDefault />}
-        {profileImageUrl && <ProfileIconImage imgUrl={profileImageUrl} />}
+        {profileImageCroppedUrl && (
+          <ProfileIconImage imgUrl={profileImageCroppedUrl} />
+        )}
         <ProfileIconSelect onClick={handleSelectImageClick} />
       </svg>
-      {isModalOpen && profileImageUrl && profileImage && (
+      {isModalOpen && profileImageUrl && profileImageCroppedUrl && (
         <ProfileImageCropper
-          profileImage={profileImage}
           profileImageUrl={profileImageUrl}
+          profileImageCroppedUrl={profileImageCroppedUrl}
           onClose={() => setIsModalOpen(false)}
-          onSave={saveImage}
+          onSave={handleSaveImage}
           onRemove={handleRemoveImage}
         />
       )}
