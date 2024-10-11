@@ -2,42 +2,65 @@ import { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { motion, useAnimation, PanInfo } from 'framer-motion';
 import scrapPlusIcon from 'assets/scrapPlusIcon.svg';
-import scrapCheckIcon from 'assets/scrapCheckIcon.svg';
-import { ScrapModalProps } from 'types/article';
+import { ScrapModalProps } from 'types/props/articleVideo';
+import { FolderInfo } from 'types/api/folder';
+import { useQuery } from 'react-query';
+import { getFolderList, saveArticleToFolder } from 'apis/folderApi';
+import Spinner from 'components/common/Spinner';
+import ErrorSection from 'components/common/ErrorSection';
 
 function ScrapModal({
+  articleId,
   isOpen,
   onRequestClose,
   onCreateModalOpen,
-}: ScrapModalProps) {
-  const [checkedItems, setCheckedItems] = useState<boolean[]>([]);
+}: Readonly<ScrapModalProps>) {
+  const [checkedItems, setCheckedItems] = useState<
+    { id: number; hasThisArticle: boolean }[]
+  >([]);
   const contentRef = useRef<HTMLDivElement>(null);
   const controls = useAnimation();
 
   const windowHeight = window.screen.height;
-  const defaultHeight = windowHeight * 0.6;
+  const maxHeight = windowHeight * 0.6;
+
+  const {
+    data: folderList,
+    isLoading,
+    isError,
+    error,
+  } = useQuery<FolderInfo[]>(['folderList'], () => getFolderList(), {
+    onSuccess: (data) => {
+      const initialCheckedItems = data.map((folder) => ({
+        id: folder.id,
+        hasThisArticle: folder.articles.some(
+          (article) => article === Number(articleId),
+        ),
+      }));
+      setCheckedItems(initialCheckedItems);
+    },
+  });
 
   useEffect(() => {
     if (isOpen) {
-      controls.start({ y: 0, height: defaultHeight });
+      controls.start({ y: 0 });
       document.body.style.overflow = 'hidden';
     } else {
-      controls.start({ y: '100%' });
+      controls.start({ y: window.innerHeight });
       document.body.style.overflow = 'auto';
     }
     return () => {
       document.body.style.overflow = 'auto';
     };
-  }, [controls, defaultHeight, isOpen]);
+  }, [controls, isOpen]);
 
-  useEffect(() => {
-    // 초기 상태로 모든 아이템의 체크 상태를 false로 설정
-    setCheckedItems(new Array(25).fill(false));
-  }, []);
-
-  const handleClick = (index: number) => {
+  const handleClick = (id: number) => {
     setCheckedItems((prev) =>
-      prev.map((checked, i) => (i === index ? !checked : checked)),
+      prev.map((item) =>
+        item.id === id
+          ? { ...item, hasThisArticle: !item.hasThisArticle }
+          : item,
+      ),
     );
   };
 
@@ -77,11 +100,26 @@ function ScrapModal({
   };
 
   const handleOverlayClick = () => {
-    controls.start({ y: '100%' }).then(onRequestClose);
+    controls.start({ y: '100vh' }).then(() => {
+      onRequestClose(); // 모달 상태 변경은 애니메이션 후에 실행
+    });
   };
 
   const handleCreateFolderClick = () => {
     onCreateModalOpen();
+  };
+
+  const handleSubmitClick = async () => {
+    try {
+      const folderIds = checkedItems
+        .filter((item) => item.hasThisArticle)
+        .map((item) => item.id);
+
+      saveArticleToFolder(folderIds, Number(articleId));
+      controls.start({ y: '100vh' }).then(onRequestClose);
+    } catch (err) {
+      console.error('비디오 폴더에 저장 실패', err);
+    }
   };
 
   return (
@@ -92,11 +130,11 @@ function ScrapModal({
       onClick={handleOverlayClick}
     >
       <ModalContent
-        initial={{ y: '100%' }}
-        animate={controls}
-        exit={{ y: '100%' }}
-        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        style={{ height: defaultHeight }}
+        initial={{ y: '100vh' }}
+        animate={{ y: '0' }}
+        exit={{ y: '100vh' }}
+        transition={{ type: 'spring', stiffness: 200, damping: 30 }}
+        style={{ maxHeight }}
         drag="y"
         dragConstraints={{ top: 0, bottom: 0 }}
         dragElastic={1}
@@ -114,29 +152,51 @@ function ScrapModal({
         </ModalHeader>
         <ContentWrapper ref={contentRef}>
           <ModalBody>
-            {[...Array(25)].map((_, index) => (
-              <ScrapItem key={index} onClick={() => handleClick(index)}>
-                <HiddenCheckbox />
-                <StyledCheckbox $checked={checkedItems[index]}>
-                  <svg width="16px" height="16px" viewBox="0 0 24 24">
-                    <polyline
-                      points="20 6 9 17 4 12"
-                      stroke="white"
-                      strokeWidth="2"
-                      fill="none"
-                    />
-                  </svg>
-                </StyledCheckbox>
-                <ScrapName>폴더 {index + 1}</ScrapName>
-              </ScrapItem>
-            ))}
+            {isLoading && <Spinner height="200px" />}
+            {isError && (
+              <ErrorSection
+                height="200px"
+                text="폴더 목록을 불러오는 데 실패했어요...😥"
+              />
+            )}
+            {!isLoading && !isError && folderList?.length === 0 ? (
+              <ErrorSection height="200px" text="생성된 폴더가 없습니다." />
+            ) : null}
+            {Array.isArray(folderList) &&
+              folderList.length > 0 &&
+              folderList.map((folder) => (
+                <ScrapItem
+                  key={folder.id}
+                  onClick={() => handleClick(folder.id)}
+                >
+                  <HiddenCheckbox />
+                  <StyledCheckbox
+                    $checked={
+                      checkedItems.find((item) => item.id === folder.id)
+                        ?.hasThisArticle ?? false
+                    }
+                  >
+                    <svg width="16px" height="16px" viewBox="0 0 24 24">
+                      <polyline
+                        points="20 6 9 17 4 12"
+                        stroke="white"
+                        strokeWidth="2"
+                        fill="none"
+                      />
+                    </svg>
+                  </StyledCheckbox>
+                  <ScrapName>{folder.title}</ScrapName>
+                </ScrapItem>
+              ))}
           </ModalBody>
         </ContentWrapper>
         <ModalFooter>
           <Btn onClick={handleOverlayClick} $isSubmit={false}>
             취소
           </Btn>
-          <Btn $isSubmit={true}>완료</Btn>
+          <Btn onClick={handleSubmitClick} $isSubmit={true}>
+            완료
+          </Btn>
         </ModalFooter>
       </ModalContent>
     </ModalOverlay>
@@ -168,12 +228,15 @@ const ModalContent = styled(motion.div)`
   position: relative;
   margin: 20px 0;
   border: none;
+  height: auto; // 내용에 맞춰 높이 설정
+  max-height: 60vh; // 최대 높이는 화면의 60%
 `;
 
 const ContentWrapper = styled.div`
   overflow-y: auto;
   flex-grow: 1;
   overscroll-behavior: contain;
+  max-height: calc(60vh - 80px);
 `;
 
 const DraggableBar = styled.div`
@@ -217,6 +280,7 @@ const CreateScrap = styled.button`
   gap: 5px;
   padding: 5px;
   border-radius: 20px;
+  cursor: pointer;
   &:active {
     background-color: ${({ theme }) => theme.textColor + '3b'};
     transition: none;
@@ -245,6 +309,7 @@ const ScrapItem = styled.div`
   font-size: 14px;
   line-height: 140%;
   overflow: hidden;
+  cursor: pointer;
   border: 1px solid ${({ theme }) => theme.bgColor};
   &:active {
     background-color: ${({ theme }) => theme.textColor + '30'};
@@ -294,6 +359,7 @@ const ScrapName = styled.span`
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  color: ${({ theme }) => theme.textColor};
 `;
 
 const ModalFooter = styled.div`
@@ -330,4 +396,5 @@ const Btn = styled.button<{ $isSubmit: boolean }>`
   &:not(:active) {
     transition: background-color 0.5s;
   }
+  cursor: pointer;
 `;

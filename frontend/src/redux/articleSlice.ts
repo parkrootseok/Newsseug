@@ -1,30 +1,61 @@
+import { SliceDetails } from 'types/api/article';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Article } from 'types/api/article';
 
-// TODO : 현재 시청하고 있는 Article List에 대한 상태 관리
-interface CurrentArticleList {
-  ArticleList: Article[];
-  pastArticleId: number;
-  currentArticleId: number;
-  nextArticleId: number;
+interface ArticleState {
+  articleIds: number[];
+  sliceDetails: SliceDetails | {};
+  articlesFrom: string;
+  activeCategory: string;
+  activePress: number | null;
+  folderId: number | null;
+  keyword: string | null;
 }
 
-const initialState: CurrentArticleList = {
-  ArticleList: [],
-  pastArticleId: 0,
-  currentArticleId: 0,
-  nextArticleId: 0,
+const initialArticleState: ArticleState = {
+  articleIds: [],
+  sliceDetails: {},
+  articlesFrom: '',
+  activeCategory: 'ALL',
+  activePress: null,
+  folderId: null,
+  keyword: null,
 };
 
 const articleSlice = createSlice({
-  name: 'article',
-  initialState,
+  name: 'articles',
+  initialState: initialArticleState,
   reducers: {
-    setCurrentArticles: (state, action: PayloadAction<Article[]>) => {
-      state.ArticleList = action.payload;
+    setArticleIds(state, action: PayloadAction<number[]>) {
+      state.articleIds = action.payload;
+    },
+    setSliceDetail(state, action: PayloadAction<SliceDetails | {}>) {
+      state.sliceDetails = action.payload;
+    },
+    setArticleFrom(state, action: PayloadAction<string>) {
+      state.articlesFrom = action.payload;
+    },
+    setActiveCategory(state, action: PayloadAction<string>) {
+      state.activeCategory = action.payload;
+    },
+    setActviePress(state, action: PayloadAction<number | null>) {
+      state.activePress = action.payload;
+    },
+    setFolderId(state, action: PayloadAction<number | null>) {
+      state.folderId = action.payload;
+    },
+    setKeyword(state, action: PayloadAction<string | null>) {
+      state.keyword = action.payload;
     },
   },
 });
 
-export const { setCurrentArticles } = articleSlice.actions;
+export const {
+  setArticleIds,
+  setSliceDetail,
+  setArticleFrom,
+  setActiveCategory,
+  setActviePress,
+  setFolderId,
+  setKeyword,
+} = articleSlice.actions;
 export default articleSlice.reducer;

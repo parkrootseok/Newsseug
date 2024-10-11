@@ -1,5 +1,6 @@
 package com.a301.newsseug.domain.interaction.controller;
 
+import com.a301.newsseug.domain.article.service.RedisCounterService;
 import com.a301.newsseug.domain.auth.model.entity.CustomUserDetails;
 import com.a301.newsseug.domain.interaction.service.LikeService;
 import com.a301.newsseug.global.model.dto.Result;
@@ -35,14 +36,11 @@ public class LikeController {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable(name = "articleId") Long articleId
     ) {
-
-        likeService.postLikeToArticle(userDetails, articleId);
-
+        likeService.createLike(userDetails, articleId);
         return ResponseUtil.ok(
                 Result.of(
                         Boolean.TRUE
                 ));
-
     }
 
     @Operation(summary = "좋아요 취소 API", description = "사용자가 기사에 좋아요를 삭제한다.",
@@ -56,9 +54,7 @@ public class LikeController {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable(name = "articleId") Long articleId
     ) {
-
-        likeService.deleteLikeFromArticle(userDetails, articleId);
-
+        likeService.deleteLike(userDetails, articleId);
         return ResponseUtil.ok(
                 Result.of(
                         Boolean.TRUE

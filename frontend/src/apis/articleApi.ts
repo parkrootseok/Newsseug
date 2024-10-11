@@ -1,7 +1,6 @@
 import api from 'apis/commonApi';
-import article from 'db/article.json';
-import { AxiosResponse, isAxiosError } from 'axios';
-import { Article } from 'types/api/article';
+import { isAxiosError } from 'axios';
+import { PageParamsType, PageType } from 'types/api/article';
 const ARTICLES_URL = `/api/v1/articles`;
 
 /**
@@ -10,109 +9,99 @@ const ARTICLES_URL = `/api/v1/articles`;
  * Type : Promise<AxiosResponse> => AxiosResponse의 Case에 대한 Promise를 반환해야 함.
  */
 
-/**
- * IMP : Home 화면에서 사용하는 모든 Articles를 Fetch하는 API
- */
-export const fetchAllArticles = async (): Promise<Article[]> => {
+export const fetchArticles = async ({
+  category = 'ALL',
+  page = 0,
+}: PageParamsType): Promise<PageType> => {
   try {
-    const response: AxiosResponse<Article[]> = await api.get(
-      `${ARTICLES_URL}/all`,
-    );
-    return response.data;
+    // await new Promise((resolve) => setTimeout(resolve, 1000));
+    const response = await api.get(ARTICLES_URL, {
+      params: { pageNumber: page, filter: category },
+    });
+    return response.data.data;
   } catch (error: unknown) {
     if (isAxiosError(error)) {
-      // IMP : API 없거나, 404 Not Found Error가 발생할 경우 Mock Data를 사용하고 있음.
-      if (error.response?.status === 401) {
-        console.warn('API가 없으므로 Mock 데이터를 반환합니다.');
-        return article.articles;
-      } else throw error;
+      if (error.response?.status === 404) throw new Error('Not Found');
+      else throw error;
+    } else throw error;
+  }
+};
+
+export const fetchArticlesByToday = async ({
+  category = 'ALL',
+  page = 0,
+}: PageParamsType): Promise<PageType> => {
+  try {
+    // await new Promise((resolve) => setTimeout(resolve, 1000));
+    const response = await api.get(`${ARTICLES_URL}/today`, {
+      params: { pageNumber: page, filter: category },
+    });
+    return response.data.data;
+  } catch (error: unknown) {
+    if (isAxiosError(error)) {
+      if (error.response?.status === 404) throw new Error('Not Found');
+      else throw error;
+    } else throw error;
+  }
+};
+
+export const fetchArticlesByAge = async ({
+  category = 'ALL',
+  page = 0,
+}: PageParamsType): Promise<PageType> => {
+  try {
+    const response = await api.get(`${ARTICLES_URL}/age`, {
+      params: { pageNumber: page, filter: category },
+    });
+    return response.data.data;
+  } catch (error: unknown) {
+    if (isAxiosError(error)) {
+      if (error.response?.status === 404) throw new Error('Not Found');
+      else throw error;
     } else throw error;
   }
 };
 
 /**
- * IMP : Home 화면에서 사용하는 '오늘의 뉴스' Articles를 Fetch하는 API
+ * IMP : 구독 페이지의 기사 조회를 위한 API
+ * IMP : 1.1 pressId가 없다면, 구독한 언론사의 전체 기사를 조회함.
+ * IMP : 1.2 pressId가 있다면, 해당 언론사의 전체 기사를 조회함.
+ * IMP : 2.1 category가 없다면, 전체 카테고리의 기사를 조회함.
+ * IMP : 2.2 category가 있다면, 해당 카테고리의 기사를 조회함.
+ * @param param0
+ * @returns
  */
-export const fetchArticlesByToday = async (): Promise<Article[]> => {
+export const fetchArticlesByPress = async ({
+  category = 'ALL',
+  page = 0,
+  pressId,
+}: PageParamsType): Promise<PageType> => {
   try {
-    const response: AxiosResponse<Article[]> = await api.get(
-      `${ARTICLES_URL}/today`,
-    );
-    return response.data;
+    // await new Promise((resolve) => setTimeout(resolve, 1000));
+    const fetchPressUrl = pressId
+      ? `${ARTICLES_URL}/press/${pressId}`
+      : `${ARTICLES_URL}/press`;
+
+    const response = await api.get(fetchPressUrl, {
+      params: { filter: category, pageNumber: page },
+    });
+    return response.data.data;
   } catch (error: unknown) {
     if (isAxiosError(error)) {
-      if (error.response?.status === 401) {
-        console.warn('API가 없으므로 Mock 데이터를 반환합니다.');
-        return (
-          article.articleByCategory.find(
-            (eachSection) => eachSection.category === '오늘의 뉴스',
-          )?.articleList || []
-        );
-      } else throw error;
+      if (error.response?.status === 404) throw new Error('Not Found');
+      else throw error;
     } else throw error;
   }
 };
 
-/**
- * IMP : Home 화면에서 사용하는 '연령대별 뉴스' Articles를 Fetch하는 API
- */
-export const fetchArticlesByAge = async (age: number): Promise<Article[]> => {
+export const fetchRandomArticles = async () => {
   try {
-    const response: AxiosResponse<Article[]> = await api.get(
-      `${ARTICLES_URL}?age=${encodeURIComponent(age)}`,
-    );
-    return response.data;
+    const response = await api.get(`${ARTICLES_URL}/random`);
+    return response.data.data;
   } catch (error: unknown) {
     if (isAxiosError(error)) {
-      if (error.response?.status === 401) {
-        return [];
-      } else throw error;
-    } else throw error;
-  }
-};
-
-/**
- * IMP : 각 Category에 해당하는 Articles[]를 Fetch하는 API => Query Parameter로 Category를 받아서 Fetch
- * @param category
- */
-export const fetchArticlesByCategory = async (
-  category: string,
-): Promise<Article[]> => {
-  try {
-    const response: AxiosResponse<Article[]> = await api.get(
-      `${ARTICLES_URL}?category=${encodeURIComponent(category)}`,
-    );
-    return response.data;
-  } catch (error) {
-    if (isAxiosError(error)) {
-      if (error.response?.status === 401) {
-        console.warn('API가 없으므로 Mock 데이터를 반환합니다.');
-        return (
-          article.articleByCategory.find(
-            (eachSection) => eachSection.category === category,
-          )?.articleList || []
-        );
-      } else throw error;
-    } else throw error;
-  }
-};
-
-/**
- * IMP : 각 Article을 Fetch하는 API
- * *  ArticleId를 통해 각 Article 1개를 Fetch한다.
- * @param articleId
- */
-export const fetchEachArticle = async (articleId: number): Promise<Article> => {
-  try {
-    const response: AxiosResponse<Article> = await api.get(
-      `${ARTICLES_URL}/${articleId}`,
-    );
-    return response.data;
-  } catch (error: unknown) {
-    if (isAxiosError(error)) {
-      if (error.response?.status === 404) {
-        throw new Error('Not Found');
-      } else throw error;
+      if (error.response?.status === 404) throw new Error('Not Found');
+      else throw error;
     } else throw error;
   }
 };

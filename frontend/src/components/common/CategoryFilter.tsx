@@ -7,6 +7,8 @@ import React, {
   useMemo,
 } from 'react';
 import { CategoryFilterProps } from 'types/common/common';
+import { parseRgbString } from 'utils/parseRgbString';
+import { getBrightness } from 'utils/getBrightness';
 
 /**
  * IMP : CategoryFilter ( News Category Filter ) Component
@@ -27,8 +29,17 @@ function CategoryFilter({
   );
 
   const [isSticky, setIsSticky] = useState(false);
+  const [brightness, setBrightness] = useState<number>(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const stickyTriggerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (bgColor) {
+      const [r, g, b] = parseRgbString(bgColor);
+
+      setBrightness(getBrightness(r, g, b));
+    }
+  }, [bgColor]);
 
   const handleIntersect = useCallback(
     (entries: IntersectionObserverEntry[]) => {
@@ -47,8 +58,7 @@ function CategoryFilter({
   useEffect(() => {
     if (isPressPage && stickyTriggerRef.current) {
       const observer = new IntersectionObserver(handleIntersect, {
-        threshold: [0, 1],
-        rootMargin: '47px 0px 0px 0px',
+        rootMargin: '200px 0px 0px 0px',
       });
       observer.observe(stickyTriggerRef.current);
       return () => observer.disconnect();
@@ -72,15 +82,16 @@ function CategoryFilter({
         $isSticky={isSticky}
       >
         {categories.map((category) => (
-          <FilterButton
+          <CategoryFilterButton
             key={category}
+            $brightness={brightness}
             $isPressPage={isPressPage}
             $isSticky={isSticky}
             $active={activeCategory === category}
             onClick={() => handleCategoryClick(category)}
           >
             {category}
-          </FilterButton>
+          </CategoryFilterButton>
         ))}
       </Container>
     </>
@@ -94,7 +105,7 @@ const StickyTrigger = styled.div`
   top: 0;
   left: 0;
   right: 0;
-  height: 1px;
+  height: 0px;
   visibility: hidden;
 `;
 
@@ -116,7 +127,7 @@ const Container = styled.div<{
   scroll-behavior: smooth;
   position: ${({ $isPressPage: isPressPage }) =>
     isPressPage ? 'sticky' : 'static'};
-  top: ${({ $isPressPage: isPressPage }) => (isPressPage ? '48px' : 'auto')};
+  top: ${({ $isPressPage: isPressPage }) => (isPressPage ? '45px' : 'auto')};
   background-color: ${({
     $isSticky,
     $isPressPage: isPressPage,
@@ -125,7 +136,7 @@ const Container = styled.div<{
   }) => (isPressPage && $isSticky ? bgColor : theme.bgColor)};
   z-index: ${({ $isPressPage: isPressPage }) => (isPressPage ? '999' : 'auto')};
   will-change: background-color;
-  transition: background-color 0.1s ease-out;
+  transition: background-color 0.05s ease-out;
 
   &::-webkit-scrollbar {
     display: none;
@@ -136,58 +147,77 @@ const Container = styled.div<{
 const getBorder = (
   theme: any,
   $isSticky: boolean,
+  $brightness: number,
   $active?: boolean,
   $isPressPage?: boolean,
 ) => {
   if ($isPressPage && $isSticky) {
-    return `1px solid ${theme.descriptionColor}`;
+    return $brightness > 128
+      ? `1px solid #202020`
+      : `1px solid ${theme.descriptionColor}`;
   }
   return $active ? 'none' : `1px solid ${theme.descriptionColor}`;
 };
 
 const getColor = (
+  $brightness: number,
   $isSticky: boolean,
   theme: any,
   $active?: boolean,
   $isPressPage?: boolean,
 ) => {
   if ($isPressPage && $isSticky) {
-    return theme.textColor;
+    if ($active) {
+      return $brightness > 128 ? '#fff' : '#202020';
+    }
+    return $brightness > 128 ? '#202020' : '#ffffff';
   }
   return $active ? theme.bgColor : theme.textColor;
 };
 
 const getBackgroundColor = (
+  $brightness: number,
   $isSticky: boolean,
   theme: any,
   $active?: boolean,
   $isPressPage?: boolean,
 ) => {
   if ($isPressPage && $isSticky) {
-    return $active ? theme.descriptionColor : '#eeeeee00';
+    if ($brightness > 128) {
+      return $active ? '#202020' : '#eeeeee00';
+    } else {
+      return $active ? theme.descriptionColor : '#eeeeee00';
+    }
   }
   return $active ? theme.mainColor : theme.bgColor;
 };
 
-const FilterButton = styled.button<{
+const CategoryFilterButton = styled.button<{
+  $brightness: number;
   $active?: boolean;
   $isPressPage?: boolean;
   $isSticky: boolean;
 }>`
   display: flex;
-  border: ${({ $active, $isPressPage, $isSticky, theme }) =>
-    getBorder(theme, $isSticky, $active, $isPressPage)};
+  border: ${({ $active, $isPressPage, $isSticky, theme, $brightness }) =>
+    getBorder(theme, $isSticky, $brightness, $active, $isPressPage)};
   font-size: 12px;
   width: 55px;
   height: 32px;
   padding: 6px 12px;
   justify-content: center;
   align-items: center;
-  color: ${({ $active, theme, $isPressPage, $isSticky }) =>
-    getColor($isSticky, theme, $active, $isPressPage)};
+  color: ${({ $brightness, $active, theme, $isPressPage, $isSticky }) =>
+    getColor($brightness, $isSticky, theme, $active, $isPressPage)};
   border-radius: 3px;
-  background-color: ${({ $active, $isPressPage, $isSticky, theme }) =>
-    getBackgroundColor($isSticky, theme, $active, $isPressPage)};
+  background-color: ${({
+    $active,
+    $isPressPage,
+    $isSticky,
+    theme,
+    $brightness,
+  }) =>
+    getBackgroundColor($brightness, $isSticky, theme, $active, $isPressPage)};
   cursor: pointer;
   outline: none;
   will-change: background-color, color, border;

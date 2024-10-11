@@ -1,7 +1,9 @@
 import styled from 'styled-components';
 import SubTitle from 'components/home/SubTitle';
 import ArticleSlideBox from 'components/home/ArticleSlideBox';
-import { SectionProps } from 'types/home';
+import { SectionProps } from 'types/props/home';
+import Spinner from '../common/Spinner';
+import ErrorSection from '../common/ErrorSection';
 
 /**
  * IMP : Section Component ( Section )
@@ -9,11 +11,40 @@ import { SectionProps } from 'types/home';
  * @param param0
  * @returns
  */
-function Section({ subTitle, articleList, moreLink }: Readonly<SectionProps>) {
+function Section({
+  subTitle,
+  articleList,
+  moreLink,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
+  isLoading,
+  sectionType,
+  sliceDetails,
+  isError,
+}: Readonly<SectionProps>) {
   return (
     <SectionStyle>
       <SubTitle subTitle={subTitle} moreLink={moreLink} />
-      <ArticleSlideBox articleList={articleList} />
+      {isError && (
+        <ErrorSection
+          height="250px"
+          text={`${subTitle}를 불러오는 데 실패했어요...😥`}
+        />
+      )}
+      {isLoading && <Spinner height="250px" />}
+      {!isError && !isLoading && articleList.length > 0 ? (
+        <ArticleSlideBox
+          articleList={articleList}
+          fetchNextPage={fetchNextPage}
+          hasNextPage={hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+          sectionType={sectionType}
+          sliceDetails={sliceDetails}
+        />
+      ) : !isError && !isLoading && articleList.length === 0 ? (
+        <ErrorSection height="250px" text={`${subTitle}가 없습니다.`} />
+      ) : null}
     </SectionStyle>
   );
 }

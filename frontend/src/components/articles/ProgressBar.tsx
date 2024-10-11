@@ -1,8 +1,12 @@
 import { useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { ProgressBarProps } from 'types/article';
+import { ProgressBarProps } from 'types/props/articleVideo';
 
-function ProgressBar({ progress, isPlaying, onSeek }: ProgressBarProps) {
+function ProgressBar({
+  progress,
+  isPlaying,
+  onSeek,
+}: Readonly<ProgressBarProps>) {
   const progressBarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -33,11 +37,12 @@ export default ProgressBar;
 
 const ProgressSection = styled.div<{ $isPlaying: boolean }>`
   padding: ${({ $isPlaying }) => ($isPlaying ? '0' : '0 10px 16px')};
+  transition: 0.3s;
 `;
 
 const ProgressBarWrap = styled.div`
   position: relative;
-  background: ${({ theme }) => theme.relaxColor.dark};
+  background: #5e5f60;
   height: 5px;
   cursor: pointer;
 `;
@@ -64,7 +69,7 @@ const ProgressInput = styled.input`
     appearance: none;
     width: 15px;
     height: 15px;
-    background-color: ${({ theme }) => theme.bgColor};
+    background-color: #fff;
     border-radius: 50%;
     cursor: pointer;
   }

@@ -10,11 +10,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Entity
@@ -23,23 +25,36 @@ import lombok.NoArgsConstructor;
 public class Folder extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "folders_seq")
+    @SequenceGenerator(name = "folders_seq", sequenceName = "folders_seq", allocationSize = 1)
     private Long folderId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
     @Column(columnDefinition = "VARCHAR(10)", nullable = false)
-    private String name;
+    private String title;
+
+    @Setter
+    private String thumbnailUrl;
 
     private Long articleCount;
 
     @Builder
-    public Folder(String name, Member member) {
-        this.name = name;
+    public Folder(Member member, String title, String thumbnailUrl) {
+        this.title = title;
         this.member = member;
+        this.thumbnailUrl = thumbnailUrl;
         this.articleCount = 0L;
+    }
+
+    public void incrementArticleCount() {
+        this.articleCount++;
+    }
+
+    public void decrementArticleCount() {
+        this.articleCount--;
     }
 
 }

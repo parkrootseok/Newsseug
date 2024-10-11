@@ -1,7 +1,7 @@
 package com.a301.newsseug.domain.interaction.model.entity;
 
 import com.a301.newsseug.domain.article.model.entity.Article;
-import com.a301.newsseug.domain.article.model.entity.type.ReportType;
+import com.a301.newsseug.domain.interaction.model.entity.type.ReportType;
 import com.a301.newsseug.global.util.ClockUtil;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -19,7 +19,8 @@ import java.time.LocalDateTime;
 public class Report {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "reports_seq")
+    @SequenceGenerator(name = "reports_seq", sequenceName = "reports_seq", allocationSize = 1)
     private Long reportId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -31,7 +32,7 @@ public class Report {
     private ReportType type;
 
     @CreatedDate
-    @Column(updatable = false, columnDefinition = "TIMESTAMP")
+    @Column(updatable = false, nullable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime createdAt;
 
     @PrePersist

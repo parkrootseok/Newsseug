@@ -1,4 +1,4 @@
-import { SubscribePressCardProps } from '@/types/subscribe';
+import { SubscribePressCardProps } from 'types/props/subscribe';
 import styled from 'styled-components';
 import {
   PressLogo,
@@ -12,7 +12,7 @@ function SubscribePressCard({
   isActive,
   isAllActive,
   onClick,
-}: SubscribePressCardProps) {
+}: Readonly<SubscribePressCardProps>) {
   return (
     <Container
       $isActive={isActive}
@@ -20,9 +20,9 @@ function SubscribePressCard({
       onClick={onClick}
     >
       <LogoContainer>
-        <PressLogo src={press.imgUrl} />
+        <PressLogo src={press.imageUrl} />
       </LogoContainer>
-      <PressName>{press.pressName}</PressName>
+      <PressName>{press.name}</PressName>
     </Container>
   );
 }

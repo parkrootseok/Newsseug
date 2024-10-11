@@ -1,52 +1,78 @@
 import { useState } from 'react';
 import styled, { useTheme } from 'styled-components';
 import reportIcon from 'assets/reportIcon.svg';
-import { ArticleButtonsProp } from 'types/article';
+import { ArticleButtonsProp } from 'types/props/articleVideo';
+import {
+  fetchDishateArticle,
+  fetchDislikeArticle,
+  fetchHateArticle,
+  fetchLikeArticle,
+} from 'apis/articleVideoApi';
+import { getCookie } from 'utils/stateUtils';
 
 function ArticleButtons({
+  articleId,
   likeInfo,
-  dislikeInfo,
+  hateInfo,
   handleScrapClick,
   handleReportClick,
-}: ArticleButtonsProp) {
+  handleButtonClickWithoutLogin,
+}: Readonly<ArticleButtonsProp>) {
   const theme = useTheme();
 
   const [isLike, setIslike] = useState<boolean>(likeInfo.isLike);
   const [likeCount, setLikeCount] = useState<number>(likeInfo.likeCount);
 
-  const [isDislike, setIsDislike] = useState<boolean>(dislikeInfo.isLike);
-  const [dislikeCount, setDislikeCount] = useState<number>(
-    dislikeInfo.likeCount,
-  );
+  const [isHate, setIsHate] = useState<boolean>(hateInfo.isHate);
+  const [hateCount, setHateCount] = useState<number>(hateInfo.hateCount);
 
-  const handleLike = () => {
-    if (isDislike) {
-      setIsDislike(!isDislike);
-      setDislikeCount(dislikeCount - 1);
+  const isAuthenticated = () => {
+    const token = getCookie('AccessToken');
+    return !!token; // 토큰이 있으면 true, 없으면 false
+  };
+
+  const handleLike = async () => {
+    if (!isAuthenticated()) {
+      handleButtonClickWithoutLogin();
+      return;
+    }
+    // 싫어요가 눌러진 상태라면 싫어요 취소 후 좋아요 설정
+    if (isHate) {
+      setIsHate(!isHate);
+      setHateCount(hateCount - 1);
     }
 
+    // 좋아요가 눌러진 상태라면 좋아요 취소
     if (isLike) {
+      await fetchDislikeArticle(articleId);
       setLikeCount(likeCount - 1);
     } else {
+      await fetchLikeArticle(articleId);
       setLikeCount(likeCount + 1);
     }
 
     setIslike(!isLike);
   };
 
-  const handleDislike = () => {
+  const handleHate = async () => {
+    if (!isAuthenticated()) {
+      handleButtonClickWithoutLogin();
+      return;
+    }
     if (isLike) {
       setIslike(!isLike);
       setLikeCount(likeCount - 1);
     }
 
-    if (isDislike) {
-      setDislikeCount(dislikeCount - 1);
+    if (isHate) {
+      await fetchDishateArticle(articleId);
+      setHateCount(hateCount - 1);
     } else {
-      setDislikeCount(dislikeCount + 1);
+      await fetchHateArticle(articleId);
+      setHateCount(hateCount + 1);
     }
 
-    setIsDislike(!isDislike);
+    setIsHate(!isHate);
   };
 
   return (
@@ -57,11 +83,11 @@ function ArticleButtons({
         </Icon>
         <span>{likeCount}</span>
       </Button>
-      <Button onClick={handleDislike}>
+      <Button onClick={handleHate}>
         <Icon>
-          <DislikeIcon liked={isDislike} theme={theme} />
+          <HateIcon liked={isHate} theme={theme} />
         </Icon>
-        <span>{dislikeCount}</span>
+        <span>{hateCount}</span>
       </Button>
       <Button onClick={handleScrapClick}>
         <Icon>
@@ -90,6 +116,7 @@ const ButtonContainer = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 24px;
+  z-index: 100;
 `;
 
 const Button = styled.button`
@@ -98,9 +125,9 @@ const Button = styled.button`
   align-items: center;
   background-color: transparent;
   border: none;
-  color: ${({ theme }) => theme.bgColor};
+  color: #fff;
   gap: 4px;
-
+  cursor: pointer;
   .span {
     text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
     font-size: 10px;
@@ -133,7 +160,7 @@ const LikeIcon = ({ liked, theme }: { liked: boolean; theme: any }) => (
   </svg>
 );
 
-const DislikeIcon = ({ liked, theme }: { liked: boolean; theme: any }) => (
+const HateIcon = ({ liked, theme }: { liked: boolean; theme: any }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="24"

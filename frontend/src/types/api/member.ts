@@ -1,56 +1,55 @@
-/**
- * IMP : Member에 대한 Type 정의
- * @property {number} id - 회원 ID
- * @property {string} nickname - 닉네임
- * @property {GenderType} gender - 성별
- * @property {Date} birth - 생년월일
- * @property {OAuth2Details} oAuth2Details - OAuth2 정보
- */
-interface Member {
-  id: number;
-  nickname: string;
-  gender: GenderType;
-  birth: Date;
-  oAuth2Details: OAuth2Details;
-}
+import { SliceDetails } from './article';
 
 export type GenderType = 'MALE' | 'FEMALE';
 export type ProviderType = 'kakao' | 'google' | 'none';
-type Role = 'ROLE_MEMBER' | 'ROLE_ADMIN';
-
-interface OAuth2Details {
-  providerType: ProviderType;
-  providerId: string;
-  role: Role;
-}
-
-interface History {
-  historyId: number;
-  memberId: number;
-  articleId: number;
-  playTime: number;
-  createdAt: Date;
-}
-
 /**
- * IMP : 아래는 FE 개발자가 직접 추가한 Type입니다.
- */
-
-/**
- * IMP : Member의 정보를 받아오는 Response Type
- * @property {string} nickname - 닉네임
- * @property {string} gender - 성별
- * @property {number} age - 나이
+ * IMP : API와 관련된 Member의 정보를 정의한 Type
  */
 export interface MemberState {
   nickname: string;
   gender: string;
-  age: number;
+  age: number | null;
+  profileImageUrl: string;
 }
 
 export interface MemberStore {
   member: MemberState;
-  AccessToken: string;
+  accessToken: string;
+  refreshToken: string;
   providerType: ProviderType;
   providerId: string;
+}
+
+export interface DecodedToken {
+  exp: number;
+}
+
+export interface TokenResponse {
+  accessToken: string;
+  refreshToken: string;
+}
+
+// IMP : 회원 정보 조회에 대한 Response Type
+export interface MemberInfo {
+  nickname: string;
+  gender: string;
+  birth: string;
+  profileImageUrl: string;
+}
+
+export interface MemberHistoryDetail {
+  id: number;
+  name: string;
+  thumbnailUrl: string;
+  viewCount: number;
+  pressName: string;
+}
+
+export interface MemberHistories {
+  histories: MemberHistoryDetail[];
+}
+
+export interface MemberHistoryInfo {
+  content: MemberHistories;
+  sliceDetails: SliceDetails;
 }

@@ -8,6 +8,17 @@ import {
   SearchNavItem,
   MyPageNavItem,
 } from 'components/icon/NavItemIcon';
+import { fetchArticles, fetchRandomArticles } from 'apis/articleApi';
+import { useDispatch } from 'react-redux';
+import {
+  setActiveCategory,
+  setArticleFrom,
+  setArticleIds,
+  setSliceDetail,
+} from '../../redux/articleSlice';
+import { ArticleListCardProps } from 'types/common/common';
+import { SliceDetails } from 'types/api/article';
+import { getCookie } from 'utils/stateUtils';
 
 /**
  * IMP : NavBar Component ( Navigation Bar )
@@ -17,8 +28,42 @@ import {
 function NavBar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const handleItemClick = (index: number, to: string) => {
-    navigate(to);
+
+  const dispatch = useDispatch();
+  const isAuthenticated = () => {
+    const token = getCookie('AccessToken');
+    return !!token; // 토큰이 있으면 true, 없으면 false
+  };
+
+  const articleDispatch = (
+    articleList: ArticleListCardProps[],
+    sliceDetails: SliceDetails,
+    articleFrom: string,
+  ) => {
+    dispatch(setArticleIds(articleList.map((article) => article.id)));
+    dispatch(setArticleFrom(articleFrom));
+    dispatch(setSliceDetail(sliceDetails ?? {}));
+    dispatch(setActiveCategory('all'));
+  };
+
+  const handleItemClick = async (index: number, to: string) => {
+    if (index === 2) {
+      try {
+        let article;
+        if (!isAuthenticated()) {
+          article = await fetchArticles({ category: 'ALL', page: 0 });
+          articleDispatch(article.content, article.sliceDetails, 'all');
+        } else {
+          article = await fetchRandomArticles();
+          articleDispatch(article.content, article.sliceDetails, 'newsseug');
+        }
+        navigate(`/articles/${article.content[0].id}`);
+      } catch (error) {
+        console.error('Error fetching articles:', error);
+      }
+    } else {
+      navigate(to);
+    }
   };
 
   return (
@@ -46,12 +91,16 @@ const NavBarContainer = styled.div`
   display: flex;
   position: fixed;
   bottom: 0;
+  top: auto;
   width: 100%;
+  max-width: 500px;
   height: 8%;
   flex-shrink: 0;
-  background-color: white;
-  box-shadow: 0px -4px 10px rgba(0, 0, 0, 0.1);
+  background-color: ${({ theme }) => theme.bgColor};
+  box-shadow: 0px -10px 100px rgba(0, 0, 0, 0.1);
   z-index: 1000;
+  padding: 0;
+  padding-bottom: 15px;
 `;
 
 const navItems = [

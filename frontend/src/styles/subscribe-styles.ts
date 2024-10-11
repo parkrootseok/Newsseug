@@ -12,8 +12,8 @@ export const PressContainer = styled.div`
 `;
 
 export const PressLogo = styled.img`
-  width: 40px;
-  height: 40px;
+  width: 56px;
+  height: 56px;
   object-fit: contain;
 `;
 
@@ -22,7 +22,8 @@ export const LogoContainer = styled.div`
   height: 56px;
   border-radius: 100%;
   border: 1px solid #f4f4f4;
-  background: #fff;
+  /* background: #fff; */
+  background: ${({ theme }) => theme.bgColor};
   display: flex;
   justify-content: center;
   align-items: center;
@@ -33,4 +34,5 @@ export const PressName = styled.p`
   font-size: 10px;
   font-weight: 500;
   line-height: 140%;
+  color: ${({ theme }) => theme.textColor};
 `;

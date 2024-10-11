@@ -1,13 +1,17 @@
 package com.a301.newsseug.domain.folder.service;
 
 import com.a301.newsseug.domain.auth.model.entity.CustomUserDetails;
+import com.a301.newsseug.domain.folder.model.dto.response.CreateFolderResponse;
+import com.a301.newsseug.domain.folder.model.dto.response.GetFolderDetailsResponse;
 import com.a301.newsseug.domain.folder.model.dto.response.GetFolderResponse;
-import com.a301.newsseug.domain.folder.model.dto.response.ListFolderResponse;
+import java.util.List;
 
 public interface FolderService {
 
-    GetFolderResponse getFolder(CustomUserDetails userDetails, Long folderId);
-    ListFolderResponse getFoldersByMember(CustomUserDetails userDetails);
-    void createFolder(CustomUserDetails userDetails, String name);
+    GetFolderDetailsResponse getFolder(CustomUserDetails userDetails, int pageNumber, Long folderId);
+
+    List<GetFolderResponse> getFolders(CustomUserDetails userDetails);
+
+    CreateFolderResponse createFolder(CustomUserDetails userDetails, String title);
 
 }

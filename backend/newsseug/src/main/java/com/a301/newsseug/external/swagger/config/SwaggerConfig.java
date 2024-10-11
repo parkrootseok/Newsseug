@@ -3,6 +3,7 @@ package com.a301.newsseug.external.swagger.config;
 import static org.springframework.security.config.Elements.JWT;
 
 import com.a301.newsseug.domain.article.model.entity.Article;
+import com.a301.newsseug.domain.auth.model.entity.CustomUserDetails;
 import com.a301.newsseug.domain.folder.model.entity.Folder;
 import com.a301.newsseug.domain.member.model.entity.Member;
 import com.a301.newsseug.domain.press.model.entity.Press;
@@ -14,11 +15,16 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import java.util.List;
 import org.springdoc.core.models.GroupedOpenApi;
+import org.springdoc.core.utils.SpringDocUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SwaggerConfig {
+
+    static {
+        SpringDocUtils.getConfig().addRequestWrapperToIgnore(CustomUserDetails.class);
+    }
 
     @Bean
     public OpenAPI customOpenAPI() {
@@ -57,8 +63,8 @@ public class SwaggerConfig {
         return GroupedOpenApi.builder()
                 .group(Member.class.getSimpleName())
                 .pathsToMatch("/api/v1/auth/**", "/api/v1/members/**")
-                .addOpenApiCustomizer(openApi
-                                -> openApi.addSecurityItem(
+                .addOpenApiCustomizer(openApi ->
+                        openApi.addSecurityItem(
                                 new SecurityRequirement().addList("Bearer")
                         )
                 )
@@ -72,8 +78,8 @@ public class SwaggerConfig {
         return GroupedOpenApi.builder()
                 .group(Press.class.getSimpleName())
                 .pathsToMatch("/api/v1/press/**")
-                .addOpenApiCustomizer(openApi
-                                -> openApi.addSecurityItem(
+                .addOpenApiCustomizer(openApi ->
+                        openApi.addSecurityItem(
                                 new SecurityRequirement().addList("Bearer")
                         )
                 )
@@ -86,9 +92,9 @@ public class SwaggerConfig {
 
         return GroupedOpenApi.builder()
                 .group(Folder.class.getSimpleName())
-                .pathsToMatch("/api/v1/folders/**")
-                .addOpenApiCustomizer(openApi
-                                -> openApi.addSecurityItem(
+                .pathsToMatch("/api/v1/folders/**", "/api/v1/bookmarks/**")
+                .addOpenApiCustomizer(openApi ->
+                        openApi.addSecurityItem(
                                 new SecurityRequirement().addList("Bearer")
                         )
                 )
@@ -102,8 +108,8 @@ public class SwaggerConfig {
         return GroupedOpenApi.builder()
                 .group(Article.class.getSimpleName())
                 .pathsToMatch("/api/v1/articles/**")
-                .addOpenApiCustomizer(openApi
-                                -> openApi.addSecurityItem(
+                .addOpenApiCustomizer(openApi ->
+                        openApi.addSecurityItem(
                                 new SecurityRequirement().addList("Bearer")
                         )
                 )
@@ -116,12 +122,22 @@ public class SwaggerConfig {
 
         return GroupedOpenApi.builder()
                 .group("Interaction")
-                .pathsToMatch("/api/v1/likes/**", "/api/v1/hates/**", "/api/v1/reports/**")
-                .addOpenApiCustomizer(openApi
-                                -> openApi.addSecurityItem(
+                .pathsToMatch("/api/v1/likes/**", "/api/v1/hates/**", "/api/v1/reports/**", "/api/v1/histories/**", "/api/v1/search/**")
+                .addOpenApiCustomizer(openApi ->
+                        openApi.addSecurityItem(
                                 new SecurityRequirement().addList("Bearer")
                         )
                 )
+                .build();
+
+    }
+
+    @Bean
+    public GroupedOpenApi S3Api() {
+
+        return GroupedOpenApi.builder()
+                .group("S3")
+                .pathsToMatch("/api/v1/s3/**")
                 .build();
 
     }

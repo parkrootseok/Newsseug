@@ -1,8 +1,8 @@
-import { SubTitleProps } from '@/types/mypage';
+import { SubTitleProps } from 'types/props/mypage';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-function SubTitle({ title, url }: SubTitleProps) {
+function SubTitle({ title, url }: Readonly<SubTitleProps>) {
   const navigate = useNavigate();
   const handleAllBtnClick = () => {
     if (url) {
@@ -22,7 +22,7 @@ export default SubTitle;
 const Wrapper = styled.div`
   display: flex;
   width: 100%;
-  padding: 10px 0px;
+  padding: 15px 0px;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
@@ -50,6 +50,7 @@ const AllBtn = styled.a`
   font-weight: 600;
   line-height: 140%;
   letter-spacing: -0.25px;
+  cursor: pointer;
   &:active {
     background: none;
     text-decoration: underline;

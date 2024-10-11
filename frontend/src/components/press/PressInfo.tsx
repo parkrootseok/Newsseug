@@ -4,18 +4,21 @@ import PressDescription from './PressDescription';
 import { PressDetail } from 'types/api/press';
 
 function PressInfo({
+  id,
   name,
   imageUrl,
-  pressId,
   description,
   subscribeCount,
+  isSubscribed,
 }: Readonly<PressDetail>) {
   return (
     <Wrapper>
       <PressProfile
+        id={id}
         name={name}
         imageUrl={imageUrl}
         subscribeCount={subscribeCount}
+        isSubscribed={isSubscribed}
       />
       <PressDescription description={description} />
     </Wrapper>

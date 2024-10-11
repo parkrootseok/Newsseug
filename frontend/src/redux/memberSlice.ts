@@ -1,13 +1,28 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { MemberState, MemberStore, ProviderType } from 'types/api/member';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import {
+  MemberState,
+  MemberInfo,
+  MemberStore,
+  ProviderType,
+} from 'types/api/member';
+import { CalculateAge } from 'utils/formUtils';
+import { getMemberInfo } from 'apis/memberApi';
 
-// TODO : Folder, History State는 따로 관리한다.
 const initialState: MemberStore = {
-  member: { nickname: '노래하는마라샹궈', gender: 'MALE', age: 27 },
-  AccessToken: '',
+  member: { nickname: '', gender: '', age: null, profileImageUrl: '' },
+  accessToken: '',
+  refreshToken: '',
   providerType: 'none',
   providerId: '',
 };
+
+export const fetchMemberInfo = createAsyncThunk<MemberInfo>(
+  'member/fetchMemberInfo',
+  async () => {
+    const response = await getMemberInfo();
+    return response;
+  },
+);
 
 const memberSlice = createSlice({
   name: 'member',
@@ -17,17 +32,33 @@ const memberSlice = createSlice({
       state.member.nickname = action.payload.nickname;
       state.member.gender = action.payload.gender;
       state.member.age = action.payload.age;
+      state.member.profileImageUrl = action.payload.profileImageUrl;
     },
     setProviderInfo: (
       state,
-      action: PayloadAction<{ AccessToken: string; providerId: string }>,
+      action: PayloadAction<{
+        AccessToken: string;
+        RefreshToken: string;
+        providerId: string;
+      }>,
     ) => {
-      state.AccessToken = action.payload.AccessToken;
+      state.accessToken = action.payload.AccessToken;
+      state.refreshToken = action.payload.RefreshToken;
       state.providerId = action.payload.providerId;
     },
     setProviderType: (state, action: PayloadAction<ProviderType>) => {
       state.providerType = action.payload;
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(fetchMemberInfo.fulfilled, (state, action) => {
+      state.member = {
+        nickname: action.payload.nickname,
+        gender: action.payload.gender,
+        age: CalculateAge(action.payload.birth),
+        profileImageUrl: action.payload.profileImageUrl,
+      };
+    });
   },
 });
 

@@ -1,6 +1,5 @@
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
-import { SubTitleProps } from 'types/home';
+import { SubTitleProps } from 'types/props/home';
 
 /**
  * IMP : SubTitle Component ( SubTitle )
@@ -12,7 +11,7 @@ function SubTitle({ subTitle, moreLink }: Readonly<SubTitleProps>) {
   return (
     <SubTitleBoxStyle>
       <SubTitleStyle>{subTitle}</SubTitleStyle>
-      <MoreLinkStyle to={moreLink}>더보기</MoreLinkStyle>
+      <MoreLinkStyle onClick={moreLink}>더보기</MoreLinkStyle>
     </SubTitleBoxStyle>
   );
 }
@@ -27,7 +26,7 @@ const SubTitleBoxStyle = styled.div`
 `;
 
 const SubTitleStyle = styled.p`
-  color: #202020;
+  color: ${({ theme }) => theme.textColor};
   font-family: Pretendard;
   font-size: 16px;
   font-style: normal;
@@ -36,13 +35,14 @@ const SubTitleStyle = styled.p`
   letter-spacing: -0.4px;
 `;
 
-const MoreLinkStyle = styled(Link)`
+const MoreLinkStyle = styled.div`
   color: #58d7a2;
   text-decoration: none;
   font-family: Pretendard;
   font-size: 12px;
   font-style: normal;
   font-weight: 600;
-  line-height: 140%; /* 14px */
+  line-height: 140%;
   letter-spacing: -0.25px;
+  cursor: pointer;
 `;

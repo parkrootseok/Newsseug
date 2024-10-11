@@ -1,24 +1,34 @@
 package com.a301.newsseug.domain.folder.service;
 
-import com.a301.newsseug.domain.article.model.dto.SimpleArticleDto;
+import com.a301.newsseug.domain.article.model.dto.response.GetArticleResponse;
 import com.a301.newsseug.domain.auth.model.entity.CustomUserDetails;
 import com.a301.newsseug.domain.bookmark.model.entity.Bookmark;
 import com.a301.newsseug.domain.bookmark.repository.BookmarkRepository;
 import com.a301.newsseug.domain.folder.exception.InaccessibleFolderException;
-import com.a301.newsseug.domain.folder.model.dto.FolderDto;
 import com.a301.newsseug.domain.folder.model.dto.response.GetFolderResponse;
+import com.a301.newsseug.domain.folder.model.dto.response.CreateFolderResponse;
+import com.a301.newsseug.domain.folder.model.dto.response.GetFolderDetailsResponse;
 import com.a301.newsseug.domain.folder.model.entity.Folder;
-import com.a301.newsseug.domain.folder.model.dto.response.ListFolderResponse;
 import com.a301.newsseug.domain.folder.repository.FolderRepository;
 import com.a301.newsseug.domain.member.model.entity.Member;
-import com.a301.newsseug.global.model.entity.ActivateStatus;
+import com.a301.newsseug.global.enums.SortingCriteria;
+import com.a301.newsseug.global.model.dto.SlicedResponse;
+import com.a301.newsseug.global.model.entity.ActivationStatus;
+import com.a301.newsseug.global.model.entity.SliceDetails;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class FolderServiceImpl implements FolderService {
@@ -27,46 +37,67 @@ public class FolderServiceImpl implements FolderService {
     private final BookmarkRepository bookmarkRepository;
 
     @Override
-    public GetFolderResponse getFolder(CustomUserDetails userDetails, Long folderId) {
+    @Transactional(readOnly = true)
+    public GetFolderDetailsResponse getFolder(CustomUserDetails userDetails, int pageNumber, Long folderId) {
 
         Member loginMember = userDetails.getMember();
-        Folder folder = folderRepository.findByFolderIdAndMemberAndStatus(folderId, loginMember, ActivateStatus.ACTIVE)
+        Folder folder = folderRepository.findByFolderIdAndMemberAndActivationStatus(folderId, loginMember, ActivationStatus.ACTIVE)
                 .orElseThrow(InaccessibleFolderException::new);
 
-        List<Bookmark> bookmarks = bookmarkRepository.findAllByFolder(folder);
+        Pageable pageable = PageRequest.of(
+                pageNumber,
+                10,
+                Sort.by(Sort.Direction.DESC, SortingCriteria.CREATED_AT.getField())
+        );
+        Slice<Bookmark> bookmarks = bookmarkRepository.findAllByFolderWithSlice(folder, pageable);
 
-        return GetFolderResponse.of(
-                folderId,
-                folder.getName(),
-                SimpleArticleDto.fromBookmark(bookmarks)
-                );
-
-    }
-
-    @Override
-    public ListFolderResponse getFoldersByMember(CustomUserDetails userDetails) {
-
-        Member loginMember = userDetails.getMember();
-        List<Folder> folders = folderRepository.findAllByMember(loginMember);
-
-        return ListFolderResponse.of(
-                folders.stream()
-                        .map(FolderDto::of)
-                        .toList()
+        return GetFolderDetailsResponse.of(
+                folder,
+                SlicedResponse.of(
+                        SliceDetails.of(bookmarks.getNumber(), bookmarks.isFirst(), bookmarks.hasNext()),
+                        GetArticleResponse.fromBookmark(bookmarks.getContent())
+                )
         );
 
     }
 
     @Override
-    public void createFolder(CustomUserDetails userDetails, String name) {
+    @Transactional(readOnly = true)
+    public List<GetFolderResponse> getFolders(CustomUserDetails userDetails) {
 
         Member loginMember = userDetails.getMember();
-        Folder folder = Folder.builder()
-                .member(loginMember)
-                .name(name)
-                .build();
+        List<Folder> folders = folderRepository.findAllByMemberAndActivationStatus(loginMember, ActivationStatus.ACTIVE);
+        Map<Folder, List<Bookmark>> foldersWithBookmark = getBookmarkFromFolder(folders);
 
-        folderRepository.save(folder);
+        return GetFolderResponse.of(foldersWithBookmark);
+
+    }
+
+    private Map<Folder, List<Bookmark>> getBookmarkFromFolder(List<Folder> folders) {
+
+        Map<Folder, List<Bookmark>> foldersWithBookmark = new HashMap<>();
+
+        for (Folder folder : folders) {
+            List<Bookmark> bookmarks = bookmarkRepository.findAllByFolder(folder);
+            foldersWithBookmark.put(folder, bookmarks);
+        }
+
+        return foldersWithBookmark;
+
+    }
+
+    @Override
+    public CreateFolderResponse createFolder(CustomUserDetails userDetails, String title) {
+
+        Member loginMember = userDetails.getMember();
+
+        return CreateFolderResponse.of(
+                folderRepository.save(
+                        Folder.builder()
+                                .member(loginMember)
+                                .title(title)
+                                .build()
+                ));
 
     }
 

@@ -1,13 +1,13 @@
 package com.a301.newsseug.domain.article.model.entity;
 
 import com.a301.newsseug.domain.article.model.entity.type.CategoryType;
+import com.a301.newsseug.domain.article.model.entity.type.ConversionStatus;
 import com.a301.newsseug.domain.press.model.entity.Press;
 import com.a301.newsseug.global.model.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -16,7 +16,8 @@ import lombok.NoArgsConstructor;
 public class Article extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "articles_seq")
+    @SequenceGenerator(name = "articles_seq", sequenceName = "articles_seq", allocationSize = 1)
     private Long articleId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -29,17 +30,27 @@ public class Article extends BaseEntity {
     @Column(nullable = false)
     private String sourceUrl;
 
-    @Column(nullable = false)
+    @Column(updatable = false, columnDefinition = "TIMESTAMP")
+    private LocalDateTime sourceCreatedAt;
+
     private String contentUrl;
 
-    @Column(nullable = false)
     private String videoUrl;
 
-    @Column(nullable = false)
     private String thumbnailUrl;
 
     @Column(nullable = false)
-    private Long viewCount = 0L;
+    private Long viewCount;
+
+    @Column(nullable = false)
+    private Long likeCount;
+
+    @Column(nullable = false)
+    private Long hateCount;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ConversionStatus conversionStatus;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -55,6 +66,8 @@ public class Article extends BaseEntity {
         this.videoUrl = videoUrl;
         this.thumbnailUrl = thumbnailUrl;
         this.viewCount = 0L;
+        this.likeCount = 0L;
+        this.hateCount = 0L;
         this.category = category;
     }
 }

@@ -18,25 +18,25 @@ public class RedisTokenServiceImpl implements RedisTokenService {
     private final JwtProperties jwtProperties;
 
     @Override
-    public void save(String id, String value) {
+    public void save(String key, String value) {
         redisTemplate.opsForValue().set(
-                String.format(REFRESH_TOKEN_KEY_PREFIX, id),
+                String.format(REFRESH_TOKEN_KEY_PREFIX, key),
                 value,
-                jwtProperties.getExpiration().getRefresh(),
+                jwtProperties.expiration().refresh(),
                 TimeUnit.SECONDS
         );
     }
 
     @Override
-    public Optional<String> findByKey(String id) {
+    public Optional<String> findByKey(String key) {
         return Optional.ofNullable(
-                (String) redisTemplate.opsForValue().get(String.format(REFRESH_TOKEN_KEY_PREFIX, id))
+                (String) redisTemplate.opsForValue().get(String.format(REFRESH_TOKEN_KEY_PREFIX, key))
         );
     }
 
     @Override
-    public void deleteByKey(String id) {
-        redisTemplate.delete(String.format(REFRESH_TOKEN_KEY_PREFIX, id));
+    public Boolean deleteByKey(String key) {
+        return redisTemplate.delete(String.format(REFRESH_TOKEN_KEY_PREFIX, key));
     }
 
 }

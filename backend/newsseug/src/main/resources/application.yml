@@ -1,9 +1,0 @@
-spring:
-  application:
-    name: newsseug
-
-  profiles:
-    default: local
-
-  config:
-    import: application-jwt.yml, application-oauth.yml

@@ -17,13 +17,19 @@ public enum CategoryType {
     ECONOMY("economy"),
 
     @Schema(description = "국제")
-    world("world"),
+    WORLD("world"),
 
     @Schema(description = "사건")
     ACCIDENT("accident"),
 
     @Schema(description = "과학")
-    SCIENCE("science");
+    SCIENCE("science"),
+
+    @Schema(description = "사회")
+    SOCIETY("society"),
+
+    @Schema(description = "스포츠")
+    SPORTS("science");
 
     private final String value;
 
@@ -39,4 +45,5 @@ public enum CategoryType {
 
         return categoryType;
     }
+
 }

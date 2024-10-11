@@ -2,36 +2,67 @@ import PressCard from 'components/search/PressCard';
 import CategoryFilter from 'components/common/CategoryFilter';
 import SubLayout from 'components/common/SubLayout';
 import InputSection from 'components/search/InputSection';
-import { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import ArticleListCardGroup from 'components/common/ArticleListCardGroup';
-
-const dummydata = [
-  {
-    isPress: true,
-  },
-  [
-    {
-      imgUrl:
-        'https://s3-alpha-sig.figma.com/img/667a/5ec0/17d320f067f72c7c0715dd9d1850d4fc?Expires=1727049600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=hWM89vxi11NLSDAYOnvPfg35sMTalordg5aZQ-huHZZufY4lfIPR12tVBlHpuojcmpcNyOhk2WlihG8sAHNaUtxkPzEbqu7rvv-GHp3qR1qoIV~MPHS~UKhCg9CsjeQhj7hpnyJ93WqKXG6RFMLi1LUeiKlx4a3xmhM8muh68EX2d0nvm0oAE~MiJixrAWtvuuCKxO~m1ieQ1ZkIcXSxvk1RJ4t-Tt0bsowjuV~KB4hocdrdxVo0vlJ2amURMrxI0PburQjpFlDbbIHte6vjQmb8kZOTP9Bk9BiM9uDtaMvBL1oAUba-lh0KaBEQb~1U19mJ-0obCtJjIV4AhmKWzg__',
-      title: '전국 민속놀이 대회 개최 소식',
-      viewCount: 123456789,
-      pressName: 'KBS',
-    },
-    {
-      imgUrl:
-        'https://s3-alpha-sig.figma.com/img/667a/5ec0/17d320f067f72c7c0715dd9d1850d4fc?Expires=1727049600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=hWM89vxi11NLSDAYOnvPfg35sMTalordg5aZQ-huHZZufY4lfIPR12tVBlHpuojcmpcNyOhk2WlihG8sAHNaUtxkPzEbqu7rvv-GHp3qR1qoIV~MPHS~UKhCg9CsjeQhj7hpnyJ93WqKXG6RFMLi1LUeiKlx4a3xmhM8muh68EX2d0nvm0oAE~MiJixrAWtvuuCKxO~m1ieQ1ZkIcXSxvk1RJ4t-Tt0bsowjuV~KB4hocdrdxVo0vlJ2amURMrxI0PburQjpFlDbbIHte6vjQmb8kZOTP9Bk9BiM9uDtaMvBL1oAUba-lh0KaBEQb~1U19mJ-0obCtJjIV4AhmKWzg__',
-      title: 'AI 기술 발전 속도 증가',
-      viewCount: 987654321,
-      pressName: 'MBC',
-    },
-  ],
-];
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { PressDetail } from 'types/api/press';
+import { getSearchResult } from 'apis/searchApi';
+import { SearchResultInfo } from 'types/api/search';
+import { useInfiniteQuery } from 'react-query';
+import Spinner from 'components/common/Spinner';
+import ErrorSection from 'components/common/ErrorSection';
 
 function SearchResult() {
   const [searchParams] = useSearchParams();
   const keyword: string = searchParams.get('keyword') ?? '';
   const [activeCategory, setActiveCategory] = useState<string>('전체');
+  const [pressData, setPressData] = useState<PressDetail[]>([]);
+
+  useEffect(() => {
+    const fetchPressData = async () => {
+      try {
+        const result = await getSearchResult({
+          keywordText: keyword,
+          pageNumber: 0,
+          category: activeCategory,
+        });
+        setPressData(result.press || []);
+      } catch (error) {
+        console.error('Press data load error:', error);
+      }
+    };
+
+    if (keyword) {
+      fetchPressData();
+    }
+  }, [keyword, activeCategory]);
+
+  // 무한 스크롤 설정
+  const { data, isLoading, isError, fetchNextPage, hasNextPage } =
+    useInfiniteQuery<SearchResultInfo>(
+      ['searchArticles', keyword, activeCategory],
+      ({ pageParam = 0 }) =>
+        getSearchResult({
+          keywordText: keyword,
+          pageNumber: pageParam,
+          category: activeCategory,
+        }),
+      {
+        getNextPageParam: (lastPage) => {
+          return lastPage.articles.sliceDetails.hasNext
+            ? lastPage.articles.sliceDetails.currentPage + 1
+            : undefined;
+        },
+        enabled: !!keyword,
+      },
+    );
+
+  const pages = data?.pages || [];
+  const sliceDetails =
+    pages.length > 0 ? pages[pages.length - 1].articles.sliceDetails : {};
+
+  const allArticles =
+    data?.pages.flatMap((page) => page.articles.content) || [];
 
   return (
     <SubLayout isSearch={true}>
@@ -41,13 +72,38 @@ function SearchResult() {
           activeCategory={activeCategory}
           setActiveCategory={setActiveCategory}
         />
-        {dummydata.map((item, idx) => {
-          if (Array.isArray(item)) {
-            return <ArticleListCardGroup key={idx} articleList={item} />;
-          } else if (typeof item === 'object' && item != null) {
-            return <PressCard key={idx} />;
-          }
-        })}
+        {isLoading && <Spinner height="400px" />}
+        {isError && (
+          <ErrorSection height="400px" text="검색에 실패했어요...😥" />
+        )}
+        {!isLoading &&
+          !isError &&
+          (allArticles.length > 0 || pressData.length > 0 ? (
+            <>
+              {pressData.map((press: PressDetail) => (
+                <PressCard
+                  key={press.id}
+                  id={press.id}
+                  name={press.name}
+                  imageUrl={press.imageUrl}
+                  isSubscribed={press.isSubscribed}
+                  description={press.description}
+                  subscribeCount={press.subscribeCount}
+                />
+              ))}
+              <ArticleListCardGroup
+                articleList={allArticles}
+                fetchNextPage={fetchNextPage}
+                hasNextPage={hasNextPage}
+                sliceDetails={sliceDetails}
+                articleFrom="search"
+                activeCategory={activeCategory}
+                keyword={keyword}
+              />
+            </>
+          ) : (
+            <ErrorSection height="400px" text="검색 결과가 없습니다." />
+          ))}
       </>
     </SubLayout>
   );

@@ -15,13 +15,20 @@ import { SubLayoutProps } from 'types/common/layout';
 function SubLayout({
   children,
   isSearch = false,
-  headerColor = '#fff',
+  headerColor,
   isPaddingZero = false,
+  isAllSubPage = false,
+  pressList,
 }: React.PropsWithChildren<Readonly<SubLayoutProps>>) {
   const [headerChildren, containerChildren] = React.Children.toArray(children);
   return (
     <Layout>
-      <SubHeader headerColor={headerColor} isSearch={isSearch}>
+      <SubHeader
+        isAllSubPage={isAllSubPage}
+        headerColor={headerColor}
+        isSearch={isSearch}
+        pressList={pressList}
+      >
         {headerChildren}
       </SubHeader>
       <Container isPaddingZero={isPaddingZero}>{containerChildren}</Container>
