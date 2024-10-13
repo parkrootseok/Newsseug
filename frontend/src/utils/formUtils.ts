@@ -1,13 +1,12 @@
 import { setMemberInfo } from '../redux/memberSlice';
 import { AppDispatch, RootState } from '../redux/index';
 import { useDispatch, useSelector } from 'react-redux';
-// import { getRandomNickname } from '@woowa-babble/random-nickname';
+import { getRandomNickname } from '@woowa-babble/random-nickname';
 
 const CreateRandomNickname = (): string => {
   const types = ['animals', 'characters', 'monsters'];
   const randomType = types[Math.floor(Math.random() * types.length)];
-  return 'dDDD';
-  // return getRandomNickname(randomType);
+  return getRandomNickname(randomType);
 };
 
 export const CalculateAge = (birthDate: string): number => {
