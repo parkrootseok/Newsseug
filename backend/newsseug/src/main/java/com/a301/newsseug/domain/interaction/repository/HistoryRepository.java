@@ -16,3 +16,4 @@ public interface HistoryRepository extends JpaRepository<History, Long>, History
 	Page<History> findByMember(Member member, Pageable pageable);
 
 }
+
