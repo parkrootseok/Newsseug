@@ -22,9 +22,9 @@
 
 -   카테고리 기반 추천 기사 : 사용자의 시청 기록을 바탕으로 가장 최근에 시정한 카테고리에 해당하는 기사를 제공합니다.
 
-|    기사 조회        |              카테고리 기반 추천 기사               |
+|               기사 조회             |             카테고리 기반 추천 기사               |
 | :------------------------------------------: | :------------------------------------------------: |
-| <img width="250" src="./etc/asset/home.gif"> | <img width="250" src="./etc/asset/user_video.gif"> |
+| <img width="225" src="./etc/asset/home.gif"> | <img width="225" src="./etc/asset/user_video.gif"> |
 
 ### 💼 언론사 구독 기능
 
@@ -32,7 +32,7 @@
 
 |                    언론사 구독                    |              구독한 언론사 기사 조회              |
 | :-----------------------------------------------: | :-----------------------------------------------: |
-| <img width="180" src="./etc/asset/subscribe-1.gif"> | <img width="180" src="./etc/asset/subscribe-2.gif"> |
+| <img width="225" src="./etc/asset/subscribe-1.gif"> | <img width="225" src="./etc/asset/subscribe-2.gif"> |
 
 ### 📂 북마크 기능
 
@@ -40,7 +40,7 @@
 
 |                     북마크                     |                      북마크한 기사 조회                      |
 | :--------------------------------------------: | :--------------------------------------------: |
-| <img width="250" src="./etc/asset/scrap1.gif"> | <img width="250" src="./etc/asset/scrap2.gif"> |
+| <img width="225" src="./etc/asset/scrap1.gif"> | <img width="225" src="./etc/asset/scrap2.gif"> |
 
 ### 🔍 검색 기능
 
@@ -48,7 +48,7 @@
 
 |                      검색                      |
 | :--------------------------------------------: |
-| <img width="250" src="./etc/asset/search.gif"> |
+| <img width="225" src="./etc/asset/search.gif"> |
 
 ## 🎥 숏폼 생성 과정
 
