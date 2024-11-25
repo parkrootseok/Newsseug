@@ -5,7 +5,6 @@ import com.a301.newsseug.domain.interaction.model.entity.History;
 import com.a301.newsseug.domain.member.model.entity.Member;
 
 import com.a301.newsseug.global.model.entity.ActivationStatus;
-import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
