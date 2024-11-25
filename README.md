@@ -112,12 +112,12 @@ BeautifulSoup4 라이브러리를 활용해 각 언론사별 크롤러를 구현
       <th scope="col" colspan="3" style="text-align: center; background-color: #C6ABFF; color: #FFF;"> Client </th>
     </tr>
     <tr>
-      <td style="text-align: center; background-color: #ADD8E6; color: #FFF;">박근석</td>
-      <td style="text-align: center; background-color: #ADD8E6; color: #FFF;">박상후</td>
-      <td style="text-align: center; background-color: #ADD8E6; color: #FFF;">박찬규</td>
-      <td style="text-align: center; background-color: #C6ABFF; color: #FFF;">김주연</td>
-      <td style="text-align: center; background-color: #C6ABFF; color: #FFF;">김민경</td>
-      <td style="text-align: center; background-color: #C6ABFF; color: #FFF;">오화랑</td>
+      <td align="center" style="background-color: #ADD8E6; color: #FFF;">박근석</td>
+      <td align="center" style="background-color: #ADD8E6; color: #FFF;">박상후</td>
+      <td align="center" style="background-color: #ADD8E6; color: #FFF;">박찬규</td>
+      <td align="center" style="background-color: #C6ABFF; color: #FFF;">김주연</td>
+      <td align="center" style="background-color: #C6ABFF; color: #FFF;">김민경</td>
+      <td align="center" style="background-color: #C6ABFF; color: #FFF;">오화랑</td>
     </tr>
     <tr>
       <td>
