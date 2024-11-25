@@ -36,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ArticleServiceImpl implements ArticleService {
 
     private final RedisCounterService redisCounterService;
@@ -49,11 +50,10 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public GetArticleDetailsResponse getArticleDetail(CustomUserDetails userDetails,
-            Long articleId) {
+                                                      Long articleId) {
 
         Article article = articleRepository.getOrThrow(articleId);
-        Long incrementedViewCount = redisCounterService.increment("article:viewCount:", articleId,
-                1L);
+        Long incrementedViewCount = redisCounterService.increment("article:viewCount:", articleId, 1L);
         Long likeCount = redisCounterService.findByKey("article:likeCount:", articleId).orElse(0L);
         Long hateCount = redisCounterService.findByKey("article:hateCount:", articleId).orElse(0L);
 
@@ -124,7 +124,7 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public SlicedResponse<List<GetArticleResponse>> getTodayArticlesByCategory(String category,
-            int pageNumber) {
+                                                                               int pageNumber) {
 
         Pageable pageable = PageRequest.of(pageNumber, 10);
         LocalDateTime startOfDay = ClockUtil.getLocalDateTime().toLocalDate().atStartOfDay();
@@ -141,7 +141,7 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public SlicedResponse<List<GetArticleResponse>> getArticlesByCategory(String category,
-            int pageNumber) {
+                                                                          int pageNumber) {
 
         Pageable pageable = PageRequest.of(pageNumber, 10);
         Slice<Article> sliced = articleRepository.findAllByCategory(category, pageable);
@@ -154,7 +154,6 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public SlicedResponse<List<GetArticleResponse>> getArticlesByPress(
             CustomUserDetails userDetails, Long pressId, int pageNumber, String category
     ) {

@@ -14,7 +14,15 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
-@Table(name = "likes")
+@Table(
+        name = "likes",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uniqueLike",
+                        columnNames = {"member_id", "article_id"}
+                )
+        }
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Like {
 
