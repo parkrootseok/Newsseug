@@ -22,9 +22,9 @@
 
 -   카테고리 기반 추천 기사 : 사용자의 시청 기록을 바탕으로 가장 최근에 시정한 카테고리에 해당하는 기사를 제공합니다.
 
-|               기사 조회             |             카테고리 기반 추천 기사               |
+|    기사 조회        |              카테고리 기반 추천 기사               |
 | :------------------------------------------: | :------------------------------------------------: |
-| <img width="225" src="./etc/asset/home.gif"> | <img width="225" src="./etc/asset/user_video.gif"> |
+| <img width="250" src="./etc/asset/home.gif"> | <img width="250" src="./etc/asset/user_video.gif"> |
 
 ### 💼 언론사 구독 기능
 
@@ -32,7 +32,7 @@
 
 |                    언론사 구독                    |              구독한 언론사 기사 조회              |
 | :-----------------------------------------------: | :-----------------------------------------------: |
-| <img width="225" src="./etc/asset/subscribe-1.gif"> | <img width="225" src="./etc/asset/subscribe-2.gif"> |
+| <img width="250" src="./etc/asset/subscribe-1.gif"> | <img width="250" src="./etc/asset/subscribe-2.gif"> |
 
 ### 📂 북마크 기능
 
@@ -40,7 +40,7 @@
 
 |                     북마크                     |                      북마크한 기사 조회                      |
 | :--------------------------------------------: | :--------------------------------------------: |
-| <img width="225" src="./etc/asset/scrap1.gif"> | <img width="225" src="./etc/asset/scrap2.gif"> |
+| <img width="250" src="./etc/asset/scrap1.gif"> | <img width="250" src="./etc/asset/scrap2.gif"> |
 
 ### 🔍 검색 기능
 
@@ -48,7 +48,7 @@
 
 |                      검색                      |
 | :--------------------------------------------: |
-| <img width="225" src="./etc/asset/search.gif"> |
+| <img width="250" src="./etc/asset/search.gif"> |
 
 ## 🎥 숏폼 생성 과정
 
@@ -106,17 +106,41 @@ BeautifulSoup4 라이브러리를 활용해 각 언론사별 크롤러를 구현
 
 ## 🧑🏻 팀원
 
-### 🖥️ Client
+<table border="1" style="border-collapse: collapse; text-align: center; width: 100%;">
+    <tr>
+      <th scope="col" colspan="3" style="text-align: center; background-color: #ADD8E6; color: #FFF;"> Server </th>
+      <th scope="col" colspan="3" style="text-align: center; background-color: #C6ABFF; color: #FFF;"> Client </th>
+    </tr>
+    <tr>
+      <td style="text-align: center; background-color: #ADD8E6; color: #FFF;">박근석</td>
+      <td style="text-align: center; background-color: #ADD8E6; color: #FFF;">박상후</td>
+      <td style="text-align: center; background-color: #ADD8E6; color: #FFF;">박찬규</td>
+      <td style="text-align: center; background-color: #C6ABFF; color: #FFF;">김주연</td>
+      <td style="text-align: center; background-color: #C6ABFF; color: #FFF;">김민경</td>
+      <td style="text-align: center; background-color: #C6ABFF; color: #FFF;">오화랑</td>
+    </tr>
+    <tr>
+      <td>
+        <a href="https://github.com/parkrootseok"><img src="https://avatars.githubusercontent.com/parkrootseok" width=160/></a>
+      </td>
+      <td>
+        <a href="https://github.com/SangHuPark"><img src="https://avatars.githubusercontent.com/SangHuPark" width=160/></a>
+      </td>
+      <td>
+        <a href="https://github.com/pcg0610"><img src="https://avatars.githubusercontent.com/pcg0610" width=160/></a>
+      </td>
+      <td>
+       <a href="https://github.com/izodam"><img src="https://avatars.githubusercontent.com/izodam" width=160/></a> 
+      </td>
+      <td>
+        <a href="https://github.com/mkkim68"><img src="https://avatars.githubusercontent.com/mkkim68" width=160/></a>
+      </td>
+      <td>
+         <a href="https://github.com/Hwarang-Oh"><img src="https://avatars.githubusercontent.com/Hwarang-Oh" width=160/></a> 
+      </td>
+    </tr>
+</table>
 
-| 김주연 | 김민경 | 오화랑 |
-| :---: | :---: | :---: |
-| <a href="https://github.com/izodam"><img src="https://avatars.githubusercontent.com/izodam" width=160/></a> | <a href="https://github.com/mkkim68"><img src="https://avatars.githubusercontent.com/mkkim68" width=160/></a> | <a href="https://github.com/Hwarang-Oh"><img src="https://avatars.githubusercontent.com/Hwarang-Oh" width=160/></a> | | [izodam](https://github.com/izodam) | [mkkim68](https://github.com/mkkim68) [Hwarang-Oh](https://github.com/Hwarang-Oh) |
-
-### 🖥️ Server
-
-| 박근석 | 박상후 | 박찬규 |
-| :---: | :---: | :---: |
-| <a href="https://github.com/parkrootseok"><img src="https://avatars.githubusercontent.com/parkrootseok" width=160/></a> | <a href="https://github.com/SangHuPark"><img src="https://avatars.githubusercontent.com/SangHuPark" width=160/></a> | <a href="https://github.com/pcg0610"><img src="https://avatars.githubusercontent.com/pcg0610" width=160/></a> | |[parkrootseok](https://github.com/parkrootseok) | [SangHuPark](https://github.com/SangHuPark) | [pcg0610](https://github.com/pcg0610) |
 
 ## ⚒️ 기술 스택
 
