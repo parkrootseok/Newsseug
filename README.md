@@ -1,4 +1,4 @@
-# 뉴스를 한눈에 "뉴쓱" 📰 
+# 📰 뉴스를 한눈에 "뉴쓱"  
 
 ## 📌 소개
 
@@ -70,7 +70,7 @@
 
 </br>
 
-### 🐱‍🏍 주요 기능 흐름
+### 🚗 주요 기능 흐름
 
 <div align=center>
     <img width="60%" src="./etc/asset/functional-flow-chart.png">
