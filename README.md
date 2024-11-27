@@ -1,13 +1,15 @@
-# 📰 뉴쓱
+# 뉴스를 한눈에 "뉴쓱" 📰 
 
-## 📌 프로젝트 소개
+## 📌 소개
 
 **뉴쓱**은 사람들이 뉴스를 더 쉽고 재밌게 소비할 수 있도록 **뉴스 기사를 숏폼 형태로 제공**하는 커뮤니티 플랫폼입니다.
 
 사용자들은 간단한 숏폼 영상으로 최신 뉴스를 빠르게 확인하고, 접근성을 높인 인터페이스를 통해 다양한 뉴스를 소비할 수 있습니다.
 
+</br>
 
-## 💻 프로젝트 주요 기능
+
+## 💻 주요 기능
 
 ### 🎬 숏폼 영상 시청
 
@@ -22,87 +24,132 @@
 
 -   카테고리 기반 추천 기사 : 사용자의 시청 기록을 바탕으로 가장 최근에 시정한 카테고리에 해당하는 기사를 제공합니다.
 
-|    기사 조회        |              카테고리 기반 추천 기사               |
-| :------------------------------------------: | :------------------------------------------------: |
-| <img width="250" src="./etc/asset/home.gif"> | <img width="250" src="./etc/asset/user_video.gif"> |
+</br>
 
-### 💼 언론사 구독 기능
+|   기사 조회   |  카테고리 기반 추천 기사  |
+| :---------: | :-----------------: |
+| <img width="55%" src="./etc/asset/home.gif"> | <img width="55%" src="./etc/asset/user_video.gif"> |
+
+### 💼 언론사 구독
 
 사용자가 관심 있는 언론사를 구독하여 해당 언론사의 기사 숏폼을 모아볼 수 있습니다.
 
+</br>
+
 |                    언론사 구독                    |              구독한 언론사 기사 조회              |
 | :-----------------------------------------------: | :-----------------------------------------------: |
-| <img width="250" src="./etc/asset/subscribe-1.gif"> | <img width="250" src="./etc/asset/subscribe-2.gif"> |
+| <img width="55%" src="./etc/asset/subscribe-1.gif"> | <img width="55%" src="./etc/asset/subscribe-2.gif"> |
 
-### 📂 북마크 기능
+### 📂 북마크
 
-사용자가 보고 싶은 기사를 북마크할 수 있는 기능으로, '저장하기' 버튼을 눌러 자신이 만든 폴더에 숏폼 영상을 저장하여 언제든지 쉽게 다시 확인할 수 있습니다.
+사용자가 보고 싶은 기사를 북마크할 수 있는 기능으로, '저장하기' 버튼을 눌러 자신이 만든 폴더에 숏폼 영상을 저장하여 언제든지 쉽게 다시 확인할 수 있습니다. 
+
+</br>
 
 |                     북마크                     |                      북마크한 기사 조회                      |
 | :--------------------------------------------: | :--------------------------------------------: |
-| <img width="250" src="./etc/asset/scrap1.gif"> | <img width="250" src="./etc/asset/scrap2.gif"> |
+| <img width="55%" src="./etc/asset/scrap1.gif"> | <img width="55%" src="./etc/asset/scrap2.gif"> |
 
-### 🔍 검색 기능
+### 🔍 검색
 
-키워드를 입력하면 관련된 기사와 언론사를 제공합니다.
+키워드를 입력하면 관련된 기사와 언론사를 제공합니다. 
 
+</br>
+
+<div align=center width="50%">
+    
 |                      검색                      |
 | :--------------------------------------------: |
-| <img width="250" src="./etc/asset/search.gif"> |
+| <img width="55%" src="./etc/asset/search.gif"> |
+    
+</div>
 
 ## 🎥 숏폼 생성 과정
 
 각 언론사에 보도된 뉴스 기사를 다음과 같은 과정을 통해 숏폼 영상으로 제작하여 사용자에게 제공합니다.
 
+</br>
+
 ### 🐱‍🏍 주요 기능 흐름
 
-<img width="600" src="./etc/asset/functional-flow-chart.png">
+<div align=center>
+    <img width="60%" src="./etc/asset/functional-flow-chart.png">
+</div>
 
 ### 🕷 크롤링
 
 BeautifulSoup4 라이브러리를 활용해 각 언론사별 크롤러를 구현했습니다.
 
-<img width="600" src="./etc/asset/crawler-compare.png">
+</br>
+
+<div align=center>
+    <img width="60%" src="./etc/asset/crawler-compare.png">
+</div>
 
 ### 🌐 배포 환경
 
-크롤러는 AWS Lambda 를 통한 서버리스 환경에서 동작하고 있습니다.
+크롤러는 AWS Lambda 를 통한 서버리스 환경에서 동작하고 있습니다. 이러한 설계는 다음과 같은 요약을 토대로 선택했습니다.
 
-이러한 설계는 다음과 같은 요약을 토대로 선택했습니다.
+</br>
 
-<img width="600" src="./etc/asset/server-less-compare.png">
+<div align=center>
+    <img width="600" src="./etc/asset/server-less-compare.png">    
+</div>
+
 
 ### ⚙️ 프롬프트 엔지니어링
 
 관련 논문을 참고해 정확도를 61%에서 87%로 상승시킨 5가지 방법 중 3가지를 적용하여 다음 사진과 같이 작성했습니다.
 
-<img width="600" src="./etc/asset/prompt.png">
+</br>
+
+<div align=center>
+    <img width="600" src="./etc/asset/prompt.png">
+</div>
 
 ### 📃 시나리오 생성
 
 기사 원문을 전달하면 프롬프트를 통해 해당 기사를 6개의 장면으로 분할하여 다음과 같은 사진과 같이 각 장면에 대한 묘사와 대사를 생성합니다.
 
-<img width="600" src="./etc/asset/scenario.png">
+</br>
+
+<div align=center>
+    <img width="600" src="./etc/asset/scenario.png">
+</div>
 
 ### 🎞️ 이미지 생성
 
 프롬프팅 엔지니어링을 수행한 결과 다음 사진과 같으며, 생성한 시나리오의 **description**을 바탕으로 이미지를 생성합니다.
 
+</br>
+
+<div align=center>
+    
 |                     수행전                    |                      수행후                      |
 | :--------------------------------------------: | :--------------------------------------------: |
 | <img width="275" src="./etc/asset/before.png"> | <img width="290" src="./etc/asset/after.png"> |
+
+</div>
 
 ### 🎙️ 나레이션 생성
 
 생성한 시나리오의 **dialogue**을 바탕으로 나레이션을 생성합니다.
 
-<img width="600" src="./etc/asset/speech.png">
+</br>
+
+<div align=center>
+    <img width="600" src="./etc/asset/speech.png">
+</div>
 
 ### 📹 숏폼 생성
 
 위에서 도출한 이미지 배열과 나레이션을 합쳐 숏폼 영상을 생성합니다.
 
-<img width="600" src="./etc/asset/create_video.png">
+</br>
+
+<div align=center>
+    <img width="600" src="./etc/asset/create_video.png">
+</div>
 
 ## 🧑🏻 팀원
 
