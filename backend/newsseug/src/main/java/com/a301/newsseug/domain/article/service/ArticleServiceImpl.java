@@ -49,8 +49,9 @@ public class ArticleServiceImpl implements ArticleService {
     private final HateRepository hateRepository;
 
     @Override
-    public GetArticleDetailsResponse getArticleDetail(CustomUserDetails userDetails,
-                                                      Long articleId) {
+    public GetArticleDetailsResponse getArticleDetail(
+            CustomUserDetails userDetails, Long articleId
+    ) {
 
         Article article = articleRepository.getOrThrow(articleId);
         Long incrementedViewCount = redisCounterService.increment("article:viewCount:", articleId, 1L);
@@ -93,7 +94,8 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public SlicedResponse<List<GetArticleResponse>> getRandomArticle(
-            CustomUserDetails userDetails) {
+            CustomUserDetails userDetails
+    ) {
 
         Pageable pageable = PageRequest.of(0, 10);
         Member loginMember = userDetails.getMember();
@@ -123,8 +125,9 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public SlicedResponse<List<GetArticleResponse>> getTodayArticlesByCategory(String category,
-                                                                               int pageNumber) {
+    public SlicedResponse<List<GetArticleResponse>> getTodayArticlesByCategory(
+            String category, int pageNumber
+    ) {
 
         Pageable pageable = PageRequest.of(pageNumber, 10);
         LocalDateTime startOfDay = ClockUtil.getLocalDateTime().toLocalDate().atStartOfDay();
@@ -140,8 +143,9 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public SlicedResponse<List<GetArticleResponse>> getArticlesByCategory(String category,
-                                                                          int pageNumber) {
+    public SlicedResponse<List<GetArticleResponse>> getArticlesByCategory(
+            String category, int pageNumber
+    ) {
 
         Pageable pageable = PageRequest.of(pageNumber, 10);
         Slice<Article> sliced = articleRepository.findAllByCategory(category, pageable);
@@ -182,7 +186,8 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public SlicedResponse<List<GetArticleResponse>> getArticlesByBirthYear(
-            CustomUserDetails userDetails, int pageNumber, String category) {
+            CustomUserDetails userDetails, int pageNumber, String category
+    ) {
 
         Pageable pageable = PageRequest.of(pageNumber, 10);
         int age = AgeUtil.calculateAge(userDetails);
