@@ -46,7 +46,7 @@ public class HateServiceImpl implements HateService {
                     LikeCountingEvent.builder()
                             .hash("article:likeCount:")
                             .id(articleId)
-                            .delta(1L)
+                            .delta(-1L)
                             .build()
             );
         }
@@ -65,6 +65,7 @@ public class HateServiceImpl implements HateService {
                         .delta(1L)
                         .build()
         );
+
     }
 
     @Override
@@ -74,7 +75,13 @@ public class HateServiceImpl implements HateService {
         Article article = articleRepository.getOrThrow(articleId);
         Hate hate = hateRepository.getOrThrow(loginMember, article);
         hateRepository.delete(hate);
-        redisCounterService.incrementAsync("article:hateCount:", articleId, -1L);
+        eventPublisher.publishEvent(
+                HateCountingEvent.builder()
+                        .hash("article:hateCount:")
+                        .id(articleId)
+                        .delta(-1L)
+                        .build()
+        );
 
     }
 

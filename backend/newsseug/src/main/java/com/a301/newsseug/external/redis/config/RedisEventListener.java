@@ -16,12 +16,12 @@ public class RedisEventListener {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleLikeCountingEvent(LikeCountingEvent event) {
-        redisCounterService.incrementAsync(event.hash(), event.id(), event.delta());
+        redisCounterService.increment(event.hash(), event.id(), event.delta());
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleHateCountingEvent(HateCountingEvent event) {
-        redisCounterService.incrementAsync(event.hash(), event.id(), event.delta());
+        redisCounterService.increment(event.hash(), event.id(), event.delta());
     }
 
 }
