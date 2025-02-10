@@ -55,14 +55,4 @@ public class RedisCounterServiceImpl implements RedisCounterService {
         return redisTemplate.opsForHash().increment(hash, HashKey.toString(), value);
     }
 
-    @Override
-    @Async("asyncExecutor")
-    public void incrementAsync(String hash, Long HashKey, Long value) {
-        try {
-            redisTemplate.opsForHash().increment(hash, HashKey.toString(), value);
-        } catch (Exception e) {
-            log.error("Failed to increment Redis value for hash: {}, key: {}, by: {}", hash, HashKey, value, e);
-        }
-    }
-
 }

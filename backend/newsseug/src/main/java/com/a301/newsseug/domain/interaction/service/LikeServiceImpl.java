@@ -38,7 +38,6 @@ public class LikeServiceImpl implements LikeService {
         Optional<Hate> hate = hateRepository.findByMemberAndArticle(loginMember, article);
         if(hate.isPresent()) {
             hateRepository.delete(hate.get());
-            redisCounterService.incrementAsync("article:hateCount:", articleId, -1L);
             eventPublisher.publishEvent(
                     HateCountingEvent.builder()
                             .hash("article:hateCount:")
@@ -72,7 +71,13 @@ public class LikeServiceImpl implements LikeService {
         Article article = articleRepository.getOrThrow(articleId);
         Like like = likeRepository.getOrThrow(loginMember, article);
         likeRepository.delete(like);
-        redisCounterService.incrementAsync("article:likeCount:", articleId, -1L);
+        eventPublisher.publishEvent(
+                LikeCountingEvent.builder()
+                        .hash("article:likeCount:")
+                        .id(articleId)
+                        .delta(-1L)
+                        .build()
+        );
 
     }
 

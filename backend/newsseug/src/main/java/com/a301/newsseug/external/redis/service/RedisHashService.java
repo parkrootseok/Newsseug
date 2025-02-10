@@ -11,6 +11,5 @@ public interface RedisHashService<H, HK, HV> {
     Optional<HV> findByKey(H hash, HK key);
     void deleteByKey(H hash, HK key);
     Long increment(H hash, HK key, HV value);
-    void incrementAsync(String hash, Long HashKey, Long value);
 
 }

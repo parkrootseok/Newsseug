@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Member 도메인에 대한 Controller 계층
+ */
 @Tag(name = "멤버 관련 API")
 @RestController
 @RequestMapping("/api/v1/members")
@@ -28,7 +31,7 @@ public class MemberController {
 
     @Operation(summary = "사용자 정보 조회", description = "사용자 정보를 조회한다.")
     @GetMapping()
-    public ResponseEntity<Result<GetMemberResponse>> updateMember(
+    public ResponseEntity<Result<GetMemberResponse>> getMemberDetails(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         return ResponseUtil.ok(Result.of(memberService.getMember(userDetails)));
