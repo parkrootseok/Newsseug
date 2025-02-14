@@ -3,7 +3,6 @@ package com.a301.newsseug.domain.article.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -13,7 +12,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class RedisCounterServiceImpl implements RedisCounterService {
+public class CounterServiceImpl implements CounterService {
 
     private final RedisTemplate<String, Object> redisTemplate;
 

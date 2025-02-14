@@ -14,7 +14,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class CounterSchedulingServiceImpl implements CounterSchedulingService {
 
-    private final RedisCounterService redisCounterService;
+    private final CounterService counterService;
     private final ArticleRepository articleRepository;
 
     @Override
@@ -26,7 +26,7 @@ public class CounterSchedulingServiceImpl implements CounterSchedulingService {
     }
 
     private void syncCount(String redisHashKey, String column) {
-        Map<Object, Object> countLogs = redisCounterService.findByHash(redisHashKey);
+        Map<Object, Object> countLogs = counterService.findByHash(redisHashKey);
 
         if (Objects.nonNull(countLogs)) {
             for (Map.Entry<Object, Object> entry : countLogs.entrySet()) {
@@ -36,11 +36,12 @@ public class CounterSchedulingServiceImpl implements CounterSchedulingService {
 
                 if (Objects.nonNull(count)) {
                     log.info("Updating articleId: {}, New {}: {}", articleId, column, count);
-                    redisCounterService.deleteByKey(redisHashKey, Long.parseLong(articleId));
+                    counterService.deleteByKey(redisHashKey, Long.parseLong(articleId));
                     articleRepository.updateCount(column, Long.parseLong(articleId), count.longValue());
                 }
             }
         }
 
     }
+
 }

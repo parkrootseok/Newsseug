@@ -39,7 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class ArticleServiceImpl implements ArticleService {
 
-    private final RedisCounterService redisCounterService;
+    private final CounterService counterService;
     private final BirthYearCountService birthYearCountService;
     private final HistoryService historyService;
     private final SubscribeService subscribeService;
@@ -54,9 +54,9 @@ public class ArticleServiceImpl implements ArticleService {
     ) {
 
         Article article = articleRepository.getOrThrow(articleId);
-        Long incrementedViewCount = redisCounterService.increment("article:viewCount:", articleId, 1L);
-        Long likeCount = redisCounterService.findByKey("article:likeCount:", articleId).orElse(0L);
-        Long hateCount = redisCounterService.findByKey("article:hateCount:", articleId).orElse(0L);
+        Long incrementedViewCount = counterService.increment("article:viewCount:", articleId, 1L);
+        Long likeCount = counterService.findByKey("article:likeCount:", articleId).orElse(0L);
+        Long hateCount = counterService.findByKey("article:hateCount:", articleId).orElse(0L);
 
         if (Objects.nonNull(userDetails)) {
 

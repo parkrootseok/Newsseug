@@ -2,7 +2,6 @@ package com.a301.newsseug.domain.interaction.service;
 
 import com.a301.newsseug.domain.article.model.entity.Article;
 import com.a301.newsseug.domain.article.repository.ArticleRepository;
-import com.a301.newsseug.domain.article.service.RedisCounterService;
 import com.a301.newsseug.domain.auth.model.entity.CustomUserDetails;
 import com.a301.newsseug.domain.interaction.model.dto.event.HateCountingEvent;
 import com.a301.newsseug.domain.interaction.model.dto.event.LikeCountingEvent;
@@ -27,7 +26,6 @@ public class LikeServiceImpl implements LikeService {
     private final ArticleRepository articleRepository;
     private final LikeRepository likeRepository;
     private final HateRepository hateRepository;
-    private final RedisCounterService redisCounterService;
 
     @Override
     @Transactional
