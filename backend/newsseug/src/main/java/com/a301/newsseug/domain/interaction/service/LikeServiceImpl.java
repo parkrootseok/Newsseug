@@ -3,13 +3,12 @@ package com.a301.newsseug.domain.interaction.service;
 import com.a301.newsseug.domain.article.model.entity.Article;
 import com.a301.newsseug.domain.article.repository.ArticleRepository;
 import com.a301.newsseug.domain.auth.model.entity.CustomUserDetails;
-import com.a301.newsseug.domain.interaction.model.dto.event.HateCountingEvent;
-import com.a301.newsseug.domain.interaction.model.dto.event.LikeCountingEvent;
 import com.a301.newsseug.domain.interaction.model.entity.Hate;
 import com.a301.newsseug.domain.interaction.model.entity.Like;
 import com.a301.newsseug.domain.interaction.repository.HateRepository;
 import com.a301.newsseug.domain.interaction.repository.LikeRepository;
 import com.a301.newsseug.domain.member.model.entity.Member;
+import com.a301.newsseug.global.event.CountingEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -37,7 +36,7 @@ public class LikeServiceImpl implements LikeService {
         if(hate.isPresent()) {
             hateRepository.delete(hate.get());
             eventPublisher.publishEvent(
-                    HateCountingEvent.builder()
+                    CountingEvent.builder()
                             .hash("article:hateCount:")
                             .id(articleId)
                             .delta(-1L)
@@ -52,7 +51,7 @@ public class LikeServiceImpl implements LikeService {
         );
 
         eventPublisher.publishEvent(
-                LikeCountingEvent.builder()
+                CountingEvent.builder()
                         .hash("article:likeCount:")
                         .id(articleId)
                         .delta(1L)
@@ -70,7 +69,7 @@ public class LikeServiceImpl implements LikeService {
         Like like = likeRepository.getOrThrow(loginMember, article);
         likeRepository.delete(like);
         eventPublisher.publishEvent(
-                LikeCountingEvent.builder()
+                CountingEvent.builder()
                         .hash("article:likeCount:")
                         .id(articleId)
                         .delta(-1L)

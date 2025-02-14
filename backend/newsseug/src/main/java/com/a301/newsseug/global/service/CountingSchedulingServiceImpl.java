@@ -1,4 +1,4 @@
-package com.a301.newsseug.domain.article.service;
+package com.a301.newsseug.global.service;
 
 import com.a301.newsseug.domain.article.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,9 +12,9 @@ import java.util.Objects;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CounterSchedulingServiceImpl implements CounterSchedulingService {
+public class CountingSchedulingServiceImpl implements CountingSchedulingService {
 
-    private final CounterService counterService;
+    private final CountingService countingService;
     private final ArticleRepository articleRepository;
 
     @Override
@@ -26,7 +26,7 @@ public class CounterSchedulingServiceImpl implements CounterSchedulingService {
     }
 
     private void syncCount(String redisHashKey, String column) {
-        Map<Object, Object> countLogs = counterService.findByHash(redisHashKey);
+        Map<Object, Object> countLogs = countingService.findByHash(redisHashKey);
 
         if (Objects.nonNull(countLogs)) {
             for (Map.Entry<Object, Object> entry : countLogs.entrySet()) {
@@ -36,7 +36,7 @@ public class CounterSchedulingServiceImpl implements CounterSchedulingService {
 
                 if (Objects.nonNull(count)) {
                     log.info("Updating articleId: {}, New {}: {}", articleId, column, count);
-                    counterService.deleteByKey(redisHashKey, Long.parseLong(articleId));
+                    countingService.deleteByKey(redisHashKey, Long.parseLong(articleId));
                     articleRepository.updateCount(column, Long.parseLong(articleId), count.longValue());
                 }
             }

@@ -19,6 +19,7 @@ import com.a301.newsseug.domain.press.repository.PressRepository;
 import com.a301.newsseug.global.model.dto.SlicedResponse;
 import com.a301.newsseug.global.model.entity.ActivationStatus;
 import com.a301.newsseug.global.model.entity.SliceDetails;
+import com.a301.newsseug.global.service.CountingService;
 import com.a301.newsseug.global.util.AgeUtil;
 import com.a301.newsseug.global.util.ClockUtil;
 import java.time.LocalDateTime;
@@ -39,7 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class ArticleServiceImpl implements ArticleService {
 
-    private final CounterService counterService;
+    private final CountingService countingService;
     private final BirthYearCountService birthYearCountService;
     private final HistoryService historyService;
     private final SubscribeService subscribeService;
@@ -54,9 +55,9 @@ public class ArticleServiceImpl implements ArticleService {
     ) {
 
         Article article = articleRepository.getOrThrow(articleId);
-        Long incrementedViewCount = counterService.increment("article:viewCount:", articleId, 1L);
-        Long likeCount = counterService.findByKey("article:likeCount:", articleId).orElse(0L);
-        Long hateCount = counterService.findByKey("article:hateCount:", articleId).orElse(0L);
+        Long incrementedViewCount = countingService.increment("article:viewCount:", articleId, 1L);
+        Long likeCount = countingService.findByKey("article:likeCount:", articleId).orElse(0L);
+        Long hateCount = countingService.findByKey("article:hateCount:", articleId).orElse(0L);
 
         if (Objects.nonNull(userDetails)) {
 

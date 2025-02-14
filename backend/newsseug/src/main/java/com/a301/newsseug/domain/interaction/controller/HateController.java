@@ -1,6 +1,6 @@
 package com.a301.newsseug.domain.interaction.controller;
 
-import com.a301.newsseug.domain.article.service.CounterService;
+import com.a301.newsseug.global.service.CountingService;
 import com.a301.newsseug.domain.auth.model.entity.CustomUserDetails;
 import com.a301.newsseug.domain.interaction.service.HateService;
 import com.a301.newsseug.global.model.dto.Result;
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class HateController {
 
     private final HateService hateService;
-    private final CounterService counterService;
+    private final CountingService countingService;
 
     @Operation(summary = "싫어요 API", description = "사용자가 기사에 싫어요를 저장한다.",
             responses = {

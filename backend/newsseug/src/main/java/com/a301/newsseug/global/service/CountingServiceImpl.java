@@ -1,5 +1,7 @@
-package com.a301.newsseug.domain.article.service;
+package com.a301.newsseug.global.service;
 
+import com.a301.newsseug.global.event.CountingEvent;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -12,7 +14,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CounterServiceImpl implements CounterService {
+public class CountingServiceImpl implements CountingService {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -52,6 +54,10 @@ public class CounterServiceImpl implements CounterService {
     @Override
     public Long increment(String hash, Long HashKey, Long value) {
         return redisTemplate.opsForHash().increment(hash, HashKey.toString(), value);
+    }
+
+    public void incrementBatch(List<CountingEvent> events) {
+
     }
 
 }
